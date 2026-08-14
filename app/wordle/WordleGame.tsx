@@ -73,7 +73,11 @@ export default function WordleGame({ data }: { data: WordleData }) {
   }, [board, done, commit]);
 
   // Sauvegarde de l'avancement d'une grille quotidienne en cours.
-  useAutoSave(save, board, board.mode === "daily" && board.status === "playing");
+  useAutoSave(
+    save,
+    board,
+    board.mode === "daily" && board.status === "playing",
+  );
 
   // Highlight de press : on illumine brièvement la touche correspondant au dernier
   // caractère produit (frappe physique OU clic). État purement visuel, hors reducer.

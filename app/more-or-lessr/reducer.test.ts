@@ -25,7 +25,10 @@ const seq = dailySequence(data, DAY, "rating");
 
 // Renvoie l'état juste après START rating.
 function started() {
-  return reducer(createInitialState(DAY), { type: "START", category: "rating" });
+  return reducer(createInitialState(DAY), {
+    type: "START",
+    category: "rating",
+  });
 }
 // Direction correcte pour le duel ancre/challenger courant (catégorie rating).
 function correctDir(anchor: Player, challenger: Player): Direction {
