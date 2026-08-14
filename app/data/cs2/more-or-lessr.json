@@ -1,0 +1,33 @@
+{
+  "game": "more-or-lessr",
+  "players": [
+    { "name": "ZywOo", "team": "Vitality", "nationality": "France", "peak_rating": 1.33, "prize_money": 2185460 },
+    { "name": "s1mple", "team": "BC.Games", "nationality": "Ukraine", "peak_rating": 1.31, "prize_money": 1752367 },
+    { "name": "donk", "team": "Spirit", "nationality": "Russia", "peak_rating": 1.40, "peak_year": 2024, "prize_money": 600000 },
+    { "name": "m0NESY", "team": "Falcons", "nationality": "Russia", "peak_rating": 1.26, "peak_year": 2023, "prize_money": 700000 },
+    { "name": "NiKo", "team": "Falcons", "nationality": "Bosnia and Herzegovisna", "peak_rating": 1.23, "peak_year": 2018, "prize_money": 1500000 },
+    { "name": "sh1ro", "team": "Spirit", "nationality": "Russia", "peak_rating": 1.20, "peak_year": 2021, "prize_money": 800000 },
+    { "name": "dev1ce", "team": "Astralis", "nationality": "Denmark", "peak_rating": 1.20, "peak_year": 2019, "prize_money": 2000000 },
+    { "name": "coldzera", "team": "Legends", "nationality": "Brazil", "peak_rating": 1.27, "peak_year": 2017, "prize_money": 1200000 },
+    { "name": "ropz", "team": "Vitality", "nationality": "Estonia", "peak_rating": 1.16, "peak_year": 2022, "prize_money": 2068665 },
+    { "name": "electronic", "team": "Virtus.pro", "nationality": "Russia", "peak_rating": 1.18, "peak_year": 2021, "prize_money": 1300000 },
+    { "name": "Twistzz", "team": "FaZe", "nationality": "Canada", "peak_rating": 1.16, "peak_year": 2019, "prize_money": 1300000 },
+    { "name": "broky", "team": "FaZe", "nationality": "Latvia", "peak_rating": 1.17, "peak_year": 2022, "prize_money": 1100000 },
+    { "name": "frozen", "team": "FaZe", "nationality": "Slovakia", "peak_rating": 1.18, "peak_year": 2023, "prize_money": 700000 },
+    { "name": "huNter-", "team": "Falcons", "nationality": "Bosnia and Herzegovina", "peak_rating": 1.16, "peak_year": 2020, "prize_money": 900000 },
+    { "name": "flameZ", "team": "Vitality", "nationality": "Israel", "peak_rating": 1.18, "peak_year": 2024, "prize_money": 1271778 },
+    { "name": "blameF", "team": "Astralis", "nationality": "Denmark", "peak_rating": 1.20, "peak_year": 2020, "prize_money": 700000 },
+    { "name": "KSCERATO", "team": "FURIA", "nationality": "Brazil", "peak_rating": 1.18, "peak_year": 2021, "prize_money": 600000 },
+    { "name": "NAF", "team": "Liquid", "nationality": "Canada", "peak_rating": 1.14, "peak_year": 2019, "prize_money": 1500000 },
+    { "name": "Magisk", "team": "N/A", "nationality": "Denmark", "peak_rating": 1.14, "peak_year": 2018, "prize_money": 1800000 },
+    { "name": "dupreeh", "team": "Vitality", "nationality": "Denmark", "peak_rating": 1.12, "peak_year": 2018, "prize_money": 2000000 },
+    { "name": "Xyp9x", "team": "Legends", "nationality": "Denmark", "peak_rating": 1.05, "peak_year": 2018, "prize_money": 1900000 },
+    { "name": "apEX", "team": "Vitality", "nationality": "France", "peak_rating": 1.05, "peak_year": 2018, "prize_money": 2342802 },
+    { "name": "mezii", "team": "Vitality", "nationality": "UK", "peak_rating": 1.12, "peak_year": 2025, "prize_money": 1152000 },
+    { "name": "rain", "team": "100Thieves", "nationality": "Norway", "peak_rating": 1.12, "peak_year": 2022, "prize_money": 1200000 },
+    { "name": "FalleN", "team": "FURIA", "nationality": "Brazil", "peak_rating": 1.10, "peak_year": 2016, "prize_money": 1300000 },
+    { "name": "GuardiaN", "team": "Legends", "nationality": "Slovakia", "peak_rating": 1.18, "peak_year": 2017, "prize_money": 798053 },
+    { "name": "Brollan", "team": "FaZe", "nationality": "Sweden", "peak_rating": 1.14, "peak_year": 2021, "prize_money": 500000 },
+    { "name": "jks", "team": "G2", "nationality": "Australia", "peak_rating": 1.12, "peak_year": 2019, "prize_money": 500000 }
+  ]
+}
