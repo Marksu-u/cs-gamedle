@@ -4,13 +4,19 @@ import type { Player } from "@/lib/guessr/types";
 type Props = {
   target: Player;
   attempts: number;
+  points: number;
+  mode: "daily" | "practice";
   onReplay: () => void;
   gaveUp?: boolean; // variante abandon : révèle la réponse en rouge
 };
 
+// NOTE : bannière volontairement minimale sur `points` — la tâche 13 se charge
+// de l'habillage complet (multiplicateur, série, etc).
 export default function ResultBanner({
   target,
   attempts,
+  points,
+  mode,
   onReplay,
   gaveUp,
 }: Props) {
@@ -37,6 +43,11 @@ export default function ResultBanner({
       <p className="mt-1 text-sm text-[color:var(--muted)]">
         {target.current_team} · {target.role.join(" / ")}
       </p>
+      {mode === "daily" && points > 0 && (
+        <p className="mt-1 text-sm text-[color:var(--muted)]">
+          +{points} points
+        </p>
+      )}
       {target.achievements.length > 0 && (
         <ul className="mt-3 space-y-1 text-sm">
           {target.achievements.map((a) => (

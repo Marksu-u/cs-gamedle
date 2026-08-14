@@ -1,20 +1,59 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
 import HelpModal from "@/components/HelpModal";
 import CategorySelect from "@/components/more-or-lessr/CategorySelect";
 import ChainBoard from "@/components/more-or-lessr/ChainBoard";
 import ResultBanner from "@/components/more-or-lessr/ResultBanner";
-import type { MorelessData } from "@/lib/more-or-lessr/types";
+import { molPoints } from "@/lib/daily/scoring";
+import {
+  useDailyPuzzle,
+  useAutoSave,
+  useDay,
+} from "@/lib/daily/useDailyPuzzle";
+import type { PuzzleId } from "@/lib/daily/types";
+import type { GameState, MorelessData } from "@/lib/more-or-lessr/types";
 import { createInitialState, createMorelessReducer } from "./reducer";
 
 const REVEAL_MS = 1400; // temps d'affichage du résultat avant le round suivant
 
 export default function MorelessGame({ data }: { data: MorelessData }) {
-  // Reducer mémoïsé : créé une fois côté client (fige la date du jour pour la session).
-  const reducer = useMemo(() => createMorelessReducer(data), [data]);
-  const [state, dispatch] = useReducer(reducer, undefined, createInitialState);
+  const day = useDay();
+  // Reducer mémoïsé : fermé sur `data` + le jour (fige la grille du jour pour la session).
+  const reducer = useMemo(() => createMorelessReducer(data, day), [data, day]);
+  const [state, dispatch] = useReducer(reducer, undefined, () =>
+    createInitialState(day),
+  );
+
+  // La catégorie choisie détermine la grille quotidienne concernée.
+  const puzzleId = (
+    state.category ? `mol-${state.category}` : "mol-rating"
+  ) as PuzzleId;
+  const { saved, done, points, save, commit } = useDailyPuzzle<GameState>(
+    puzzleId,
+    day,
+  );
+
+  const restored = useRef(false);
+  useEffect(() => {
+    if (restored.current || !saved) return;
+    restored.current = true;
+    dispatch({ type: "RESTORE", state: saved });
+  }, [saved]);
+
+  useEffect(() => {
+    if (state.mode !== "daily" || state.status !== "finished" || done) return;
+    commit({ status: "won", points: molPoints(state.score), state });
+  }, [state, done, commit]);
+
+  useAutoSave(
+    save,
+    state,
+    state.mode === "daily" &&
+      (state.status === "playing" || state.status === "revealed"),
+  );
+
   const [helpOpen, setHelpOpen] = useState(false);
 
   // Après un choix (status "revealed"), on laisse voir le résultat puis on avance.
@@ -56,7 +95,8 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
       {state.status === "finished" && (
         <ResultBanner
           score={state.score}
-          onReplay={() => dispatch({ type: "REPLAY" })}
+          points={points}
+          onReplay={() => dispatch({ type: "PRACTICE" })}
           onChangeCategory={() =>
             dispatch({
               type: "START",

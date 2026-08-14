@@ -2,10 +2,13 @@ import type { BoardState } from "@/lib/wordle/types";
 
 type Props = {
   board: BoardState;
-  onReplay: () => void;
+  points: number;
+  onPractice: () => void;
 };
 
-export default function ResultBanner({ board, onReplay }: Props) {
+// NOTE : bannière volontairement minimale sur `points` — la tâche 13 se charge
+// de l'habillage complet (multiplicateur, série, etc).
+export default function ResultBanner({ board, points, onPractice }: Props) {
   if (board.status === "playing") return null;
   const won = board.status === "won";
   return (
@@ -21,9 +24,12 @@ export default function ResultBanner({ board, onReplay }: Props) {
           Le pseudo était <span className="font-bold text-foreground">{board.target}</span>
         </p>
       )}
+      {board.mode === "daily" && points > 0 && (
+        <p className="text-sm text-[color:var(--muted)]">+{points} points</p>
+      )}
       <button
         type="button"
-        onClick={onReplay}
+        onClick={onPractice}
         className="mt-1 rounded-md bg-[var(--accent)] px-5 py-2 text-xs font-semibold tracking-widest text-black uppercase transition hover:bg-[var(--accent-hot)]"
       >
         Rejouer

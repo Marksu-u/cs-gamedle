@@ -9,7 +9,14 @@ import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
 import HelpModal from "@/components/HelpModal";
 import { deriveKeyStates } from "@/lib/wordle/engine";
 import { availableLengths } from "@/lib/wordle/selection";
-import type { WordleData } from "@/lib/wordle/types";
+import { wordlePoints } from "@/lib/daily/scoring";
+import {
+  useDailyPuzzle,
+  useAutoSave,
+  useDay,
+} from "@/lib/daily/useDailyPuzzle";
+import type { PuzzleId } from "@/lib/daily/types";
+import type { BoardState, WordleData } from "@/lib/wordle/types";
 import {
   createInitialState,
   createWordleReducer,
@@ -23,13 +30,50 @@ export default function WordleGame({ data }: { data: WordleData }) {
   // façon homogène (cf. Board), pour que la grille la plus large tienne à l'écran.
   const maxLength = Math.max(...lengths);
 
-  // Reducer mémoïsé (fermé sur `data`, stable). L'init paresseuse tire le mot côté
-  // client ; comme la cible n'est jamais rendue, aucun mismatch d'hydratation.
-  const reducer = useMemo(() => createWordleReducer(data), [data]);
+  const day = useDay();
+  // Reducer mémoïsé (fermé sur `data` + le jour, stable). L'init paresseuse tire
+  // le mot côté client ; comme la cible n'est jamais rendue, aucun mismatch
+  // d'hydratation.
+  const reducer = useMemo(() => createWordleReducer(data, day), [data, day]);
   const [state, dispatch] = useReducer(reducer, undefined, () =>
-    createInitialState(data, defaultLength),
+    createInitialState(data, defaultLength, day),
   );
   const board = state.boards[state.activeLength];
+
+  // Chaque longueur est une grille quotidienne indépendante, avec sa propre
+  // entrée de stockage. On persiste donc le BOARD, pas le WordleState entier.
+  const puzzleId = `wordle-${board.length}` as PuzzleId;
+  const { saved, done, points, save, commit } = useDailyPuzzle<BoardState>(
+    puzzleId,
+    day,
+  );
+
+  // Reprise après rafraîchissement, une fois PAR LONGUEUR : le joueur peut
+  // ouvrir l'onglet 7 lettres bien après avoir chargé la page.
+  const restored = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    if (!saved || restored.current.has(board.length)) return;
+    restored.current.add(board.length);
+    dispatch({ type: "RESTORE_BOARD", board: saved });
+  }, [saved, board.length]);
+
+  // Enregistrement du résultat dès qu'une grille quotidienne se termine.
+  useEffect(() => {
+    if (board.mode !== "daily" || board.status === "playing" || done) return;
+    commit({
+      status: board.status === "won" ? "won" : "lost",
+      points: wordlePoints({
+        length: board.length,
+        attempt: board.guesses.length,
+        hints: board.hintedChars.length,
+        won: board.status === "won",
+      }),
+      state: board,
+    });
+  }, [board, done, commit]);
+
+  // Sauvegarde de l'avancement d'une grille quotidienne en cours.
+  useAutoSave(save, board, board.mode === "daily" && board.status === "playing");
 
   // Highlight de press : on illumine brièvement la touche correspondant au dernier
   // caractère produit (frappe physique OU clic). État purement visuel, hors reducer.
@@ -150,7 +194,8 @@ export default function WordleGame({ data }: { data: WordleData }) {
         <Board board={board} maxLength={maxLength} />
         <ResultBanner
           board={board}
-          onReplay={() => dispatch({ type: "REPLAY" })}
+          points={points}
+          onPractice={() => dispatch({ type: "PRACTICE" })}
         />
       </div>
       <Keyboard

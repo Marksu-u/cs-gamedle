@@ -2,12 +2,16 @@ import { TOTAL_ROUNDS } from "@/lib/more-or-lessr/types";
 
 type Props = {
   score: number;
+  points: number;
   onReplay: () => void;
   onChangeCategory: () => void;
 };
 
+// NOTE : bannière volontairement minimale sur `points` — la tâche 13 se charge
+// de l'habillage complet (multiplicateur, série, etc).
 export default function ResultBanner({
   score,
+  points,
   onReplay,
   onChangeCategory,
 }: Props) {
@@ -20,6 +24,9 @@ export default function ResultBanner({
       <p className="cs2-display text-foreground text-5xl font-extrabold italic">
         {score}/{TOTAL_ROUNDS}
       </p>
+      {points > 0 && (
+        <p className="text-sm text-[color:var(--muted)]">+{points} points</p>
+      )}
       <div className="mt-2 flex gap-3">
         <button
           type="button"

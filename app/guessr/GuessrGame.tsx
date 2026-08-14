@@ -1,20 +1,56 @@
 "use client";
 
-import { useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
 import HelpModal from "@/components/HelpModal";
 import GuessGrid from "@/components/guessr/GuessGrid";
 import GuessInput from "@/components/guessr/GuessInput";
 import ResultBanner from "@/components/guessr/ResultBanner";
 import { MAX_HINTS } from "@/lib/guessr/hints";
-import type { GuessrData } from "@/lib/guessr/types";
+import { guessrPoints } from "@/lib/daily/scoring";
+import {
+  useDailyPuzzle,
+  useAutoSave,
+  useDay,
+} from "@/lib/daily/useDailyPuzzle";
+import type { GameState, GuessrData } from "@/lib/guessr/types";
 import { createGuessrReducer, createInitialState } from "./reducer";
 
 export default function GuessrGame({ data }: { data: GuessrData }) {
-  const reducer = useMemo(() => createGuessrReducer(data), [data]);
+  const day = useDay();
+  const reducer = useMemo(() => createGuessrReducer(data, day), [data, day]);
   const [state, dispatch] = useReducer(reducer, undefined, () =>
-    createInitialState(data),
+    createInitialState(data, day),
   );
+  const { saved, done, points, save, commit } = useDailyPuzzle<GameState>(
+    "guessr",
+    day,
+  );
+
+  const restored = useRef(false);
+  useEffect(() => {
+    if (restored.current || !saved) return;
+    restored.current = true;
+    dispatch({ type: "RESTORE", state: saved });
+  }, [saved]);
+
+  useEffect(() => {
+    if (state.mode !== "daily" || state.status === "playing" || done) return;
+    const guesses = state.rows.filter((r) => r.kind === "guess").length;
+    const hints = state.rows.filter((r) => r.kind === "hint").length;
+    commit({
+      status: state.status === "won" ? "won" : "lost",
+      points: guessrPoints({ guesses, hints, won: state.status === "won" }),
+      state,
+    });
+  }, [state, done, commit]);
+
+  useAutoSave(
+    save,
+    state,
+    state.mode === "daily" && state.status === "playing",
+  );
+
   const [helpOpen, setHelpOpen] = useState(false);
 
   // Noms déjà proposés → dérivés des lignes guess uniquement.
@@ -65,7 +101,9 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
         <ResultBanner
           target={state.target}
           attempts={state.rows.length}
-          onReplay={() => dispatch({ type: "REPLAY" })}
+          points={points}
+          mode={state.mode}
+          onReplay={() => dispatch({ type: "PRACTICE" })}
         />
       )}
 
@@ -74,7 +112,9 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
           gaveUp
           target={state.target}
           attempts={state.rows.length}
-          onReplay={() => dispatch({ type: "REPLAY" })}
+          points={points}
+          mode={state.mode}
+          onReplay={() => dispatch({ type: "PRACTICE" })}
         />
       )}
 
