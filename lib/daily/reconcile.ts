@@ -17,7 +17,13 @@ export function reconcile(state: Persisted, today: number): Persisted {
   const progress = state.progress?.day === today ? state.progress : null;
   const { lastPlayedDay } = state.meta;
 
-  const serieRompue = lastPlayedDay >= 0 && lastPlayedDay < today - 1;
+  // `lastPlayedDay > today` n'arrive pas avec une horloge UTC monotone, mais
+  // arrive si le joueur recule l'horloge de sa machine. On traite ce cas comme
+  // une rupture : sinon une série resterait accrochée à un score qu'elle ne
+  // pourrait plus justifier.
+  const jamaisJoue = lastPlayedDay < 0;
+  const serieRompue =
+    !jamaisJoue && (lastPlayedDay < today - 1 || lastPlayedDay > today);
   const meta = serieRompue
     ? { ...state.meta, streak: 0, runScore: 0 }
     : state.meta;
@@ -37,9 +43,11 @@ export function commitPuzzle(
   result: PuzzleProgress,
   drawnDay: number = today,
 ): Persisted {
-  if (drawnDay !== today) {
-    return { ...state, progress: null };
-  }
+  // On écarte CE résultat, pas la journée : `reconcile` ne jette la progression
+  // que si elle date d'un jour révolu. Rendre `progress: null` sans condition
+  // effacerait les grilles légitimement terminées aujourd'hui — qui
+  // redeviendraient alors marquables une seconde fois.
+  if (drawnDay !== today) return reconcile(state, today);
 
   const base = reconcile(state, today);
   const progress: Progress = base.progress ?? { day: today, puzzles: {} };
@@ -76,12 +84,21 @@ export function commitPuzzle(
 
 // Enregistre l'avancement d'une grille NON terminée (reprise après rafraîchissement).
 // Ne touche ni la série ni les scores.
+//
+// `drawnDay` joue le même rôle que dans `commitPuzzle`, et pour la même raison :
+// un onglet ouvert avant la bascule continue de sauvegarder après. Sans ce
+// garde-fou, l'état d'une partie de la veille serait réécrit sous la date du
+// jour, et la grille du lendemain reprendrait avec les essais de la veille —
+// évalués contre une autre réponse.
 export function saveProgress(
   state: Persisted,
   today: number,
   id: PuzzleId,
   gameState: unknown,
+  drawnDay: number = today,
 ): Persisted {
+  if (drawnDay !== today) return reconcile(state, today);
+
   const base = reconcile(state, today);
   const progress: Progress = base.progress ?? { day: today, puzzles: {} };
   if (

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { commitPuzzle, reconcile } from "./reconcile";
+import { commitPuzzle, reconcile, saveProgress } from "./reconcile";
 import { EMPTY_META, type Meta, type Persisted } from "./types";
 
 const persisted = (
@@ -231,5 +231,124 @@ describe("commitPuzzle", () => {
     );
     expect(apres.meta).toEqual(avant.meta);
     expect(apres.progress).toBeNull();
+  });
+
+  it("écarte le résultat périmé SANS effacer la journée en cours", () => {
+    // Le piège : rendre `progress: null` sans condition efface les grilles
+    // déjà terminées aujourd'hui, qui redeviennent alors marquables. Le score
+    // du jour serait compté deux fois.
+    let etat = commitPuzzle(
+      persisted({ streak: 5, lastPlayedDay: 100, runScore: 900 }),
+      101,
+      "guessr",
+      { status: "won", points: 200, state: null },
+    );
+    const scoreApresGuessr = etat.meta.runScore;
+
+    // Une partie tirée la veille se termine maintenant : elle ne compte pas...
+    etat = commitPuzzle(
+      etat,
+      101,
+      "wordle-5",
+      { status: "won", points: 300, state: null },
+      100,
+    );
+    expect(etat.meta.runScore).toBe(scoreApresGuessr);
+    // ...et ne doit pas avoir effacé le Guessr déjà terminé aujourd'hui.
+    expect(etat.progress?.puzzles.guessr?.status).toBe("won");
+
+    // Donc rejouer le Guessr ne rapporte toujours rien.
+    etat = commitPuzzle(etat, 101, "guessr", {
+      status: "won",
+      points: 200,
+      state: null,
+    });
+    expect(etat.meta.runScore).toBe(scoreApresGuessr);
+  });
+});
+
+describe("saveProgress", () => {
+  it("enregistre l'avancement sans toucher à la série ni au score", () => {
+    const avant = persisted({ streak: 4, lastPlayedDay: 100, runScore: 900 });
+    const apres = saveProgress(avant, 100, "wordle-5", { guesses: ["ZYWOO"] });
+    expect(apres.meta).toEqual(avant.meta);
+    expect(apres.progress?.puzzles["wordle-5"]).toEqual({
+      status: "playing",
+      points: 0,
+      state: { guesses: ["ZYWOO"] },
+    });
+  });
+
+  it("une grille sauvegardée puis terminée rapporte bien ses points", () => {
+    // Sans cette assertion, restreindre le test « déjà terminée » au seul
+    // `status !== undefined` passerait inaperçu — et TOUTE grille reprise
+    // après un rafraîchissement vaudrait alors zéro.
+    let etat = saveProgress(persisted({}), 100, "wordle-5", {
+      guesses: ["ZYWOO"],
+    });
+    etat = commitPuzzle(etat, 100, "wordle-5", {
+      status: "won",
+      points: 134,
+      state: { guesses: ["ZYWOO"] },
+    });
+    expect(etat.meta.runScore).toBe(134);
+    expect(etat.meta.streak).toBe(1);
+  });
+
+  it("ne réécrit pas par-dessus une grille déjà terminée", () => {
+    let etat = commitPuzzle(persisted({}), 100, "guessr", {
+      status: "won",
+      points: 200,
+      state: { rows: ["final"] },
+    });
+    etat = saveProgress(etat, 100, "guessr", { rows: ["écrasé"] });
+    expect(etat.progress?.puzzles.guessr?.status).toBe("won");
+    expect(etat.progress?.puzzles.guessr?.points).toBe(200);
+  });
+
+  it("ne ressuscite pas l'état d'une partie de la veille", () => {
+    // Onglet ouvert avant la bascule qui sauvegarde après : l'état de la veille
+    // ne doit pas être réécrit sous la date du jour, sinon la grille du
+    // lendemain reprend avec les essais d'hier.
+    const avant = persisted(
+      { lastPlayedDay: 100 },
+      {
+        day: 100,
+        puzzles: {
+          "wordle-5": {
+            status: "playing",
+            points: 0,
+            state: { guesses: ["HIER"] },
+          },
+        },
+      },
+    );
+    const apres = saveProgress(
+      avant,
+      101,
+      "wordle-5",
+      { guesses: ["HIER", "ENCORE"] },
+      100, // tirée au jour 100
+    );
+    expect(apres.progress).toBeNull();
+  });
+});
+
+describe("reconcile — horloge reculée", () => {
+  it("traite un dernier jour joué dans le futur comme une rupture", () => {
+    // Le joueur recule l'horloge de sa machine : sans ce garde-fou, la série
+    // resterait accrochée à un score qu'elle ne peut plus justifier.
+    const apres = reconcile(
+      persisted({
+        streak: 9,
+        lastPlayedDay: 200,
+        runScore: 9200,
+        recordScore: 9200,
+      }),
+      100,
+    );
+    expect(apres.meta.streak).toBe(0);
+    expect(apres.meta.runScore).toBe(0);
+    expect(apres.meta.recordScore).toBe(9200);
   });
 });
