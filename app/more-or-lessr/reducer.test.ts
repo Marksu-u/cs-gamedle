@@ -11,7 +11,7 @@ import { createInitialState, createMorelessReducer } from "./reducer";
 
 const data: MorelessData = {
   game: "test",
-  players: Array.from({ length: 14 }, (_, i) => ({
+  players: Array.from({ length: 28 }, (_, i) => ({
     name: `P${i}`,
     team: "T",
     nationality: "France",
@@ -19,13 +19,13 @@ const data: MorelessData = {
     prize_money: (i + 1) * 100000,
   })),
 };
-const TODAY = "2026-06-24";
-const reducer = createMorelessReducer(data, TODAY);
-const seq = dailySequence(data, TODAY, "rating");
+const DAY = 100;
+const reducer = createMorelessReducer(data, DAY);
+const seq = dailySequence(data, DAY, "rating");
 
 // Renvoie l'état juste après START rating.
 function started() {
-  return reducer(createInitialState(), { type: "START", category: "rating" });
+  return reducer(createInitialState(DAY), { type: "START", category: "rating" });
 }
 // Direction correcte pour le duel ancre/challenger courant (catégorie rating).
 function correctDir(anchor: Player, challenger: Player): Direction {
@@ -36,7 +36,7 @@ function correctDir(anchor: Player, challenger: Player): Direction {
 
 describe("createInitialState", () => {
   it("démarre sur l'écran de sélection", () => {
-    expect(createInitialState().status).toBe("select");
+    expect(createInitialState(DAY).status).toBe("select");
   });
 });
 
@@ -73,7 +73,7 @@ describe("GUESS", () => {
     expect(next.score).toBe(0);
   });
   it("ignoré hors de l'état playing", () => {
-    const sel = createInitialState();
+    const sel = createInitialState(DAY);
     expect(reducer(sel, { type: "GUESS", direction: "more" })).toBe(sel);
   });
 });
@@ -113,15 +113,16 @@ describe("fin de partie", () => {
   });
 });
 
-describe("REPLAY", () => {
-  it("rejoue la même catégorie depuis le round 1", () => {
+describe("PRACTICE", () => {
+  it("relance la même catégorie depuis le round 1, en mode entraînement", () => {
     let s = started();
     s = reducer(s, { type: "GUESS", direction: "more" });
-    s = reducer(s, { type: "REPLAY" });
+    s = reducer(s, { type: "PRACTICE" });
     expect(s.round).toBe(1);
     expect(s.score).toBe(0);
     expect(s.status).toBe("playing");
-    expect(s.anchor).toBe(seq[0]);
+    expect(s.category).toBe("rating");
+    expect(s.mode).toBe("practice");
   });
 });
 
@@ -143,7 +144,7 @@ describe("GIVE_UP", () => {
     expect(next.score).toBe(revealed.score);
   });
   it("ignoré depuis select", () => {
-    const sel = createInitialState();
+    const sel = createInitialState(DAY);
     expect(reducer(sel, { type: "GIVE_UP" })).toBe(sel);
   });
   it("ignoré depuis finished", () => {

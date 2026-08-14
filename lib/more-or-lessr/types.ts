@@ -34,6 +34,8 @@ export type GameState = {
   lastGuess: Direction | null; // direction jouée (feedback pendant « revealed »)
   lastCorrect: boolean | null; // feedback juste/faux pendant « revealed »
   status: Status;
+  mode: "daily" | "practice"; // l'entraînement ne rapporte aucun point
+  day: number; // jour sous lequel la séquence a été tirée
 };
 
 // 10 rounds → 11 joueurs consommés par partie.

@@ -12,11 +12,12 @@ export type MorelessAction =
   | { type: "START"; category: Category }
   | { type: "GUESS"; direction: Direction }
   | { type: "NEXT" }
-  | { type: "REPLAY" }
+  | { type: "PRACTICE" }
+  | { type: "RESTORE"; state: GameState }
   | { type: "GIVE_UP" };
 
-// État de départ : écran de sélection de catégorie (aucune date requise).
-export function createInitialState(): GameState {
+// État de départ : écran de sélection de catégorie.
+export function createInitialState(day: number): GameState {
   return {
     category: null,
     sequence: [],
@@ -28,6 +29,8 @@ export function createInitialState(): GameState {
     lastGuess: null,
     lastCorrect: null,
     status: "select",
+    mode: "daily",
+    day,
   };
 }
 
@@ -35,9 +38,14 @@ export function createInitialState(): GameState {
 function startCategory(
   data: MorelessData,
   category: Category,
-  today: string,
+  day: number,
+  mode: "daily" | "practice",
 ): GameState {
-  const sequence = dailySequence(data, today, category);
+  // En entraînement, on tire sur un jour arbitraire hors plage réelle : la
+  // séquence est valide et variée, sans jamais coïncider avec une manche du jour.
+  const seedDay =
+    mode === "daily" ? day : 1_000_000 + Math.floor(Math.random() * 1_000_000);
+  const sequence = dailySequence(data, seedDay, category);
   return {
     category,
     sequence,
@@ -49,19 +57,21 @@ function startCategory(
     lastGuess: null,
     lastCorrect: null,
     status: "playing",
+    mode,
+    day,
   };
 }
 
-// Factory : reducer fermé sur `data` + la date du jour → pur et testable, tirage
-// seedé hors des composants. `today` injecté (défaut = aujourd'hui) pour les tests.
-export function createMorelessReducer(
-  data: MorelessData,
-  today: string = new Date().toISOString().slice(0, 10),
-) {
+// Factory : reducer fermé sur `data` + le jour → pur et testable, tirage
+// seedé hors des composants.
+export function createMorelessReducer(data: MorelessData, day: number) {
   return function reducer(state: GameState, action: MorelessAction): GameState {
     switch (action.type) {
       case "START":
-        return startCategory(data, action.category, today);
+        return startCategory(data, action.category, day, "daily");
+
+      case "RESTORE":
+        return action.state;
 
       case "GUESS": {
         if (state.status !== "playing" || !state.anchor || !state.challenger)
@@ -100,10 +110,10 @@ export function createMorelessReducer(
         };
       }
 
-      case "REPLAY":
+      case "PRACTICE":
         return state.category
-          ? startCategory(data, state.category, today)
-          : createInitialState();
+          ? startCategory(data, state.category, day, "practice")
+          : createInitialState(day);
 
       case "GIVE_UP": {
         // Abandon possible seulement en cours de partie (playing/revealed) : on

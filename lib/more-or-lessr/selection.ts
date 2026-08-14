@@ -1,4 +1,4 @@
-import { hashSeed, mulberry32 } from "@/lib/daily/rng";
+import { draw } from "@/lib/daily/deck";
 import {
   TOTAL_ROUNDS,
   type Category,
@@ -6,12 +6,13 @@ import {
   type Player,
 } from "./types";
 
-// Séquence des joueurs du jour, déterministe : même (date, catégorie) → même
-// ordre pour tout le monde. Fisher-Yates seedé sur une copie, puis on garde
-// TOTAL_ROUNDS + 1 joueurs (ceux qui défilent pendant la partie).
+// Séquence des joueurs du jour, déterministe : même (jour, catégorie) → même
+// ordre pour tout le monde. Le tirage anti-répétition vit dans lib/daily/deck :
+// il garantit qu'une manche ne contient jamais deux fois le même joueur et que
+// deux journées consécutives ne donnent jamais la même manche.
 export function dailySequence(
   data: MorelessData,
-  date: string, // "YYYY-MM-DD"
+  day: number,
   category: Category,
 ): Player[] {
   const need = TOTAL_ROUNDS + 1;
@@ -20,12 +21,5 @@ export function dailySequence(
       `Pool insuffisant : ${data.players.length} joueurs, ${need} requis.`,
     );
   }
-  const rand = mulberry32(hashSeed(`${date}-${category}`));
-  const pool = [...data.players];
-  // Fisher-Yates : mélange en place avec le RNG seedé.
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-  return pool.slice(0, need);
+  return draw(data.players, `mol-${category}`, day, need);
 }
