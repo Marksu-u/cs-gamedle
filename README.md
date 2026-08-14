@@ -9,7 +9,14 @@ Gratuit, sans compte, sans base de données.
 | **Guessr**        | `/guessr`        | Retrouve un pro via ses attributs : équipe, rôle, nationalité, âge…            |
 | **More or Lessr** | `/more-or-lessr` | Deux pros, une stat cachée : plus ou moins ? 10 rounds, rating ou prize money. |
 
-La page d'accueil (`/`) est le sélecteur de mode.
+La page d'accueil (`/`) est le sélecteur de mode. Elle affiche aussi la série en cours, le
+score courant, le record et le compte à rebours vers la prochaine rotation.
+
+**Neuf grilles par jour**, les mêmes pour tout le monde, renouvelées à **03:00 UTC** : une
+par longueur de Wordle (6), une pour Guessr, une par catégorie de More or Lessr (2). Chaque
+grille terminée rapporte des points selon la performance ; jouer au moins une grille dans la
+journée entretient la série, qui multiplie le score. Manquer un jour remet la série et le
+score courant à zéro — le record, lui, est conservé.
 
 ## Prérequis
 
@@ -58,6 +65,7 @@ app/more-or-lessr/      # page + reducer du More or Lessr
 app/data/cs2/           # la donnée : wordle.json, guessr_players.json, more-or-lessr.json
 components/             # UI partagée (GameMenu, HelpModal, GameModeCard) + un dossier par mode
 lib/                    # logique pure, testée, sans React : un dossier par mode
+lib/daily/              # rotation quotidienne, barème, série, persistance (partagé)
 data/modes.ts           # la liste des modes affichée sur l'accueil
 ```
 
@@ -73,11 +81,21 @@ Chaque mode suit le même découpage en trois couches :
 3. **`app/<mode>/*Game.tsx` + `components/<mode>/`** — l'affichage. Le composant de jeu tient
    le `useReducer` et distribue l'état aux composants de présentation.
 
-**Le tirage de la cible** est dans `lib/<mode>/selection.ts`, et il diffère selon le mode :
-More or Lessr construit une séquence _déterministe_ à partir de la date et de la catégorie
-(même journée = même suite de duels pour tout le monde, via un RNG seedé, `lib/more-or-lessr/rng.ts`) ;
-Wordle et Guessr tirent au hasard à chaque partie. Passer ces deux-là en « une grille par jour »
-serait une bonne première évolution : la brique existe déjà côté More or Lessr.
+**Le tirage de la cible** passe par `lib/daily/deck.ts`, commun aux trois jeux : **neuf
+grilles quotidiennes** (six Wordle — une par longueur —, un Guessr, deux More or Lessr),
+identiques pour tout le monde, qui basculent à **03:00 UTC** quel que soit le fuseau du
+joueur (`lib/daily/clock.ts`).
+
+Le tirage est une suite de permutations seedées, découpées en créneaux : une manche ne peut
+donc pas contenir deux fois la même cible, et une cible ne revient pas avant `⌊pool/4⌋`
+jours. Chaque jeu garde son `lib/<mode>/selection.ts`, qui n'est plus qu'une enveloppe
+autour de `draw`.
+
+**La progression** — série, points, score courant, record — vit elle aussi dans
+`lib/daily/`, et n'est stockée que dans le `localStorage` : toujours aucun compte, aucune
+base de données. Le barème est dans `lib/daily/scoring.ts` (une fonction pure par jeu), la
+machine à états de la série dans `lib/daily/reconcile.ts`. Une fois la grille du jour
+terminée, « Rejouer » bascule en **entraînement** : cible hors rotation, aucun point.
 
 **Le thème** vit dans `app/cs2-theme.css` sous la classe `.theme-cs2`, appliquée sur le `<body>`.
 Les composants consomment ses variables via des valeurs Tailwind arbitraires
