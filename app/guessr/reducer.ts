@@ -1,21 +1,39 @@
 import { compareGuess, norm } from "@/lib/guessr/compare";
 import { buildHintResult, HINT_FIELDS, MAX_HINTS } from "@/lib/guessr/hints";
-import { randomTarget } from "@/lib/guessr/selection";
+import { dailyTarget, randomTarget } from "@/lib/guessr/selection";
 import type { GameState, GridRow, GuessrData } from "@/lib/guessr/types";
 
 export type GuessrAction =
   | { type: "GUESS"; name: string }
   | { type: "HINT" }
   | { type: "GIVE_UP" }
-  | { type: "REPLAY" };
+  | { type: "PRACTICE" }
+  | { type: "RESTORE"; state: GameState };
 
-// État de départ : cible aléatoire, partie en cours, aucune ligne.
-export function createInitialState(data: GuessrData): GameState {
-  return { target: randomTarget(data), rows: [], status: "playing" };
+// État de départ : joueur du jour, partie en cours, aucune ligne.
+export function createInitialState(data: GuessrData, day: number): GameState {
+  return {
+    target: dailyTarget(data, day),
+    rows: [],
+    status: "playing",
+    mode: "daily",
+    day,
+  };
 }
 
-// Factory : reducer fermé sur `data` → pur et testable.
-export function createGuessrReducer(data: GuessrData) {
+// Entraînement : cible aléatoire, hors rotation, ne rapporte aucun point.
+function createPracticeState(data: GuessrData, day: number): GameState {
+  return {
+    target: randomTarget(data),
+    rows: [],
+    status: "playing",
+    mode: "practice",
+    day,
+  };
+}
+
+// Factory : reducer fermé sur `data` + le jour → pur et testable.
+export function createGuessrReducer(data: GuessrData, day: number) {
   return function reducer(state: GameState, action: GuessrAction): GameState {
     switch (action.type) {
       case "GUESS": {
@@ -63,9 +81,12 @@ export function createGuessrReducer(data: GuessrData) {
         return { ...state, status: "gaveup" };
       }
 
-      // Nouvelle partie : nouvelle cible aléatoire, grille vidée.
-      case "REPLAY":
-        return createInitialState(data);
+      case "RESTORE":
+        return action.state;
+
+      // Entraînement : nouvelle cible aléatoire, grille vidée, aucun point.
+      case "PRACTICE":
+        return createPracticeState(data, day);
 
       default:
         return state;

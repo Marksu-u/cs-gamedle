@@ -64,4 +64,6 @@ export type GameState = {
   target: Player; // joueur du jour (caché)
   rows: GridRow[]; // plus récent en tête (guesses ET indices)
   status: Status;
+  mode: "daily" | "practice"; // l'entraînement ne rapporte aucun point
+  day: number; // jour sous lequel la cible a été tirée
 };

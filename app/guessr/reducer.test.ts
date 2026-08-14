@@ -32,7 +32,7 @@ afterEach(() => vi.restoreAllMocks());
 
 describe("createInitialState", () => {
   it("démarre en playing avec une cible du pool et zéro ligne", () => {
-    const s = createInitialState(data);
+    const s = createInitialState(data, 100);
     expect(s.status).toBe("playing");
     expect(s.rows).toEqual([]);
     expect(names).toContain(s.target.name);
@@ -41,15 +41,15 @@ describe("createInitialState", () => {
 
 describe("reducer GUESS", () => {
   it("ignore un nom inconnu du pool", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const s1 = reducer(s0, { type: "GUESS", name: "unknown_player" });
     expect(s1.rows).toHaveLength(0);
   });
 
   it("ajoute une ligne guess en tête et passe won si c'est la cible", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const s1 = reducer(s0, { type: "GUESS", name: s0.target.name });
     expect(s1.rows).toHaveLength(1);
     const row = s1.rows[0];
@@ -59,8 +59,8 @@ describe("reducer GUESS", () => {
   });
 
   it("reste playing sur un mauvais guess, plus récent en tête", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const wrong = data.players.find((x) => x.name !== s0.target.name)!;
     const s1 = reducer(s0, { type: "GUESS", name: wrong.name });
     expect(s1.status).toBe("playing");
@@ -70,8 +70,8 @@ describe("reducer GUESS", () => {
   });
 
   it("ignore un doublon de proposition (dédup sur les lignes guess)", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const wrong = data.players.find((x) => x.name !== s0.target.name)!;
     const s1 = reducer(s0, { type: "GUESS", name: wrong.name });
     const s2 = reducer(s1, { type: "GUESS", name: wrong.name });
@@ -79,8 +79,8 @@ describe("reducer GUESS", () => {
   });
 
   it("n'accepte plus de guess après victoire", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const won = reducer(s0, { type: "GUESS", name: s0.target.name });
     const after = reducer(won, { type: "GUESS", name: data.players[0].name });
     expect(after).toBe(won);
@@ -89,8 +89,8 @@ describe("reducer GUESS", () => {
 
 describe("reducer HINT", () => {
   it("ajoute une ligne hint en tête et consomme un essai", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const s1 = reducer(s0, { type: "HINT" });
     expect(s1.rows).toHaveLength(1);
     const row = s1.rows[0];
@@ -99,8 +99,8 @@ describe("reducer HINT", () => {
   });
 
   it("ne révèle jamais deux fois la même colonne", () => {
-    const reducer = createGuessrReducer(data);
-    let s = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    let s = createInitialState(data, 100);
     for (let i = 0; i < MAX_HINTS; i++) s = reducer(s, { type: "HINT" });
     const fields = hintRows(s.rows).flatMap((r) =>
       r.kind === "hint" ? [r.field] : [],
@@ -110,8 +110,8 @@ describe("reducer HINT", () => {
   });
 
   it("no-op après MAX_HINTS indices", () => {
-    const reducer = createGuessrReducer(data);
-    let s = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    let s = createInitialState(data, 100);
     for (let i = 0; i < MAX_HINTS; i++) s = reducer(s, { type: "HINT" });
     const after = reducer(s, { type: "HINT" });
     expect(after).toBe(s);
@@ -119,16 +119,16 @@ describe("reducer HINT", () => {
   });
 
   it("no-op si la partie n'est pas en cours", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const won = reducer(s0, { type: "GUESS", name: s0.target.name });
     const after = reducer(won, { type: "HINT" });
     expect(after).toBe(won);
   });
 
   it("les guesses restent possibles entre deux indices", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const wrong = data.players.find((x) => x.name !== s0.target.name)!;
     const s1 = reducer(s0, { type: "HINT" });
     const s2 = reducer(s1, { type: "GUESS", name: wrong.name });
@@ -140,29 +140,30 @@ describe("reducer HINT", () => {
 
 describe("reducer GIVE_UP", () => {
   it("passe le statut à gaveup", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const s1 = reducer(s0, { type: "GIVE_UP" });
     expect(s1.status).toBe("gaveup");
   });
 
   it("no-op après victoire", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const won = reducer(s0, { type: "GUESS", name: s0.target.name });
     const after = reducer(won, { type: "GIVE_UP" });
     expect(after).toBe(won);
   });
 });
 
-describe("reducer REPLAY", () => {
-  it("vide les lignes, repart en playing avec une cible du pool", () => {
-    const reducer = createGuessrReducer(data);
-    const s0 = createInitialState(data);
+describe("reducer PRACTICE", () => {
+  it("vide les lignes, repart en playing avec une cible du pool, en mode entraînement", () => {
+    const reducer = createGuessrReducer(data, 100);
+    const s0 = createInitialState(data, 100);
     const won = reducer(s0, { type: "GUESS", name: s0.target.name });
-    const replay = reducer(won, { type: "REPLAY" });
-    expect(replay.status).toBe("playing");
-    expect(replay.rows).toEqual([]);
-    expect(names).toContain(replay.target.name);
+    const practice = reducer(won, { type: "PRACTICE" });
+    expect(practice.status).toBe("playing");
+    expect(practice.rows).toEqual([]);
+    expect(names).toContain(practice.target.name);
+    expect(practice.mode).toBe("practice");
   });
 });
