@@ -1,0 +1,33 @@
+{
+  "game": "guessr",
+  "players": [
+    { "name": "ZywOo", "nationality": "France", "current_team": "Vitality", "previous_teams": ["aAa"], "role": ["AWP"], "age": 25, "majors": 2, "tournaments_won": 14, "achievements": ["2x Major Winner", "HLTV Top 1 (2019, 2020, 2023, 2025)"] },
+    { "name": "s1mple", "nationality": "Ukraine", "current_team": "BC.Game", "previous_teams": ["NAVI", "Liquid", "FlipSid3"], "role": ["AWP"], "age": 28, "majors": 1, "tournaments_won": 16, "achievements": ["Major Winner (Stockholm 2021)", "HLTV Top 1 (2018, 2021)"] },
+    { "name": "donk", "nationality": "Russia", "current_team": "Spirit", "previous_teams": [], "role": ["Rifler"], "age": 19, "majors": 0, "tournaments_won": 6, "achievements": ["HLTV Top 1 (2024)"] },
+    { "name": "m0NESY", "nationality": "Russia", "current_team": "Falcons", "previous_teams": ["G2", "NAVI Junior"], "role": ["AWP"], "age": 20, "majors": 0, "tournaments_won": 5, "achievements": ["HLTV Top 2 (2024)"] },
+    { "name": "NiKo", "nationality": "Bosnia and Herzegovina", "current_team": "Falcons", "previous_teams": ["G2", "FaZe", "MOUZ"], "role": ["Rifler"], "age": 29, "majors": 1, "tournaments_won": 12, "achievements": ["Major Winner (Cologne 2026)", "HLTV Top 1 (2018)"] },
+    { "name": "sh1ro", "nationality": "Russia", "current_team": "Spirit", "previous_teams": ["Cloud9", "Gambit"], "role": ["AWP"], "age": 23, "majors": 0, "tournaments_won": 7, "achievements": ["HLTV Top 1 (2021)"] },
+    { "name": "device", "nationality": "Denmark", "current_team": "Astralis", "previous_teams": ["NIP", "Dignitas"], "role": ["AWP"], "age": 29, "majors": 4, "tournaments_won": 24, "achievements": ["4x Major Winner", "HLTV Top 1 (2018)"] },
+    { "name": "coldzera", "nationality": "Brazil", "current_team": "Imperial", "previous_teams": ["FaZe", "MIBR", "Luminosity"], "role": ["Lurker"], "age": 30, "majors": 2, "tournaments_won": 14, "achievements": ["2x Major Winner", "HLTV Top 1 (2016, 2017)"] },
+    { "name": "ropz", "nationality": "Estonia", "current_team": "Vitality", "previous_teams": ["FaZe", "MOUZ"], "role": ["Rifler", "Lurker"], "age": 25, "majors": 2, "tournaments_won": 9, "achievements": ["2x Major Winner", "3x ESL Grand Slam"] },
+    { "name": "electronic", "nationality": "Russia", "current_team": "Virtus.pro", "previous_teams": ["NAVI"], "role": ["Rifler"], "age": 27, "majors": 1, "tournaments_won": 9, "achievements": ["Major Winner (Stockholm 2021)"] },
+    { "name": "Twistzz", "nationality": "Canada", "current_team": "FaZe", "previous_teams": ["Liquid", "MIBR"], "role": ["Rifler"], "age": 26, "majors": 1, "tournaments_won": 10, "achievements": ["Major Winner (Antwerp 2022)"] },
+    { "name": "broky", "nationality": "Latvia", "current_team": "FaZe", "previous_teams": ["fnatic"], "role": ["AWP"], "age": 24, "majors": 1, "tournaments_won": 8, "achievements": ["Major Winner (Antwerp 2022)"] },
+    { "name": "frozen", "nationality": "Slovakia", "current_team": "FaZe", "previous_teams": ["MOUZ"], "role": ["Rifler"], "age": 22, "majors": 1, "tournaments_won": 7, "achievements": ["Major Winner (Antwerp 2022)"] },
+    { "name": "huNter-", "nationality": "Bosnia and Herzegovina", "current_team": "Falcons", "previous_teams": ["G2", "CR4ZY"], "role": ["Rifler"], "age": 28, "majors": 0, "tournaments_won": 8, "achievements": ["IEM Katowice 2023 Winner"] },
+    { "name": "flameZ", "nationality": "Israel", "current_team": "Vitality", "previous_teams": ["OG", "Endpoint"], "role": ["Entry"], "age": 22, "majors": 1, "tournaments_won": 6, "achievements": ["Major Winner (Shanghai 2024)"] },
+    { "name": "blameF", "nationality": "Denmark", "current_team": "Astralis", "previous_teams": ["Complexity", "Heroic"], "role": ["Rifler", "IGL"], "age": 26, "majors": 0, "tournaments_won": 5, "achievements": ["DreamHack Masters Winner"] },
+    { "name": "KSCERATO", "nationality": "Brazil", "current_team": "FURIA", "previous_teams": [], "role": ["Rifler"], "age": 26, "majors": 0, "tournaments_won": 4, "achievements": ["IEM Rio 2023 Runner-up"] },
+    { "name": "NAF", "nationality": "Canada", "current_team": "Liquid", "previous_teams": ["Renegades", "OpTic"], "role": ["Rifler", "Support"], "age": 27, "majors": 0, "tournaments_won": 12, "achievements": ["Intel Grand Slam Season 1"] },
+    { "name": "Magisk", "nationality": "Denmark", "current_team": "Falcons", "previous_teams": ["Astralis", "Vitality", "OpTic"], "role": ["Rifler"], "age": 27, "majors": 4, "tournaments_won": 20, "achievements": ["4x Major Winner"] },
+    { "name": "dupreeh", "nationality": "Denmark", "current_team": "Astralis", "previous_teams": ["Vitality", "Heroic"], "role": ["Entry"], "age": 28, "majors": 4, "tournaments_won": 22, "achievements": ["4x Major Winner (most all-time)"] },
+    { "name": "Xyp9x", "nationality": "Denmark", "current_team": "Astralis", "previous_teams": ["Dignitas"], "role": ["Support"], "age": 30, "majors": 4, "tournaments_won": 20, "achievements": ["4x Major Winner", "The Clutch Minister"] },
+    { "name": "apEX", "nationality": "France", "current_team": "Vitality", "previous_teams": ["G2", "Envy", "LDLC"], "role": ["IGL"], "age": 33, "majors": 4, "tournaments_won": 9, "achievements": ["4x Major Winner (IGL)"] },
+    { "name": "mezii", "nationality": "United Kingdom", "current_team": "Vitality", "previous_teams": ["fnatic", "Cloud9"], "role": ["Rifler"], "age": 27, "majors": 1, "tournaments_won": 6, "achievements": ["Major Winner (Shanghai 2024)"] },
+    { "name": "rain", "nationality": "Norway", "current_team": "FaZe", "previous_teams": ["G2", "Kinguin"], "role": ["Entry"], "age": 30, "majors": 1, "tournaments_won": 11, "achievements": ["Major Winner (Antwerp 2022)"] },
+    { "name": "FalleN", "nationality": "Brazil", "current_team": "FURIA", "previous_teams": ["Liquid", "MIBR", "Luminosity"], "role": ["AWP", "IGL"], "age": 33, "majors": 2, "tournaments_won": 13, "achievements": ["2x Major Winner (IGL/AWP)"] },
+    { "name": "GuardiaN", "nationality": "Slovakia", "current_team": "Sashi", "previous_teams": ["NAVI", "FaZe"], "role": ["AWP"], "age": 31, "majors": 0, "tournaments_won": 9, "achievements": ["ESL One Cologne 2015 Runner-up"] },
+    { "name": "Brollan", "nationality": "Sweden", "current_team": "FaZe", "previous_teams": ["fnatic", "MOUZ"], "role": ["Rifler"], "age": 22, "majors": 0, "tournaments_won": 4, "achievements": ["DreamHack Masters Winner"] },
+    { "name": "jks", "nationality": "Australia", "current_team": "G2", "previous_teams": ["Complexity", "100Thieves", "Renegades"], "role": ["Rifler"], "age": 29, "majors": 0, "tournaments_won": 6, "achievements": ["IEM Sydney 2018 Runner-up"] }
+  ]
+}
