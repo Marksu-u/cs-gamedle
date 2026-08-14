@@ -22,6 +22,8 @@ export type BoardState = {
   status: GameStatus;
   invalid: boolean; // flag transitoire : déclenche le shake puis est remis à false
   hintedChars: string[]; // caractères révélés via indice (affichés "present" au clavier)
+  mode: "daily" | "practice"; // l'entraînement ne rapporte aucun point
+  day: number; // jour sous lequel la cible a été tirée
 };
 
 // État global : tous les boards + l'onglet actif.
@@ -32,3 +34,6 @@ export type WordleState = {
 
 // 6 essais comme le Wordle classique (cf. data/modes.ts).
 export const MAX_ATTEMPTS = 6;
+
+// Plafond d'indices par grille. Sans plafond, la grille du jour serait triviale.
+export const MAX_HINTS = 3;

@@ -5,13 +5,21 @@ import {
   hintCandidates,
 } from "./reducer";
 import { evaluateGuess } from "@/lib/wordle/engine";
+import { MAX_HINTS } from "@/lib/wordle/types";
 import type { BoardState, WordleData, WordleState } from "@/lib/wordle/types";
 
+// Chaque groupe a au moins 4 mots : `draw` (lib/daily/deck) exige pool >= 4.
 const data: WordleData = {
   game: "test",
-  words: { "3": ["CAT", "DOG", "BAT"], "4": ["ROPZ", "DONK"] },
+  words: {
+    "3": ["CAT", "DOG", "BAT", "RAT"],
+    "4": ["ROPZ", "DONK", "NIKO", "COBY"],
+    "5": ["APPLE", "MANGO", "LEMON", "GRAPE"],
+    "6": ["ORANGE", "YELLOW", "PURPLE", "SILVER"],
+  },
 };
-const reducer = createWordleReducer(data);
+const DAY = 100;
+const reducer = createWordleReducer(data, DAY);
 
 function board(target: string, over: Partial<BoardState> = {}): BoardState {
   return {
@@ -23,6 +31,8 @@ function board(target: string, over: Partial<BoardState> = {}): BoardState {
     status: "playing",
     invalid: false,
     hintedChars: [],
+    mode: "daily",
+    day: DAY,
     ...over,
   };
 }
@@ -32,7 +42,7 @@ function stateOf(b: BoardState): WordleState {
 
 describe("createInitialState", () => {
   it("crée le board de la longueur par défaut", () => {
-    const s = createInitialState(data, 4);
+    const s = createInitialState(data, 4, DAY);
     expect(s.activeLength).toBe(4);
     expect(s.boards[4].status).toBe("playing");
     expect(data.words["4"]).toContain(s.boards[4].target);
@@ -137,7 +147,7 @@ describe("reducer", () => {
     expect(s.boards[3].current).toBe("CA");
   });
 
-  it("REPLAY réinitialise le board avec un nouveau mot", () => {
+  it("PRACTICE réinitialise le board avec un nouveau mot, en mode entraînement", () => {
     const start = stateOf(
       board("CAT", {
         guesses: ["CAT"],
@@ -146,12 +156,13 @@ describe("reducer", () => {
         hintedChars: ["C"],
       }),
     );
-    const s = reducer(start, { type: "REPLAY" });
+    const s = reducer(start, { type: "PRACTICE" });
     expect(s.boards[3].status).toBe("playing");
     expect(s.boards[3].guesses).toHaveLength(0);
     expect(s.boards[3].current).toBe("");
     expect(s.boards[3].hintedChars).toEqual([]);
     expect(data.words["3"]).toContain(s.boards[3].target);
+    expect(s.boards[3].mode).toBe("practice");
   });
 
   it("CLEAR_INVALID remet le flag à false", () => {
@@ -238,5 +249,54 @@ describe("reducer HINT / GIVE_UP", () => {
     const start = stateOf(board("CAT", { status: "won" }));
     const s = reducer(start, { type: "GIVE_UP" });
     expect(s).toBe(start);
+  });
+});
+
+describe("rotation quotidienne", () => {
+  it("rend la même cible pour un jour donné", () => {
+    const a = createInitialState(data, 5, 100);
+    const b = createInitialState(data, 5, 100);
+    expect(a.boards[5].target).toBe(b.boards[5].target);
+    expect(a.boards[5].mode).toBe("daily");
+  });
+
+  it("change de cible d'un jour à l'autre", () => {
+    expect(createInitialState(data, 5, 100).boards[5].target).not.toBe(
+      createInitialState(data, 5, 101).boards[5].target,
+    );
+  });
+
+  it("PRACTICE bascule le board en entraînement", () => {
+    const reducer = createWordleReducer(data, 100);
+    const apres = reducer(createInitialState(data, 5, 100), {
+      type: "PRACTICE",
+    });
+    expect(apres.boards[5].mode).toBe("practice");
+  });
+});
+
+describe("plafond d'indices", () => {
+  it(`refuse au-delà de ${MAX_HINTS} indices`, () => {
+    const reducer = createWordleReducer(data, 100);
+    let state = createInitialState(data, 5, 100);
+    for (let i = 0; i < MAX_HINTS + 3; i++)
+      state = reducer(state, { type: "HINT" });
+    expect(state.boards[5].hintedChars.length).toBeLessThanOrEqual(MAX_HINTS);
+  });
+});
+
+describe("RESTORE_BOARD", () => {
+  it("réinstalle un board sans toucher aux autres longueurs", () => {
+    const reducer = createWordleReducer(data, 100);
+    let state = createInitialState(data, 5, 100);
+    state = reducer(state, { type: "SELECT_LENGTH", length: 6 });
+    const board6 = state.boards[6];
+    const repris = { ...state.boards[5], guesses: ["ABCDE"] };
+    state = reducer(
+      { ...state, activeLength: 5 },
+      { type: "RESTORE_BOARD", board: repris },
+    );
+    expect(state.boards[5].guesses).toEqual(["ABCDE"]);
+    expect(state.boards[6]).toBe(board6);
   });
 });

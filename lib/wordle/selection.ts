@@ -1,3 +1,4 @@
+import { draw } from "@/lib/daily/deck";
 import type { WordleData } from "./types";
 
 // Les clés du JSON sont des chaînes ("3".."8") ; on les convertit et trie en nombres.
@@ -22,4 +23,14 @@ export function pickRandom(group: string[], exclude?: string): string {
 export function isValidGuess(group: string[], guess: string): boolean {
   const set = new Set(group.map((w) => w.toUpperCase()));
   return set.has(guess.toUpperCase());
+}
+
+// Mot du jour pour une longueur donnée. Chaque longueur est un flux indépendant :
+// six grilles quotidiennes, six cycles séparés.
+export function dailyWord(
+  data: WordleData,
+  length: number,
+  day: number,
+): string {
+  return draw(getGroup(data, length), `wordle-${length}`, day, 1)[0];
 }

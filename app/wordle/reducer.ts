@@ -1,7 +1,13 @@
 import { deriveKeyStates, evaluateGuess, isWin } from "@/lib/wordle/engine";
-import { getGroup, isValidGuess, pickRandom } from "@/lib/wordle/selection";
+import {
+  dailyWord,
+  getGroup,
+  isValidGuess,
+  pickRandom,
+} from "@/lib/wordle/selection";
 import {
   MAX_ATTEMPTS,
+  MAX_HINTS,
   type BoardState,
   type GameStatus,
   type WordleData,
@@ -14,7 +20,8 @@ export type WordleAction =
   | { type: "DELETE" }
   | { type: "SUBMIT" }
   | { type: "CLEAR_INVALID" }
-  | { type: "REPLAY" }
+  | { type: "PRACTICE" }
+  | { type: "RESTORE_BOARD"; board: BoardState }
   | { type: "HINT" }
   | { type: "GIVE_UP" };
 
@@ -31,14 +38,20 @@ export function hintCandidates(board: BoardState): string[] {
   });
 }
 
-// Crée un board neuf avec un mot tiré au hasard. `exclude` sert au "Rejouer".
+// Crée un board neuf. En mode « daily » la cible vient de la rotation ; en
+// « practice » elle est tirée au hasard, en évitant le mot du jour.
 export function createBoard(
   data: WordleData,
   length: number,
-  exclude?: string,
+  day: number,
+  mode: "daily" | "practice" = "daily",
 ): BoardState {
+  const target =
+    mode === "daily"
+      ? dailyWord(data, length, day)
+      : pickRandom(getGroup(data, length), dailyWord(data, length, day));
   return {
-    target: pickRandom(getGroup(data, length), exclude),
+    target,
     length,
     guesses: [],
     evaluations: [],
@@ -46,16 +59,19 @@ export function createBoard(
     status: "playing",
     invalid: false,
     hintedChars: [],
+    mode,
+    day,
   };
 }
 
 export function createInitialState(
   data: WordleData,
   defaultLength: number,
+  day: number,
 ): WordleState {
   return {
     activeLength: defaultLength,
-    boards: { [defaultLength]: createBoard(data, defaultLength) },
+    boards: { [defaultLength]: createBoard(data, defaultLength, day) },
   };
 }
 
@@ -64,9 +80,10 @@ function withBoard(state: WordleState, b: BoardState): WordleState {
   return { ...state, boards: { ...state.boards, [b.length]: b } };
 }
 
-// Factory : le reducer est fermé sur `data`. Il reste pur (déterministe à `data`
-// près) et testable, tout en gardant le tirage aléatoire des mots hors des composants.
-export function createWordleReducer(data: WordleData) {
+// Factory : le reducer est fermé sur `data` + le jour. Il reste pur (déterministe
+// à `data`/`day` près) et testable, tout en gardant le tirage aléatoire des mots
+// hors des composants.
+export function createWordleReducer(data: WordleData, day: number) {
   return function reducer(
     state: WordleState,
     action: WordleAction,
@@ -80,7 +97,7 @@ export function createWordleReducer(data: WordleData) {
           ? state.boards
           : {
               ...state.boards,
-              [action.length]: createBoard(data, action.length),
+              [action.length]: createBoard(data, action.length, day),
             };
         return { ...state, activeLength: action.length, boards };
       }
@@ -131,12 +148,19 @@ export function createWordleReducer(data: WordleData) {
         return withBoard(state, { ...board, invalid: false });
       }
 
-      case "REPLAY": {
-        return withBoard(state, createBoard(data, board.length, board.target));
+      case "RESTORE_BOARD":
+        return withBoard(state, action.board);
+
+      case "PRACTICE": {
+        return withBoard(
+          state,
+          createBoard(data, board.length, day, "practice"),
+        );
       }
 
       case "HINT": {
         if (board.status !== "playing") return state;
+        if (board.hintedChars.length >= MAX_HINTS) return state; // plafond
         const candidates = hintCandidates(board);
         if (candidates.length === 0) return state;
         const ch = candidates[Math.floor(Math.random() * candidates.length)];
