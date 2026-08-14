@@ -5,6 +5,7 @@ type Props = {
   description: string;
   href: string;
   icon: "grid" | "guess" | "versus";
+  progress?: React.ReactNode; // badge d'avancement du jour (client component)
 };
 
 const icons: Record<Props["icon"], React.ReactNode> = {
@@ -36,6 +37,7 @@ export default function GameModeCard({
   description,
   href,
   icon,
+  progress,
 }: Props) {
   return (
     <Link
@@ -61,6 +63,7 @@ export default function GameModeCard({
         <span className="cs2-display text-foreground text-2xl font-extrabold uppercase italic">
           {label}
         </span>
+        {progress && <span className="ml-auto">{progress}</span>}
       </div>
       <p className="mb-4 text-sm leading-relaxed text-[color:var(--muted)]">
         {description}

@@ -1,4 +1,6 @@
 import GameModeCard from "@/components/GameModeCard";
+import ScoreStrip from "@/components/daily/ScoreStrip";
+import ModeProgress from "@/components/daily/ModeProgress";
 import { csModes } from "@/data/modes";
 
 export default function Home() {
@@ -44,6 +46,8 @@ export default function Home() {
           identifie le pro.
         </p>
 
+        <ScoreStrip />
+
         <div className="mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
           {csModes.map((mode) => (
             <GameModeCard
@@ -52,6 +56,7 @@ export default function Home() {
               description={mode.description}
               href={mode.href}
               icon={mode.icon}
+              progress={<ModeProgress modeId={mode.id} />}
             />
           ))}
         </div>
