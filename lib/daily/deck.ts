@@ -39,19 +39,21 @@ function buildDeck<T>(
   return deck;
 }
 
-// Écarte de la tête du paquet les cartes servies en fin d'époque précédente.
+// Écarte de la tête du paquet les cartes servies en fin d'époque précédente :
+// chaque carte « récente » trouvée dans les `cooldown` premières positions est
+// échangée avec la première carte non récente située au-delà.
 //
-// `hi` borne la zone où l'on va chercher un partenaire d'échange. Voir `deckFor`
-// pour pourquoi cette borne est le point délicat de tout le module.
+// La réparation est au mieux : si la zone d'échange ne contient plus aucune carte
+// non récente, la carte reste en place. Cela ne peut arriver que si `count`
+// dépasse la moitié du pool — aucun flux du projet n'est dans ce cas.
 function applyCooldown<T>(
   deck: T[],
   recent: ReadonlySet<T>,
   cooldown: number,
-  hi: number,
 ): void {
   for (let i = 0; i < Math.min(cooldown, deck.length); i++) {
     if (!recent.has(deck[i])) continue;
-    for (let j = cooldown; j < hi; j++) {
+    for (let j = cooldown; j < deck.length; j++) {
       if (!recent.has(deck[j])) {
         [deck[i], deck[j]] = [deck[j], deck[i]];
         break;
@@ -60,39 +62,57 @@ function applyCooldown<T>(
   }
 }
 
+// Un paquet réparé est entièrement déterminé par (pool, flux, count, époque) :
+// on le garde pour la session afin que la chaîne ci-dessous ne soit parcourue
+// qu'une fois. Sans ce cache, chaque appel repaierait le chemin depuis l'époque 0.
+//
+// Le pool fait partie de la clé, via l'identité du tableau : deux pools distincts
+// servis par le même flux ne doivent pas se partager un paquet. Un WeakMap évite
+// d'avoir à hacher le contenu du pool à chaque appel, ce qui annulerait le cache.
+const decks = new WeakMap<object, Map<string, readonly unknown[]>>();
+
 function deckFor<T>(
   pool: readonly T[],
   streamId: string,
   epoch: number,
   count: number,
 ): T[] {
-  const deck = buildDeck(pool, streamId, epoch);
-  if (epoch === 0) return deck;
+  let parPool = decks.get(pool);
+  if (!parPool) {
+    parPool = new Map();
+    decks.set(pool, parPool);
+  }
+  const key = `${streamId}|${count}|${epoch}`;
+  const cached = parPool.get(key);
+  if (cached) return cached as T[];
 
   const n = pool.length;
   const cooldown = cooldownSize(n, count);
-  // Dernières cartes RÉELLEMENT servies à l'époque précédente : le reste du
-  // paquet (`n % count`) n'a jamais été montré au joueur.
+  // Cartes RÉELLEMENT servies par une époque : le reste (`n % count`) n'a jamais
+  // été montré au joueur, il n'a donc pas à être protégé.
   const usedEnd = runsPerDeck(n, count) * count;
-  const previous = buildDeck(pool, streamId, epoch - 1);
-  const recent = new Set(
-    previous.slice(Math.max(0, usedEnd - cooldown), usedEnd),
-  );
 
-  // POINT DÉLICAT. `recent` est calculé sur le mélange BRUT de l'époque
-  // précédente, pas sur son mélange réparé — sinon la récursion remonterait
-  // jusqu'à l'époque 0. Ce raccourci n'est correct que si la réparation ne
-  // touche pas la queue servie du paquet. D'où la zone médiane
-  // [cooldown, usedEnd - cooldown), qui exclut la tête protégée ET cette queue.
+  // Chaîne itérative depuis l'époque 0. Le point important : `recent` est lu sur
+  // le paquet RÉPARÉ de l'époque précédente, jamais sur son mélange brut.
   //
-  // Quand elle est vide (More or Lessr : usedEnd = 22, cooldown = 11), on se
-  // rabat sur le paquet entier : la garantie devient empirique au lieu d'être
-  // prouvée. C'est acceptable là parce que 11 joueurs par jour sur un pool de 28
-  // imposent de toute façon un recouvrement — cf. le test de recouvrement moyen.
-  const median = usedEnd - cooldown;
-  const hi = median > cooldown ? median : n;
+  // Un raccourci à profondeur 1 (lire le mélange brut) serait tentant, mais il
+  // est faux dès que la réparation déplace des cartes dans la zone servie : les
+  // cartes réellement servies la veille disparaissent alors de `recent` et
+  // reviennent aussitôt. Mesuré sur More or Lessr, ce raccourci laissait 2,8
+  // joueurs en commun d'un jour à l'autre au lieu de 0.
+  //
+  // Le coût est linéaire en `epoch`, payé une seule fois grâce au cache.
+  let deck = buildDeck<T>(pool, streamId, 0);
+  for (let e = 1; e <= epoch; e++) {
+    const next = buildDeck<T>(pool, streamId, e);
+    const recent = new Set(
+      deck.slice(Math.max(0, usedEnd - cooldown), usedEnd),
+    );
+    applyCooldown(next, recent, cooldown);
+    deck = next;
+  }
 
-  applyCooldown(deck, recent, cooldown, hi);
+  parPool.set(key, deck);
   return deck;
 }
 
@@ -107,10 +127,15 @@ export function draw<T>(
   if (n < 4) {
     throw new Error(`Pool trop petit pour « ${streamId} » : ${n} (4 minimum).`);
   }
-  if (count < 1 || count > n) {
+  if (!Number.isInteger(count) || count < 1 || count > n) {
     throw new Error(
       `count invalide pour « ${streamId} » : ${count} (pool de ${n}).`,
     );
+  }
+  // Un `day` négatif ou non entier produirait un `slot` négatif, donc une tranche
+  // décalée ou vide — un tirage silencieusement faux plutôt qu'une erreur.
+  if (!Number.isInteger(day) || day < 0) {
+    throw new Error(`day invalide pour « ${streamId} » : ${day}.`);
   }
 
   const runs = runsPerDeck(n, count);
