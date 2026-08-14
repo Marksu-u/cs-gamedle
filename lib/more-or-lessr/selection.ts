@@ -1,4 +1,4 @@
-import { hashSeed, mulberry32 } from "./rng";
+import { hashSeed, mulberry32 } from "@/lib/daily/rng";
 import {
   TOTAL_ROUNDS,
   type Category,
