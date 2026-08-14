@@ -1,0 +1,154 @@
+/* Counter-Strike 2 — tokens du thème, appliqués via la classe .theme-cs2.
+   Importé par app/layout.tsx, après globals.css : les surcharges de couleurs
+   restent confinées à .theme-cs2. Les composants consomment ces variables via
+   des valeurs Tailwind arbitraires (ex. bg-[var(--surface)],
+   text-[color:var(--accent)]). */
+
+.theme-cs2 {
+  /* Surcharge les variables globales (toujours sombre, ignore le mode système). */
+  --background: #0e0f12;
+  --foreground: #e8e8e8;
+
+  /* Tokens propres au thème CS2. */
+  --surface: #16181d;
+  --muted: #9aa0a8;
+  --border: #2a2d34;
+  --accent: #e8922e;
+  --accent-soft: rgb(232 146 46 / 0.15);
+  --accent-hot: #ff5a1f;
+
+  /* Wordle — couleurs d'état des tuiles/touches. */
+  --wordle-correct: #6aaa64; /* vert : bonne lettre, bonne place */
+  --wordle-present: #d8a93b; /* doré (cohérent accent) : présente, mal placée */
+  --wordle-absent: #3a3d44; /* gris : absente */
+}
+
+/* Police d'affichage (Saira Condensed, exposée par next/font dans le layout). */
+.cs2-display {
+  font-family: var(--font-saira-condensed);
+}
+
+/* Bandeau plein écran : gradient orange en diagonale + motif de lignes,
+   d'après la key art CS2. */
+.cs2-hero {
+  background-color: var(--background);
+  background-image:
+    repeating-linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0.045) 0 1px,
+      transparent 1px 10px
+    ),
+    linear-gradient(
+      118deg,
+      transparent 44%,
+      rgba(232, 146, 46, 0.28) 64%,
+      rgba(232, 146, 46, 0.7) 84%,
+      #e8922e 100%
+    );
+}
+
+/* « 2 » du wordmark, détouré comme le logo officiel. */
+.cs2-outline {
+  -webkit-text-stroke: 2.5px var(--accent-hot);
+  color: transparent;
+}
+
+/* Animations Wordle. Référencées via des utilitaires Tailwind arbitraires
+   (ex. animate-[wordle-flip_0.5s_ease_forwards]) dans les composants. */
+@keyframes wordle-flip {
+  0% {
+    transform: rotateX(0);
+  }
+  50% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+@keyframes wordle-pop {
+  0% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes wordle-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+@keyframes wordle-tab {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* More or Lessr — entrée d'une nouvelle carte challenger + révélation de valeur. */
+@keyframes mol-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes mol-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Menu d'options + pop-up d'indice (Wordle). */
+@keyframes menu-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes hint-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  25% {
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
