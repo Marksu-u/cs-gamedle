@@ -1,23 +1,24 @@
 import { nationToFlag } from "@/lib/more-or-lessr/flags";
+import PointsLine from "@/components/daily/PointsLine";
 import type { Player } from "@/lib/guessr/types";
 
 type Props = {
   target: Player;
   attempts: number;
   points: number;
-  mode: "daily" | "practice";
-  onReplay: () => void;
+  hints: number;
+  practice?: boolean;
+  onPractice: () => void;
   gaveUp?: boolean; // variante abandon : révèle la réponse en rouge
 };
 
-// NOTE : bannière volontairement minimale sur `points` — la tâche 13 se charge
-// de l'habillage complet (multiplicateur, série, etc).
 export default function ResultBanner({
   target,
   attempts,
   points,
-  mode,
-  onReplay,
+  hints,
+  practice,
+  onPractice,
   gaveUp,
 }: Props) {
   return (
@@ -43,11 +44,6 @@ export default function ResultBanner({
       <p className="mt-1 text-sm text-[color:var(--muted)]">
         {target.current_team} · {target.role.join(" / ")}
       </p>
-      {mode === "daily" && points > 0 && (
-        <p className="mt-1 text-sm text-[color:var(--muted)]">
-          +{points} points
-        </p>
-      )}
       {target.achievements.length > 0 && (
         <ul className="mt-3 space-y-1 text-sm">
           {target.achievements.map((a) => (
@@ -55,12 +51,25 @@ export default function ResultBanner({
           ))}
         </ul>
       )}
+      <PointsLine
+        points={points}
+        detail={
+          gaveUp
+            ? "abandonné"
+            : `trouvé en ${attempts} essai${attempts > 1 ? "s" : ""}, ${
+                hints === 0
+                  ? "aucun indice"
+                  : `${hints} indice${hints > 1 ? "s" : ""}`
+              }`
+        }
+        practice={practice}
+      />
       <button
         type="button"
-        onClick={onReplay}
+        onClick={onPractice}
         className="mt-4 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold tracking-widest uppercase hover:bg-white/10"
       >
-        Rejouer
+        {practice ? "Rejouer" : "S'entraîner"}
       </button>
     </div>
   );

@@ -96,6 +96,7 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
         <ResultBanner
           score={state.score}
           points={points}
+          practice={state.mode === "practice"}
           onReplay={() => dispatch({ type: "PRACTICE" })}
           onChangeCategory={() =>
             dispatch({

@@ -102,8 +102,9 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
           target={state.target}
           attempts={state.rows.length}
           points={points}
-          mode={state.mode}
-          onReplay={() => dispatch({ type: "PRACTICE" })}
+          hints={hintsUsed}
+          practice={state.mode === "practice"}
+          onPractice={() => dispatch({ type: "PRACTICE" })}
         />
       )}
 
@@ -113,8 +114,9 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
           target={state.target}
           attempts={state.rows.length}
           points={points}
-          mode={state.mode}
-          onReplay={() => dispatch({ type: "PRACTICE" })}
+          hints={hintsUsed}
+          practice={state.mode === "practice"}
+          onPractice={() => dispatch({ type: "PRACTICE" })}
         />
       )}
 
