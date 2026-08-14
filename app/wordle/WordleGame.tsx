@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import Board from "@/components/wordle/Board";
 import Keyboard from "@/components/wordle/Keyboard";
 import LengthTabs from "@/components/wordle/LengthTabs";
@@ -10,11 +17,7 @@ import HelpModal from "@/components/HelpModal";
 import { deriveKeyStates } from "@/lib/wordle/engine";
 import { availableLengths } from "@/lib/wordle/selection";
 import { wordlePoints } from "@/lib/daily/scoring";
-import {
-  useDailyPuzzle,
-  useAutoSave,
-  useDay,
-} from "@/lib/daily/useDailyPuzzle";
+import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { PuzzleId } from "@/lib/daily/types";
 import type { BoardState, WordleData } from "@/lib/wordle/types";
 import {
@@ -43,19 +46,19 @@ export default function WordleGame({ data }: { data: WordleData }) {
   // Chaque longueur est une grille quotidienne indépendante, avec sa propre
   // entrée de stockage. On persiste donc le BOARD, pas le WordleState entier.
   const puzzleId = `wordle-${board.length}` as PuzzleId;
-  const { saved, done, points, save, commit } = useDailyPuzzle<BoardState>(
-    puzzleId,
-    day,
-  );
-
-  // Reprise après rafraîchissement, une fois PAR LONGUEUR : le joueur peut
+  // La reprise est gérée par le hook, qui la tranche PAR grille : le joueur peut
   // ouvrir l'onglet 7 lettres bien après avoir chargé la page.
-  const restored = useRef<Set<number>>(new Set());
-  useEffect(() => {
-    if (!saved || restored.current.has(board.length)) return;
-    restored.current.add(board.length);
-    dispatch({ type: "RESTORE_BOARD", board: saved });
-  }, [saved, board.length]);
+  const restaurer = useCallback(
+    (b: BoardState) => dispatch({ type: "RESTORE_BOARD", board: b }),
+    [],
+  );
+  const { done, points, commit } = useDailyPuzzle<BoardState>({
+    id: puzzleId,
+    day,
+    state: board,
+    onRestore: restaurer,
+    savable: board.mode === "daily" && board.status === "playing",
+  });
 
   // Enregistrement du résultat dès qu'une grille quotidienne se termine.
   useEffect(() => {
@@ -71,13 +74,6 @@ export default function WordleGame({ data }: { data: WordleData }) {
       state: board,
     });
   }, [board, done, commit]);
-
-  // Sauvegarde de l'avancement d'une grille quotidienne en cours.
-  useAutoSave(
-    save,
-    board,
-    board.mode === "daily" && board.status === "playing",
-  );
 
   // Highlight de press : on illumine brièvement la touche correspondant au dernier
   // caractère produit (frappe physique OU clic). État purement visuel, hors reducer.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
 import HelpModal from "@/components/HelpModal";
 import GuessGrid from "@/components/guessr/GuessGrid";
@@ -8,11 +8,7 @@ import GuessInput from "@/components/guessr/GuessInput";
 import ResultBanner from "@/components/guessr/ResultBanner";
 import { MAX_HINTS } from "@/lib/guessr/hints";
 import { guessrPoints } from "@/lib/daily/scoring";
-import {
-  useDailyPuzzle,
-  useAutoSave,
-  useDay,
-} from "@/lib/daily/useDailyPuzzle";
+import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { GameState, GuessrData } from "@/lib/guessr/types";
 import { createGuessrReducer, createInitialState } from "./reducer";
 
@@ -22,17 +18,17 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
   const [state, dispatch] = useReducer(reducer, undefined, () =>
     createInitialState(data, day),
   );
-  const { saved, done, points, save, commit } = useDailyPuzzle<GameState>(
-    "guessr",
-    day,
+  const restaurer = useCallback(
+    (s: GameState) => dispatch({ type: "RESTORE", state: s }),
+    [],
   );
-
-  const restored = useRef(false);
-  useEffect(() => {
-    if (restored.current || !saved) return;
-    restored.current = true;
-    dispatch({ type: "RESTORE", state: saved });
-  }, [saved]);
+  const { done, points, commit } = useDailyPuzzle<GameState>({
+    id: "guessr",
+    day,
+    state,
+    onRestore: restaurer,
+    savable: state.mode === "daily" && state.status === "playing",
+  });
 
   useEffect(() => {
     if (state.mode !== "daily" || state.status === "playing" || done) return;
@@ -44,12 +40,6 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
       state,
     });
   }, [state, done, commit]);
-
-  useAutoSave(
-    save,
-    state,
-    state.mode === "daily" && state.status === "playing",
-  );
 
   const [helpOpen, setHelpOpen] = useState(false);
 

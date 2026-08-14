@@ -1,17 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
 import HelpModal from "@/components/HelpModal";
 import CategorySelect from "@/components/more-or-lessr/CategorySelect";
 import ChainBoard from "@/components/more-or-lessr/ChainBoard";
 import ResultBanner from "@/components/more-or-lessr/ResultBanner";
 import { molPoints } from "@/lib/daily/scoring";
-import {
-  useDailyPuzzle,
-  useAutoSave,
-  useDay,
-} from "@/lib/daily/useDailyPuzzle";
+import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { PuzzleId } from "@/lib/daily/types";
 import type { GameState, MorelessData } from "@/lib/more-or-lessr/types";
 import { createInitialState, createMorelessReducer } from "./reducer";
@@ -30,29 +26,26 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
   const puzzleId = (
     state.category ? `mol-${state.category}` : "mol-rating"
   ) as PuzzleId;
-  const { saved, done, points, save, commit } = useDailyPuzzle<GameState>(
-    puzzleId,
-    day,
+  // La reprise est tranchée PAR catégorie par le hook : passer de « rating » à
+  // « prize » doit restaurer la manche de prize, pas repartir de zéro.
+  const restaurer = useCallback(
+    (s: GameState) => dispatch({ type: "RESTORE", state: s }),
+    [],
   );
-
-  const restored = useRef(false);
-  useEffect(() => {
-    if (restored.current || !saved) return;
-    restored.current = true;
-    dispatch({ type: "RESTORE", state: saved });
-  }, [saved]);
+  const { done, points, commit } = useDailyPuzzle<GameState>({
+    id: puzzleId,
+    day,
+    state,
+    onRestore: restaurer,
+    savable:
+      state.mode === "daily" &&
+      (state.status === "playing" || state.status === "revealed"),
+  });
 
   useEffect(() => {
     if (state.mode !== "daily" || state.status !== "finished" || done) return;
     commit({ status: "won", points: molPoints(state.score), state });
   }, [state, done, commit]);
-
-  useAutoSave(
-    save,
-    state,
-    state.mode === "daily" &&
-      (state.status === "playing" || state.status === "revealed"),
-  );
 
   const [helpOpen, setHelpOpen] = useState(false);
 

@@ -4,9 +4,10 @@
 // rafraîchissement, et l'enregistrement du résultat. Les jeux ne parlent jamais
 // directement au stockage — uniquement à ce hook.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { useState } from "react";
 import { dayIndex } from "./clock";
-import { dailyStore, useDailyState } from "./store";
+import { dailyStore, useDailyState, useHydrated } from "./store";
 import type { PuzzleId, PuzzleProgress } from "./types";
 
 export function useDay(): number {
@@ -19,10 +20,44 @@ export function useDay(): number {
   return day;
 }
 
-export function useDailyPuzzle<S>(id: PuzzleId, day: number) {
-  const state = useDailyState();
+type Options<S> = {
+  id: PuzzleId;
+  day: number; // jour du TIRAGE
+  state: S; // état de jeu courant, celui qu'on sauvegarde
+  onRestore: (state: S) => void; // doit être stable (useCallback)
+  savable: boolean; // partie en cours ET quotidienne
+};
+
+// Reprise et sauvegarde d'une grille du jour, dans UN SEUL effet.
+//
+// Les deux tiennent dans le même effet parce que leur ORDRE est le bug. Au
+// premier rendu client, `useSyncExternalStore` rend encore l'instantané SERVEUR
+// — un stockage vide. Séparés en deux effets, la reprise ne voit donc rien à
+// restaurer, tandis que la sauvegarde, elle, s'exécute aussitôt et écrit la
+// grille vierge par-dessus la partie enregistrée : elle est perdue avant même
+// que le vrai stockage n'ait été lu.
+//
+// Ce n'était pas qu'une perte de progression : le compteur d'essais repartant
+// de zéro, un simple rafraîchissement redonnait le score maximal sur une grille
+// déjà à moitié jouée.
+//
+// Ici, la première passe pour une grille donnée tranche la reprise et REND LA
+// MAIN sans écrire. La passe suivante — déclenchée par le changement d'état que
+// la reprise vient de provoquer — sauvegarde l'état restauré.
+export function useDailyPuzzle<S>({
+  id,
+  day,
+  state,
+  onRestore,
+  savable,
+}: Options<S>) {
+  const persisted = useDailyState();
+  const hydrated = useHydrated();
   const entry =
-    state.progress?.day === day ? state.progress.puzzles[id] : undefined;
+    persisted.progress?.day === day
+      ? persisted.progress.puzzles[id]
+      : undefined;
+  const saved = entry?.state as S | undefined;
 
   // `useCallback` n'est PAS cosmétique ici. `save` et `commit` sont des
   // dépendances d'effets qui écrivent dans le store ; le store notifie, le
@@ -40,22 +75,28 @@ export function useDailyPuzzle<S>(id: PuzzleId, day: number) {
     [day, id],
   );
 
+  // Dernière grille dont la reprise a été tranchée. Un ref, pas un état : on ne
+  // le lit que dans l'effet, et le modifier ne doit pas provoquer de rendu.
+  const repriseTranchee = useRef<PuzzleId | null>(null);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    if (repriseTranchee.current !== id) {
+      repriseTranchee.current = id;
+      if (saved !== undefined) {
+        onRestore(saved);
+        return; // surtout pas de sauvegarde avant que la reprise ait atterri
+      }
+    }
+
+    if (savable) save(state);
+  }, [hydrated, id, saved, onRestore, savable, state, save]);
+
   return {
-    // État sauvegardé à restaurer, ou `undefined` si rien à reprendre.
-    saved: entry?.state as S | undefined,
     // La grille du jour est-elle déjà terminée ?
     done: entry !== undefined && entry.status !== "playing",
     points: entry?.points ?? 0,
-    save,
     commit,
   };
-}
-
-// Enregistre `state` à chaque changement, tant que la partie est en cours.
-// `save` doit être stable (cf. useDailyPuzzle) sous peine de boucle de rendu.
-export function useAutoSave<S>(save: (s: S) => void, state: S, actif: boolean) {
-  useEffect(() => {
-    if (!actif) return;
-    save(state);
-  }, [save, state, actif]);
 }
