@@ -1,7 +1,10 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import PointsLine from "@/components/daily/PointsLine";
+import ShareButton from "@/components/daily/ShareButton";
+import { buildWordleShare, type ShareT } from "@/lib/share/format";
+import { pageUrl } from "@/lib/seo";
 import type { BoardState } from "@/lib/wordle/types";
 
 type Props = {
@@ -13,6 +16,9 @@ type Props = {
 export default function ResultBanner({ board, points, onPractice }: Props) {
   const t = useTranslations("wordle");
   const g = useTranslations("game");
+  // Root translator: the share builders address the catalogue by full path.
+  const root = useTranslations() as unknown as ShareT;
+  const locale = useLocale();
   if (board.status === "playing") return null;
   const won = board.status === "won";
   const essais = board.guesses.length;
@@ -42,13 +48,33 @@ export default function ResultBanner({ board, points, onPractice }: Props) {
         detail={detail}
         practice={board.mode === "practice"}
       />
-      <button
-        type="button"
-        onClick={onPractice}
-        className="mt-1 rounded-md bg-[var(--accent)] px-5 py-2 text-xs font-semibold tracking-widest text-black uppercase transition hover:bg-[var(--accent-hot)]"
-      >
-        {board.mode === "daily" ? g("practice") : g("playAgain")}
-      </button>
+      <div className="mt-1 flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={onPractice}
+          className="rounded-md bg-[var(--accent)] px-5 py-2 text-xs font-semibold tracking-widest text-black uppercase transition hover:bg-[var(--accent-hot)]"
+        >
+          {board.mode === "daily" ? g("practice") : g("playAgain")}
+        </button>
+        {/* Practice scores nothing and nobody else played that board: there is
+            nothing to compare, so nothing to share. */}
+        {board.mode === "daily" && (
+          <ShareButton
+            text={buildWordleShare(
+              {
+                length: board.length,
+                day: board.day,
+                evaluations: board.evaluations,
+                won,
+                attempts: essais,
+                hints: indices,
+                url: pageUrl("/wordle", locale),
+              },
+              root,
+            )}
+          />
+        )}
+      </div>
     </div>
   );
 }
