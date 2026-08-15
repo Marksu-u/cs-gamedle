@@ -1,6 +1,6 @@
-// Accès au stockage local. Règle unique de ce fichier : NE JAMAIS LEVER.
-// Un joueur en navigation privée, avec un quota plein ou un stockage désactivé
-// doit pouvoir jouer — il perd la persistance, pas le jeu.
+// Local storage access. The one rule of this file: NEVER THROW. A player in
+// private browsing, with a full quota or storage disabled, must still be able to
+// play — they lose persistence, not the game.
 
 import {
   EMPTY_PERSISTED,
@@ -10,8 +10,8 @@ import {
   type Persisted,
 } from "./types";
 
-// Valide la forme relue : un `meta` complet et numérique. Tout écart renvoie
-// vers un état neuf plutôt que de propager des `NaN` dans les scores.
+// Validates the shape read back: a complete, numeric `meta`. Anything else falls
+// back to a fresh state rather than letting `NaN` spread through the scores.
 function isMeta(value: unknown): value is Meta {
   if (typeof value !== "object" || value === null) return false;
   const m = value as Record<string, unknown>;
@@ -23,10 +23,10 @@ function isMeta(value: unknown): value is Meta {
   );
 }
 
-// `puzzles` doit être un objet : les appelants y indexent directement
-// (`progress.puzzles[id]`). Valider `day` seul rendait une forme sur laquelle
-// ils levaient — le module ne levait pas lui-même, mais faisait lever les
-// autres, ce qui revient au même pour le joueur.
+// `puzzles` must be an object: callers index into it directly
+// (`progress.puzzles[id]`). Validating `day` alone returned a shape they threw
+// on — the module did not throw itself, but made everyone else throw, which
+// amounts to the same thing for the player.
 function parseProgress(value: unknown): Persisted["progress"] {
   if (typeof value !== "object" || value === null) return null;
   const p = value as Record<string, unknown>;
@@ -52,7 +52,7 @@ export function load(): Persisted {
     if (!raw) return EMPTY_PERSISTED;
     return parse(raw);
   } catch {
-    // JSON invalide, stockage bloqué, SSR : dans tous les cas, état neuf.
+    // Invalid JSON, blocked storage, SSR: in every case, a fresh state.
     return EMPTY_PERSISTED;
   }
 }
@@ -61,6 +61,6 @@ export function save(state: Persisted): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {
-    // Quota dépassé ou stockage en lecture seule : on continue sans persister.
+    // Quota exceeded or read-only storage: carry on without persisting.
   }
 }

@@ -10,7 +10,7 @@ export type GuessrAction =
   | { type: "PRACTICE" }
   | { type: "RESTORE"; state: GameState };
 
-// État de départ : joueur du jour, partie en cours, aucune ligne.
+// Starting state: player of the day, game in progress, no rows.
 export function createInitialState(data: GuessrData, day: number): GameState {
   return {
     target: dailyTarget(data, day),
@@ -21,7 +21,7 @@ export function createInitialState(data: GuessrData, day: number): GameState {
   };
 }
 
-// Entraînement : cible aléatoire, hors rotation, ne rapporte aucun point.
+// Practice: random target, outside the rotation, scores nothing.
 function createPracticeState(data: GuessrData, day: number): GameState {
   return {
     target: randomTarget(data),
@@ -32,7 +32,7 @@ function createPracticeState(data: GuessrData, day: number): GameState {
   };
 }
 
-// Factory : reducer fermé sur `data` + le jour → pur et testable.
+// Factory: the reducer closes over `data` + the day → pure and testable.
 export function createGuessrReducer(data: GuessrData, day: number) {
   return function reducer(state: GameState, action: GuessrAction): GameState {
     switch (action.type) {
@@ -41,8 +41,8 @@ export function createGuessrReducer(data: GuessrData, day: number) {
         const guess = data.players.find(
           (p) => norm(p.name) === norm(action.name),
         );
-        if (!guess) return state; // nom hors pool
-        // Dédup uniquement sur les lignes guess (les indices ne bloquent pas).
+        if (!guess) return state; // name not in the pool
+        // Dedupe on guess rows only (hints do not block).
         const alreadyGuessed = state.rows.some(
           (r) =>
             r.kind === "guess" &&
@@ -57,8 +57,8 @@ export function createGuessrReducer(data: GuessrData, day: number) {
         };
       }
 
-      // Indice : révèle une colonne aléatoire encore cachée. Consomme un essai
-      // (ajoute une ligne), plafonné à MAX_HINTS, jamais deux fois la même colonne.
+      // Hint: reveals a random column still hidden. Costs a try (adds a row),
+      // capped at MAX_HINTS, never the same column twice.
       case "HINT": {
         if (state.status !== "playing") return state;
         const used = state.rows.flatMap((r) =>
@@ -75,7 +75,7 @@ export function createGuessrReducer(data: GuessrData, day: number) {
         return { ...state, rows: [row, ...state.rows] };
       }
 
-      // Abandon : révèle la réponse (bannière), plus de saisie possible.
+      // Give up: reveals the answer (banner), no further input.
       case "GIVE_UP": {
         if (state.status !== "playing") return state;
         return { ...state, status: "gaveup" };
@@ -84,7 +84,7 @@ export function createGuessrReducer(data: GuessrData, day: number) {
       case "RESTORE":
         return action.state;
 
-      // Entraînement : nouvelle cible aléatoire, grille vidée, aucun point.
+      // Practice: new random target, grid cleared, no points.
       case "PRACTICE":
         return createPracticeState(data, day);
 

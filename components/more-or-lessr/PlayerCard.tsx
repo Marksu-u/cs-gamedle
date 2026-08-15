@@ -10,13 +10,13 @@ type Props = {
   onPick?: () => void; // absent → carte non cliquable (désactivée)
 };
 
-// Rating : 2 décimales. Prize : $ avec séparateurs de milliers.
+// Rating: 2 decimals. Prize: $ with thousands separators.
 function formatValue(player: Player, category: Category): string {
   const v = statValue(player, category);
   return category === "rating" ? v.toFixed(2) : "$" + v.toLocaleString("en-US");
 }
 
-// On répond en CLIQUANT la carte qu'on pense la plus grande (cf. ChainBoard).
+// You answer by CLICKING the card you think is bigger (see ChainBoard).
 export default function PlayerCard({
   player,
   category,

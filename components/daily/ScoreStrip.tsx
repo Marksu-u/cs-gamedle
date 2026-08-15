@@ -19,8 +19,8 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-// Compte à rebours vers la prochaine bascule. Recalculé chaque seconde à partir
-// de l'horloge absolue — pas d'accumulation de dérive.
+// Countdown to the next rollover. Recomputed every second from the absolute
+// clock, so no drift accumulates.
 function useCountdown(): string {
   const [ms, setMs] = useState<number | null>(null);
   useEffect(() => {
@@ -41,8 +41,8 @@ export default function ScoreStrip() {
   const hydrated = useHydrated();
   const countdown = useCountdown();
 
-  // Tant que l'hydratation n'a pas eu lieu, on affiche un tiret : mieux vaut
-  // un vide qu'un zéro faux qui clignote vers la vraie valeur.
+  // Until hydration has happened we show a dash: better a blank than a wrong zero
+  // that flickers into the real value.
   const v = (n: number) => (hydrated ? String(n) : t("pending"));
   const mult = streakMultiplier(meta.streak);
 

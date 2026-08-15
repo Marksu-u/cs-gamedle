@@ -1,6 +1,6 @@
 import type { TileState } from "@/lib/wordle/types";
 
-// Couleurs d'état dérivées des tokens du thème CS2 (cf. cs2-theme.css).
+// State colours derived from the CS2 theme tokens (see cs2-theme.css).
 const STATE_CLASS: Record<TileState, string> = {
   empty: "border-[color:var(--border)] bg-transparent text-foreground",
   absent:
@@ -25,7 +25,7 @@ export default function Tile({ letter, state, index, revealed }: Props) {
   return (
     <div
       className={`flex h-[var(--tile-size)] w-[var(--tile-size)] items-center justify-center rounded-md border-2 font-bold uppercase text-[calc(var(--tile-size)*0.45)] ${STATE_CLASS[state]} ${animation}`}
-      // Le délai inline (longhand) surcharge le delay du shorthand `animation` posé
+      // The inline (longhand) delay overrides the delay of the `animation` shorthand set
       // par Tailwind → effet cascade colonne par colonne.
       style={revealed ? { animationDelay: `${index * 0.25}s` } : undefined}
     >

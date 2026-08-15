@@ -35,15 +35,15 @@ function flatten(value: unknown, prefix = ""): Record<string, string> {
   );
 }
 
-describe("catalogues de traduction", () => {
-  it("chaque locale déclarée a son fichier", () => {
+describe("translation catalogues", () => {
+  it("every declared locale has its file", () => {
     for (const l of locales) expect(catalogues[l]).toBeDefined();
   });
 
   const reference = keys(catalogues[defaultLocale]).sort();
 
   it.each(locales.filter((l) => l !== defaultLocale))(
-    "%s a exactement les mêmes clés que la locale par défaut",
+    "%s has exactly the same keys as the default locale",
     (locale) => {
       const autres = keys(catalogues[locale]).sort();
       const manquantes = reference.filter((k) => !autres.includes(k));
@@ -52,7 +52,7 @@ describe("catalogues de traduction", () => {
     },
   );
 
-  it.each(locales)("%s : aucune valeur vide", (locale) => {
+  it.each(locales)("%s : no empty values", (locale) => {
     const vides = Object.entries(flatten(catalogues[locale]))
       .filter(([, v]) => !v.trim())
       .map(([k]) => k);
@@ -60,7 +60,7 @@ describe("catalogues de traduction", () => {
   });
 
   it.each(locales.filter((l) => l !== defaultLocale))(
-    "%s : mêmes variables d'interpolation que la référence",
+    "%s : same interpolation variables as the reference",
     (locale) => {
       const ref = flatten(catalogues[defaultLocale]);
       const cible = flatten(catalogues[locale]);

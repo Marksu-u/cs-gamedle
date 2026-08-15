@@ -6,13 +6,13 @@ import type { GuessrData } from "@/lib/guessr/types";
 const pool = data as GuessrData;
 
 describe("guessr_players.json", () => {
-  it("assez de joueurs pour que la grille du jour ne tourne pas en rond", () => {
-    // Le pool EST le cycle : `lib/daily/deck.ts` sort chaque joueur une fois par
-    // cycle, donc 28 joueurs = la réponse revient au bout de 28 jours. Un seuil
-    // de 90 tient un trimestre.
+  it("enough players that the daily puzzle does not go round in circles", () => {
+    // The pool IS the cycle: `lib/daily/deck.ts` yields each player once per
+    // cycle, so 28 players means the answer returns after 28 days. A floor of 90
+    // covers a quarter.
     expect(pool.players.length).toBeGreaterThanOrEqual(90);
   });
-  it("chaque joueur a tous les champs requis et bien typés", () => {
+  it("every player has all required fields, correctly typed", () => {
     for (const p of pool.players) {
       expect(typeof p.name).toBe("string");
       expect(typeof p.nationality).toBe("string");
@@ -26,13 +26,13 @@ describe("guessr_players.json", () => {
       expect(Array.isArray(p.achievements)).toBe(true);
     }
   });
-  it("noms uniques", () => {
+  it("unique names", () => {
     const names = pool.players.map((p) => p.name.toLowerCase());
     expect(new Set(names).size).toBe(names.length);
   });
 
-  it("valeurs numériques plausibles", () => {
-    const aberrants = pool.players
+  it("plausible numeric values", () => {
+    const outOfRange = pool.players
       .filter(
         (p) =>
           p.age < 15 ||
@@ -48,13 +48,13 @@ describe("guessr_players.json", () => {
         (p) =>
           `${p.name} (âge ${p.age}, ${p.majors} majors, ${p.tournaments_won} tournois)`,
       );
-    expect(aberrants).toEqual([]);
+    expect(outOfRange).toEqual([]);
   });
 
-  it("le nombre de majors est cohérent avec les achievements", () => {
-    // Un joueur annoncé « 2x Major Winner » mais avec majors: 1 rend la colonne
-    // chiffrée fausse alors que le texte de victoire, lui, dit vrai.
-    const incoherents = pool.players
+  it("the majors count is consistent with the achievements", () => {
+    // A player billed as "2x Major Winner" but with majors: 1 makes the numeric
+    // column wrong while the achievement text tells the truth.
+    const inconsistent = pool.players
       .filter((p) => {
         const texte = p.achievements.join(" ");
         const mentionne = /(\d)x Major Winner/.exec(texte);
@@ -69,57 +69,56 @@ describe("guessr_players.json", () => {
         (p) =>
           `${p.name} : majors=${p.majors}, achievements=${JSON.stringify(p.achievements)}`,
       );
-    expect(incoherents).toEqual([]);
+    expect(inconsistent).toEqual([]);
   });
 
-  it("les rôles viennent d'un vocabulaire fermé", () => {
-    // La colonne rôle se compare par intersection : « AWPer » et « AWP » ne se
-    // croiseraient jamais, et le joueur verrait un faux négatif.
+  it("roles come from a closed vocabulary", () => {
+    // The role column compares by intersection: "AWPer" and "AWP" would never
+    // intersect, and the player would see a false negative.
     const CONNUS = ["AWP", "Rifler", "Entry", "Lurker", "Support", "IGL"];
-    const inconnus = pool.players.flatMap((p) =>
+    const unknown = pool.players.flatMap((p) =>
       p.role
         .filter((r) => !CONNUS.includes(r))
         .map((r) => `${p.name} : « ${r} »`),
     );
-    expect(inconnus).toEqual([]);
+    expect(unknown).toEqual([]);
   });
 
-  it("une même équipe s'écrit toujours pareil", () => {
-    // La colonne équipe se compare en TEXTE EXACT. « Team Spirit » et « Spirit »
-    // sont alors deux équipes distinctes : le joueur qui trouve le bon club voit
-    // rouge. On refuse donc deux graphies qui ne diffèrent que par un préfixe
-    // « Team » ou par la casse.
-    const toutes = new Set<string>();
+  it("one team is always spelled the same way", () => {
+    // The team column compares by EXACT TEXT. "Team Spirit" and "Spirit" are
+    // then two different teams: a player who names the right club sees red. So we
+    // reject two spellings differing only by a "Team" prefix or by case.
+    const all = new Set<string>();
     for (const p of pool.players) {
-      toutes.add(p.current_team);
-      for (const t of p.previous_teams) toutes.add(t);
+      all.add(p.current_team);
+      for (const t of p.previous_teams) all.add(t);
     }
-    const canonique = (t: string) =>
+    const canonical = (t: string) =>
       t
         .toLowerCase()
         .replace(/^team\s+/, "")
         .replace(/\s+/g, "");
 
-    const groupes = new Map<string, string[]>();
-    for (const t of toutes) {
-      const k = canonique(t);
-      groupes.set(k, [...(groupes.get(k) ?? []), t]);
+    const groups = new Map<string, string[]>();
+    for (const t of all) {
+      const k = canonical(t);
+      groups.set(k, [...(groups.get(k) ?? []), t]);
     }
-    const collisions = [...groupes.values()]
+    const collisions = [...groups.values()]
       .filter((v) => v.length > 1)
       .map((v) => v.join(" / "));
     expect(collisions).toEqual([]);
   });
 
-  it("aucun joueur ne se liste lui-même dans ses anciennes équipes", () => {
-    const bizarres = pool.players
+  it("no player lists their current team among former teams", () => {
+    const selfListed = pool.players
       .filter((p) => p.previous_teams.includes(p.current_team))
       .map((p) => `${p.name} : ${p.current_team}`);
-    expect(bizarres).toEqual([]);
+    expect(selfListed).toEqual([]);
   });
 
-  it("pas de champ texte vide", () => {
-    const vides = pool.players
+  it("no empty text field", () => {
+    const empties = pool.players
       .filter(
         (p) =>
           !p.name.trim() ||
@@ -128,14 +127,14 @@ describe("guessr_players.json", () => {
           p.achievements.some((a) => !a.trim()),
       )
       .map((p) => p.name);
-    expect(vides).toEqual([]);
+    expect(empties).toEqual([]);
   });
-  it("chaque nationalité a un drapeau connu (pas de fallback 🌍)", () => {
-    // On nomme les coupables : le message par défaut (« expected 🌍 not to be
-    // 🌍 ») oblige sinon à chercher à la main dans 116 joueurs.
-    const sansDrapeau = pool.players
+  it("every nationality has a known flag (no 🌍 fallback)", () => {
+    // Name the offenders: the default message ("expected 🌍 not to be 🌍")
+    // otherwise means hunting through 116 players by hand.
+    const flagless = pool.players
       .filter((p) => nationToFlag(p.nationality) === "🌍")
       .map((p) => `${p.name} (${p.nationality})`);
-    expect(sansDrapeau).toEqual([]);
+    expect(flagless).toEqual([]);
   });
 });

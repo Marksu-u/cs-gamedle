@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
-// Icônes monochromes (trait `currentColor`) pour rester dans la direction
-// artistique CS2 — les emojis couleur juraient avec le reste du thème.
+// Monochrome icons (`currentColor` stroke) to stay in the CS2 art direction —
+// colour emoji clashed with the rest of the theme.
 const ICON_PATHS = {
   hint: (
     <path d="M9.5 18h5M10.5 21h3M12 3a6 6 0 0 0-3.6 10.8c.7.55 1.1 1.35 1.1 2.2h5c0-.85.4-1.65 1.1-2.2A6 6 0 0 0 12 3Z" />
@@ -38,20 +38,20 @@ export type GameMenuItem = {
   id: string;
   label: string; // e.g. "Hint"
   icon: GameMenuIcon; // clé d'icône monochrome (cf. ICON_PATHS)
-  note?: string; // ex. "2/4" — affiché à droite, discret
+  note?: string; // e.g. "2/4" — shown on the right, understated
   disabled?: boolean;
-  onSelect: () => void; // le menu se ferme après sélection
+  onSelect: () => void; // the menu closes after selection
 };
 
-// Menu déroulant compact (bouton burger) réutilisé par les trois jeux CS pour
-// regrouper les actions annexes (indice / aide / abandon) au même endroit.
+// Compact dropdown (burger button) reused by all three games to gather the side
+// actions (hint / help / give up) in one place.
 export default function GameMenu({ items }: { items: GameMenuItem[] }) {
   const t = useTranslations("menu");
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Les listeners ne sont attachés que pendant que le menu est ouvert, pour
-  // ne pas alourdir la page quand il est fermé (cas le plus fréquent).
+  // Listeners are attached only while the menu is open, so the page stays light
+  // when it is closed — which is most of the time.
   useEffect(() => {
     if (!open) return;
 
@@ -83,7 +83,7 @@ export default function GameMenu({ items }: { items: GameMenuItem[] }) {
         onClick={() => setOpen((v) => !v)}
         className="rounded-md border border-[color:var(--border)] bg-[var(--surface)] p-2 text-[color:var(--muted)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
       >
-        {/* Burger : symbole de menu universel, plus lisible qu'un libellé. */}
+        {/* Burger: the universal menu symbol, clearer than a label. */}
         <svg
           viewBox="0 0 24 24"
           fill="none"

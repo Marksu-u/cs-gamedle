@@ -6,10 +6,10 @@ import {
   type Player,
 } from "./types";
 
-// Séquence des joueurs du jour, déterministe : même (jour, catégorie) → même
-// ordre pour tout le monde. Le tirage anti-répétition vit dans lib/daily/deck :
-// il garantit qu'une manche ne contient jamais deux fois le même joueur et que
-// deux journées consécutives ne donnent jamais la même manche.
+// Deterministic player sequence for the day: same (day, category) → same order
+// for everyone. The anti-repeat draw lives in lib/daily/deck, which guarantees a
+// run never contains the same player twice and that two consecutive days never
+// produce the same run.
 export function dailySequence(
   data: MorelessData,
   day: number,
@@ -24,16 +24,16 @@ export function dailySequence(
   return draw(data.players, `mol-${category}`, day, need);
 }
 
-// Séquence d'ENTRAÎNEMENT : simple mélange aléatoire, hors rotation.
+// PRACTICE sequence: a plain random shuffle, outside the rotation.
 //
-// Elle ne passe volontairement pas par `draw`. Le tirage quotidien remonte la
-// chaîne des époques depuis l'origine pour garantir ses écarts ; à 11 joueurs
-// par jour cela fait ~10 000 tours pour la journée courante, amortis par le
-// cache. Un jour tiré au hasard rate le cache à chaque fois — l'entraînement
-// gelait l'interface près d'une seconde à chaque clic sur « Rejouer ».
+// It deliberately does not go through `draw`. The daily draw walks the epoch
+// chain from the origin to guarantee its gaps; at 11 players a day that is
+// ~10,000 iterations for the current day, amortised by the cache. A randomly
+// picked day misses the cache every time — practice froze the UI for nearly a
+// second on every "Play again" click.
 //
-// L'entraînement ne rapporte rien et n'a pas à être identique d'un joueur à
-// l'autre : aucune de ces garanties ne lui sert.
+// Practice scores nothing and need not match other players: none of those
+// guarantees serve it.
 export function practiceSequence(
   data: MorelessData,
   rand: () => number = Math.random,

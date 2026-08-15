@@ -1,19 +1,18 @@
-// La règle de bascule quotidienne vit ici et NULLE PART ailleurs : 03:00 UTC,
-// quel que soit le fuseau du joueur. Retrancher 3 h avant le `floor` suffit —
-// `Date.now()` est un instant absolu, donc aucune logique de fuseau ni d'heure
-// d'été n'a sa place dans ce fichier.
+// The daily rollover rule lives here and NOWHERE else: 03:00 UTC, whatever the
+// player's timezone. Subtracting 3h before the `floor` is enough — `Date.now()`
+// is an absolute instant, so no timezone or DST logic belongs in this file.
 
 export const ROTATION_HOUR_UTC = 3;
 export const DAY_MS = 86_400_000;
 const OFFSET_MS = ROTATION_HOUR_UTC * 3_600_000;
 
-// Numéro du jour de jeu courant. C'est LA valeur qui identifie une journée :
-// tout le reste (tirage, progression, série) s'y réfère.
+// Current game-day number. This is THE value that identifies a day: everything
+// else (draw, progress, streak) refers to it.
 export function dayIndex(now: number = Date.now()): number {
   return Math.floor((now - OFFSET_MS) / DAY_MS);
 }
 
-// Millisecondes restantes avant la prochaine bascule (compte à rebours de l'accueil).
+// Milliseconds until the next rollover (drives the home page countdown).
 export function msUntilNextRotation(now: number = Date.now()): number {
   return (dayIndex(now) + 1) * DAY_MS + OFFSET_MS - now;
 }

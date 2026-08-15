@@ -23,14 +23,14 @@ const DAY = 100;
 const reducer = createMorelessReducer(data, DAY);
 const seq = dailySequence(data, DAY, "rating");
 
-// Renvoie l'état juste après START rating.
+// Returns the state right after START rating.
 function started() {
   return reducer(createInitialState(DAY), {
     type: "START",
     category: "rating",
   });
 }
-// Direction correcte pour le duel ancre/challenger courant (catégorie rating).
+// The correct direction for the current anchor/challenger duel (rating category).
 function correctDir(anchor: Player, challenger: Player): Direction {
   return statValue(challenger, "rating") >= statValue(anchor, "rating")
     ? "more"
@@ -162,8 +162,8 @@ describe("GIVE_UP", () => {
       direction: correctDir(s.anchor!, s.challenger!),
     });
     const finished = reducer(revealed, { type: "GIVE_UP" });
-    // Le timeout NEXT programmé avant l'abandon peut encore se déclencher :
-    // il doit rester sans effet une fois la partie terminée.
+    // The NEXT timeout scheduled before the give-up can still fire: it must have
+    // no effect once the run is over.
     expect(reducer(finished, { type: "NEXT" })).toBe(finished);
   });
 });

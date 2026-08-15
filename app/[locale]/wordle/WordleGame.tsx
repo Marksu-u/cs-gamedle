@@ -37,25 +37,25 @@ export default function WordleGame({ data }: { data: WordleData }) {
   const game = useTranslations("game");
   const lengths = availableLengths(data);
   const defaultLength = lengths.includes(5) ? 5 : lengths[0];
-  // Longueur max (8 ici) : sert à dimensionner les tuiles de TOUS les boards de
-  // façon homogène (cf. Board), pour que la grille la plus large tienne à l'écran.
+  // Max length (8 here): sizes the tiles of EVERY board uniformly (see Board), so
+  // the widest grid still fits on screen.
   const maxLength = Math.max(...lengths);
 
   const day = useDay();
-  // Reducer mémoïsé (fermé sur `data` + le jour, stable). L'init paresseuse tire
-  // le mot côté client ; comme la cible n'est jamais rendue, aucun mismatch
-  // d'hydratation.
+  // Memoised reducer (closes over `data` + the day, stable). The lazy init draws
+  // the word client-side; since the target is never rendered, there is no
+  // hydration mismatch.
   const reducer = useMemo(() => createWordleReducer(data, day), [data, day]);
   const [state, dispatch] = useReducer(reducer, undefined, () =>
     createInitialState(data, defaultLength, day),
   );
   const board = state.boards[state.activeLength];
 
-  // Chaque longueur est une grille quotidienne indépendante, avec sa propre
-  // entrée de stockage. On persiste donc le BOARD, pas le WordleState entier.
+  // Each length is an independent daily puzzle with its own storage entry, so we
+  // persist the BOARD, not the whole WordleState.
   const puzzleId = `wordle-${board.length}` as PuzzleId;
-  // La reprise est gérée par le hook, qui la tranche PAR grille : le joueur peut
-  // ouvrir l'onglet 7 lettres bien après avoir chargé la page.
+  // The hook owns the resume and settles it PER puzzle: the player can open the
+  // 7-letter tab long after the page loaded.
   const restaurer = useCallback(
     (b: BoardState) => dispatch({ type: "RESTORE_BOARD", board: b }),
     [],
@@ -68,7 +68,7 @@ export default function WordleGame({ data }: { data: WordleData }) {
     savable: board.mode === "daily" && board.status === "playing",
   });
 
-  // Enregistrement du résultat dès qu'une grille quotidienne se termine.
+  // Records the result as soon as a daily puzzle finishes.
   useEffect(() => {
     if (board.mode !== "daily" || board.status === "playing" || done) return;
     commit({
@@ -83,8 +83,8 @@ export default function WordleGame({ data }: { data: WordleData }) {
     });
   }, [board, done, commit]);
 
-  // Highlight de press : on illumine brièvement la touche correspondant au dernier
-  // caractère produit (frappe physique OU clic). État purement visuel, hors reducer.
+  // Press highlight: briefly lights the key matching the last character produced
+  // (physical typing OR click). Purely visual state, outside the reducer.
   const [flashKey, setFlashKey] = useState<string | null>(null);
   const flashTimer = useRef<number | null>(null);
   function flash(label: string) {
@@ -93,8 +93,8 @@ export default function WordleGame({ data }: { data: WordleData }) {
     flashTimer.current = window.setTimeout(() => setFlashKey(null), 150);
   }
 
-  // Handlers uniques partagés par le clavier physique et le clavier visuel (DRY) :
-  // chaque saisie illumine la touche puis dispatche l'action.
+  // Single set of handlers shared by the physical and on-screen keyboards (DRY):
+  // each input lights the key then dispatches the action.
   function input(char: string) {
     flash(char.toUpperCase());
     dispatch({ type: "KEY_INPUT", char });
@@ -108,9 +108,9 @@ export default function WordleGame({ data }: { data: WordleData }) {
     dispatch({ type: "DELETE" });
   }
 
-  // Clavier physique : event.key rend le caractère réellement produit, donc la
-  // saisie marche quel que soit le layout physique (QWERTY/AZERTY/…). On lie une
-  // seule fois ; les handlers n'utilisent que des références stables (dispatch, refs).
+  // Physical keyboard: event.key gives the character actually produced, so input
+  // works whatever the physical layout (QWERTY/AZERTY/…). Bound once; the handlers
+  // only use stable references (dispatch, refs).
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Enter") submit();
@@ -122,20 +122,20 @@ export default function WordleGame({ data }: { data: WordleData }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // `invalid` déclenche le shake ; on le remet à zéro une fois l'animation finie.
+  // `invalid` triggers the shake; it is cleared once the animation is done.
   useEffect(() => {
     if (!board.invalid) return;
     const id = setTimeout(() => dispatch({ type: "CLEAR_INVALID" }), 400);
     return () => clearTimeout(id);
   }, [board.invalid]);
 
-  // Modale d'aide (règles du jeu).
+  // Help modal (game rules).
   const [helpOpen, setHelpOpen] = useState(false);
 
-  // Pop-up d'indice : on affiche brièvement la DERNIÈRE lettre indicée en overlay.
-  // On mémorise la longueur précédente de hintedChars pour ne déclencher que sur
-  // un vrai AJOUT — pas au premier rendu ni lors d'un changement d'onglet (où le
-  // board actif peut déjà avoir des indices).
+  // Hint popup: briefly shows the LAST hinted letter as an overlay. We remember
+  // the previous length of hintedChars so it only fires on a real ADDITION — not
+  // on the first render, nor on a tab switch (where the active board may already
+  // carry hints).
   const [hintPop, setHintPop] = useState<string | null>(null);
   const prevHintCount = useRef(board.hintedChars.length);
   useEffect(() => {
@@ -146,25 +146,25 @@ export default function WordleGame({ data }: { data: WordleData }) {
       prevHintCount.current = count;
       return () => clearTimeout(id);
     }
-    // Resynchronise sans pop-up (ex. changement d'onglet, REPLAY qui remet à zéro).
+    // Resync without a popup (e.g. tab switch, or PRACTICE resetting the board).
     prevHintCount.current = count;
   }, [board.hintedChars]);
 
-  // Le clavier reflète aussi les caractères indicés (marqués "present").
+  // The keyboard also reflects hinted characters (marked "present").
   const keyStates = deriveKeyStates(
     board.guesses,
     board.evaluations,
     board.hintedChars,
   );
 
-  // Actions annexes regroupées dans le menu « Options ».
+  // Side actions gathered in the "Options" menu.
   const menuItems: GameMenuItem[] = [
     {
       id: "hint",
       label: menu("hint"),
       icon: "hint",
-      // Le plafond est appliqué par le reducer ; sans ces deux lignes le bouton
-      // restait allumé au-delà et ne faisait plus rien.
+      // The cap is enforced by the reducer; without these two lines the button
+      // stayed lit past the limit and silently did nothing.
       note: `${board.hintedChars.length}/${MAX_HINTS}`,
       disabled:
         board.status !== "playing" ||
@@ -194,13 +194,13 @@ export default function WordleGame({ data }: { data: WordleData }) {
         active={state.activeLength}
         onSelect={(length) => dispatch({ type: "SELECT_LENGTH", length })}
       />
-      {/* key={activeLength} : remonte le sous-arbre au changement d'onglet, ce qui
-          rejoue l'animation d'entrée (transition de tab). */}
+      {/* key={activeLength}: remounts the subtree on a tab switch, which replays
+          the entry animation. */}
       <div
         key={state.activeLength}
         className="flex w-full animate-[wordle-tab_0.25s_ease] flex-col items-center gap-5"
       >
-        {/* Menu d'actions annexes, aligné à droite juste au-dessus du board. */}
+        {/* Side-action menu, right-aligned just above the board. */}
         <div className="flex w-full justify-end">
           <GameMenu items={menuItems} />
         </div>
@@ -219,7 +219,7 @@ export default function WordleGame({ data }: { data: WordleData }) {
         onDelete={del}
       />
 
-      {/* Pop-up d'indice : grosse tuile dorée centrée, disparaît après ~1,1 s. */}
+      {/* Hint popup: large centred golden tile, fades after ~1.1s. */}
       {hintPop && (
         <div className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center">
           <div className="cs2-display animate-[hint-pop_1.1s_ease_forwards] rounded-xl bg-[var(--wordle-present)] px-8 py-6 text-6xl font-extrabold text-black">

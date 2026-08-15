@@ -184,15 +184,15 @@ describe("reducer", () => {
 
 describe("hintCandidates", () => {
   it("exclut les caractères déjà present/correct au clavier et déjà indicés", () => {
-    // Essai DOG contre CAT : rien de la cible n'est révélé (D,O,G absents).
-    // On indice C. Restent alors A et T comme candidats (C exclu car indicé).
+    // Guess DOG against CAT: nothing of the target is revealed (D,O,G absent).
+    // We hint C. A and T then remain as candidates (C excluded, being hinted).
     const b = board("CAT", { hintedChars: ["C"] });
     expect(hintCandidates(b).sort()).toEqual(["A", "T"]);
   });
 
   it("exclut un caractère révélé present/correct par un essai", () => {
-    // Essai BAT contre CAT : A et T révélés (A present/correct, T correct).
-    // Seul C reste caché.
+    // Guess BAT against CAT: A and T revealed (A present/correct, T correct).
+    // Only C stays hidden.
     const b = board("CAT", {
       guesses: ["BAT"],
       evaluations: [evaluateGuess("BAT", "CAT")],
@@ -214,12 +214,12 @@ describe("reducer HINT / GIVE_UP", () => {
   });
 
   it("HINT ne duplique jamais un caractère déjà indicé", () => {
-    // C déjà indicé ; on force le tirage sur le premier candidat restant.
+    // C already hinted; we force the draw onto the first remaining candidate.
     vi.spyOn(Math, "random").mockReturnValue(0);
     const start = stateOf(board("CAT", { hintedChars: ["C"] }));
     const s = reducer(start, { type: "HINT" });
-    // C reste dans la liste (déjà indicé), un nouveau caractère est ajouté,
-    // et aucun doublon n'apparaît.
+    // C stays in the list (already hinted), a new character is added,
+    // and no duplicate appears.
     expect(s.boards[3].hintedChars).toContain("C");
     expect(s.boards[3].hintedChars).toHaveLength(2);
     expect(new Set(s.boards[3].hintedChars).size).toBe(

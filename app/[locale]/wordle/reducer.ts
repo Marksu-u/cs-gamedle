@@ -25,7 +25,7 @@ export type WordleAction =
   | { type: "HINT" }
   | { type: "GIVE_UP" };
 
-// Caractères de la cible encore "cachés" : ni present/correct au clavier, ni déjà indicés.
+// Target characters still "hidden": neither present/correct on the keyboard, nor already hinted.
 export function hintCandidates(board: BoardState): string[] {
   const revealed = deriveKeyStates(
     board.guesses,
@@ -38,8 +38,8 @@ export function hintCandidates(board: BoardState): string[] {
   });
 }
 
-// Crée un board neuf. En mode « daily » la cible vient de la rotation ; en
-// « practice » elle est tirée au hasard, en évitant le mot du jour.
+// Creates a fresh board. In "daily" mode the target comes from the rotation; in
+// "practice" it is drawn at random, avoiding the word of the day.
 export function createBoard(
   data: WordleData,
   length: number,
@@ -75,13 +75,13 @@ export function createInitialState(
   };
 }
 
-// Helper d'immutabilité : remplace le board d'une longueur sans toucher aux autres.
+// Immutability helper: replaces the board for one length without touching the others.
 function withBoard(state: WordleState, b: BoardState): WordleState {
   return { ...state, boards: { ...state.boards, [b.length]: b } };
 }
 
-// Factory : le reducer est fermé sur `data` + le jour. Il reste pur (déterministe
-// à `data`/`day` près) et testable, tout en gardant le tirage aléatoire des mots
+// Factory: the reducer closes over `data` + the day. It stays pure (deterministic
+// given `data`/`day`) and testable, while keeping the random word draw
 // hors des composants.
 export function createWordleReducer(data: WordleData, day: number) {
   return function reducer(
@@ -92,7 +92,7 @@ export function createWordleReducer(data: WordleData, day: number) {
 
     switch (action.type) {
       case "SELECT_LENGTH": {
-        // Crée le board à la première visite de l'onglet ; sinon conserve son état.
+        // Creates the board on the tab's first visit; otherwise keeps its state.
         const boards = state.boards[action.length]
           ? state.boards
           : {
@@ -120,7 +120,7 @@ export function createWordleReducer(data: WordleData, day: number) {
 
       case "SUBMIT": {
         if (board.status !== "playing") return state;
-        // Refus (→ shake, pas de consommation d'essai) si incomplet ou pseudo inconnu.
+        // Rejected (→ shake, no try consumed) if incomplete or an unknown tag.
         if (
           board.current.length < board.length ||
           !isValidGuess(getGroup(data, board.length), board.current)
@@ -160,7 +160,7 @@ export function createWordleReducer(data: WordleData, day: number) {
 
       case "HINT": {
         if (board.status !== "playing") return state;
-        if (board.hintedChars.length >= MAX_HINTS) return state; // plafond
+        if (board.hintedChars.length >= MAX_HINTS) return state; // cap
         const candidates = hintCandidates(board);
         if (candidates.length === 0) return state;
         const ch = candidates[Math.floor(Math.random() * candidates.length)];

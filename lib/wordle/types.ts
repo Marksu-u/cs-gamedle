@@ -1,18 +1,18 @@
-// Types partagés du Wordle. Volontairement génériques (pas spécifiques à CS2)
-// pour rester réutilisables sur un autre univers.
+// Shared Wordle types. Deliberately generic (not CS2-specific) so they stay
+// reusable for another universe.
 
-// État d'une tuile après évaluation. "empty" = case non encore jouée.
+// State of a tile after evaluation. "empty" = not played yet.
 export type TileState = "correct" | "present" | "absent" | "empty";
 
-// État d'une touche du clavier (agrégé sur tous les essais). "unused" = jamais tapée.
+// State of a keyboard key (aggregated over every guess). "unused" = never typed.
 export type KeyState = "correct" | "present" | "absent" | "unused";
 
 export type GameStatus = "playing" | "won" | "lost";
 
-// Forme du JSON de données (app/data/<jeu>/wordle.json).
+// Shape of the data JSON (app/data/<game>/wordle.json).
 export type WordleData = { game: string; words: Record<string, string[]> };
 
-// État d'une grille (un board par longueur de mot).
+// State of one board (one board per word length).
 export type BoardState = {
   target: string;
   length: number;
@@ -26,7 +26,7 @@ export type BoardState = {
   day: number; // jour sous lequel la cible a été tirée
 };
 
-// État global : tous les boards + l'onglet actif.
+// Global state: every board plus the active tab.
 export type WordleState = {
   activeLength: number;
   boards: Record<number, BoardState>;

@@ -47,14 +47,13 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
 
   const [helpOpen, setHelpOpen] = useState(false);
 
-  // Noms déjà proposés → dérivés des lignes guess uniquement.
+  // Names already guessed → derived from guess rows only.
   const guessedNames = state.rows.flatMap((r) =>
     r.kind === "guess" ? [r.result.player.name] : [],
   );
   const hintsUsed = state.rows.filter((r) => r.kind === "hint").length;
-  // Les lignes d'indice ne sont pas des essais : les compter faisait afficher
-  // « trouvé en 5 essais » pour 3 propositions et 2 indices, alors que le calcul
-  // des points, lui, n'en comptait bien que 3.
+  // Hint rows are not tries: counting them displayed "found in 5 tries" for 3
+  // guesses and 2 hints, while the points calculation correctly counted 3.
   const guessCount = guessedNames.length;
 
   const menuItems: GameMenuItem[] = [

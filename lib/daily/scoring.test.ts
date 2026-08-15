@@ -23,19 +23,19 @@ describe("wordlePoints", () => {
     },
   );
 
-  it("rend 0 si la grille est perdue", () => {
+  it("returns 0 when the puzzle is lost", () => {
     expect(wordlePoints({ length: 8, attempt: 1, hints: 0, won: false })).toBe(
       0,
     );
   });
 
-  it("récompense les mots longs à performance égale", () => {
+  it("rewards longer words at equal performance", () => {
     const court = wordlePoints({ length: 3, attempt: 2, hints: 0, won: true });
     const long = wordlePoints({ length: 8, attempt: 2, hints: 0, won: true });
     expect(long).toBeGreaterThan(court);
   });
 
-  it("pénalise chaque indice", () => {
+  it("penalises each hint", () => {
     const sans = wordlePoints({ length: 5, attempt: 2, hints: 0, won: true });
     const avec = wordlePoints({ length: 5, attempt: 2, hints: 1, won: true });
     expect(avec).toBeLessThan(sans);
@@ -51,27 +51,27 @@ describe("guessrPoints", () => {
     expect(guessrPoints({ guesses, hints, won: true })).toBe(expected);
   });
 
-  it("ne descend jamais sous le plancher de 40", () => {
+  it("never drops below the floor of 40", () => {
     expect(guessrPoints({ guesses: 200, hints: 4, won: true })).toBe(40);
   });
 
-  it("rend 0 en cas d'abandon", () => {
+  it("returns 0 on giving up", () => {
     expect(guessrPoints({ guesses: 3, hints: 0, won: false })).toBe(0);
   });
 });
 
 describe("molPoints", () => {
-  it("rend 14 points par bonne réponse", () => {
+  it("returns 14 points per correct answer", () => {
     expect(molPoints(0)).toBe(0);
     expect(molPoints(1)).toBe(14);
     expect(molPoints(7)).toBe(98);
   });
 
-  it("ajoute 40 de bonus pour un sans-faute", () => {
+  it("adds a 40-point bonus for a perfect run", () => {
     expect(molPoints(10)).toBe(180);
   });
 
-  it("ne donne pas le bonus à 9 bonnes réponses", () => {
+  it("does not grant the bonus at 9 correct answers", () => {
     expect(molPoints(9)).toBe(126);
   });
 });
@@ -91,11 +91,11 @@ describe("streakMultiplier", () => {
     [59, 2],
     [60, 2.5],
     [365, 2.5],
-  ])("série de %i jours → ×%s", (streak, expected) => {
+  ])("streak of %i days → ×%s", (streak, expected) => {
     expect(streakMultiplier(streak)).toBe(expected);
   });
 
-  it("ne décroît jamais quand la série grandit", () => {
+  it("never decreases as the streak grows", () => {
     for (let s = 1; s < 200; s++) {
       expect(streakMultiplier(s)).toBeGreaterThanOrEqual(
         streakMultiplier(s - 1),
@@ -104,8 +104,8 @@ describe("streakMultiplier", () => {
   });
 });
 
-describe("équilibrage global", () => {
-  it("vaut 1400 — 840 Wordle + 200 Guessr + 360 More or Lessr", () => {
+describe("overall balance", () => {
+  it("is 1400 — 840 Wordle + 200 Guessr + 360 More or Lessr", () => {
     const wordle = [3, 4, 5, 6, 7, 8].reduce(
       (t, len) =>
         t + wordlePoints({ length: len, attempt: 1, hints: 0, won: true }),
@@ -114,8 +114,8 @@ describe("équilibrage global", () => {
     expect(wordle).toBe(840);
     expect(guessrPoints({ guesses: 1, hints: 0, won: true })).toBe(200);
     expect(molPoints(10) * 2).toBe(360);
-    // 840 + 200 + 360 : le total d'une journée parfaite. Il n'existe que sous
-    // forme d'assertion — aucun écran ne l'affiche, donc pas de constante.
+    // 840 + 200 + 360: the total of a perfect day. It exists only as an
+    // assertion — no screen displays it, so there is no constant.
     expect(
       wordle +
         guessrPoints({ guesses: 1, hints: 0, won: true }) +

@@ -26,7 +26,7 @@ export default function GuessInput({
     [guessedNames],
   );
 
-  // Suggestions : noms du pool contenant la saisie, non encore proposés, max 6.
+  // Suggestions: pool names containing the input, not yet guessed, max 6.
   const suggestions = useMemo(() => {
     const q = norm(query);
     if (!q) return [];

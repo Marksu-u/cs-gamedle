@@ -1,7 +1,7 @@
-// Types de la couche quotidienne, partagés par les trois jeux.
+// Types for the daily layer, shared by all three games.
 
-// Identifiant stable d'une grille quotidienne. Sert de clé de flux pour le
-// tirage ET de clé de progression dans le stockage — les deux doivent coïncider.
+// Stable id for a daily puzzle. Doubles as the stream key for the draw AND the
+// progress key in storage — the two must line up.
 export type PuzzleId =
   | "wordle-3"
   | "wordle-4"
@@ -13,33 +13,33 @@ export type PuzzleId =
   | "mol-rating"
   | "mol-prize";
 
-// Une grille est soit en cours, soit terminée (gagnée ou perdue). L'abandon
-// compte comme terminé : la journée est jouée, les points valent 0.
+// A puzzle is either in progress or finished (won or lost). Giving up counts as
+// finished: the day is played, the points are 0.
 export type PuzzleStatus = "playing" | "won" | "lost";
 
-// Progression d'une grille du jour. `state` est l'état de jeu sérialisé du
-// reducer concerné — opaque ici, chaque jeu sait relire le sien.
+// Progress of one daily puzzle. `state` is the serialised game state of the
+// matching reducer — opaque here, each game knows how to read its own.
 export type PuzzleProgress = {
   status: PuzzleStatus;
-  points: number; // points bruts, avant multiplicateur ; 0 tant que status === "playing"
-  state: unknown; // état du reducer, pour reprendre après un rafraîchissement
+  points: number; // raw points, before the multiplier; 0 while status === "playing"
+  state: unknown; // reducer state, so a refresh can resume
 };
 
-// Ce qui survit à la rotation.
+// What survives the rollover.
 export type Meta = {
   streak: number;
-  lastPlayedDay: number; // dayIndex du dernier jour avec >= 1 grille terminée ; -1 si jamais joué
-  runScore: number; // score courant, remis à zéro si un jour est manqué
-  recordScore: number; // meilleur runScore jamais atteint, jamais remis à zéro
+  lastPlayedDay: number; // dayIndex of the last day with >= 1 finished puzzle; -1 if never played
+  runScore: number; // current run, reset to zero when a day is missed
+  recordScore: number; // best runScore ever reached, never reset
 };
 
-// Ce qui est jeté à chaque rotation.
+// What is discarded on every rollover.
 export type Progress = {
   day: number;
   puzzles: Partial<Record<PuzzleId, PuzzleProgress>>;
 };
 
-// La forme complète écrite dans localStorage.
+// The complete shape written to localStorage.
 export type Persisted = {
   version: 1;
   meta: Meta;

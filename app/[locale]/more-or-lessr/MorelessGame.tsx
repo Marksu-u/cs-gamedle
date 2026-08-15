@@ -13,25 +13,25 @@ import type { PuzzleId } from "@/lib/daily/types";
 import type { GameState, MorelessData } from "@/lib/more-or-lessr/types";
 import { createInitialState, createMorelessReducer } from "./reducer";
 
-const REVEAL_MS = 1400; // temps d'affichage du résultat avant le round suivant
+const REVEAL_MS = 1400; // how long the result stays up before the next round
 
 export default function MorelessGame({ data }: { data: MorelessData }) {
   const t = useTranslations("moreOrLessr");
   const menu = useTranslations("menu");
   const game = useTranslations("game");
   const day = useDay();
-  // Reducer mémoïsé : fermé sur `data` + le jour (fige la grille du jour pour la session).
+  // Memoised reducer: closes over `data` + the day (freezes today's puzzle for the session).
   const reducer = useMemo(() => createMorelessReducer(data, day), [data, day]);
   const [state, dispatch] = useReducer(reducer, undefined, () =>
     createInitialState(day),
   );
 
-  // La catégorie choisie détermine la grille quotidienne concernée.
+  // The chosen category determines which daily puzzle this is.
   const puzzleId = (
     state.category ? `mol-${state.category}` : "mol-rating"
   ) as PuzzleId;
-  // La reprise est tranchée PAR catégorie par le hook : passer de « rating » à
-  // « prize » doit restaurer la manche de prize, pas repartir de zéro.
+  // The hook settles the resume PER category: switching from "rating" to "prize"
+  // must restore the prize run, not start it over.
   const restaurer = useCallback(
     (s: GameState) => dispatch({ type: "RESTORE", state: s }),
     [],
@@ -53,7 +53,7 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
 
   const [helpOpen, setHelpOpen] = useState(false);
 
-  // Après un choix (status "revealed"), on laisse voir le résultat puis on avance.
+  // After a choice (status "revealed"), let the result show then move on.
   useEffect(() => {
     if (state.status !== "revealed") return;
     const id = setTimeout(() => dispatch({ type: "NEXT" }), REVEAL_MS);

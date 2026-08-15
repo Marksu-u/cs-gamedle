@@ -1,6 +1,6 @@
-// Pays (tel qu'écrit dans le JSON des pools) → emoji drapeau. Fallback 🌍 si
-// absent — mais `guessr_players.test.ts` refuse ce fallback, donc toute nation
-// ajoutée à un pool doit d'abord apparaître ici.
+// Country (as written in the pool JSON) → flag emoji. Falls back to 🌍 when
+// missing — but `guessr_players.test.ts` rejects that fallback, so any nation
+// added to a pool must appear here first.
 const NATION_TO_FLAG: Record<string, string> = {
   France: "🇫🇷",
   Ukraine: "🇺🇦",

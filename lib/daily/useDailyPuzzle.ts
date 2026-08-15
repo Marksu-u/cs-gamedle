@@ -1,8 +1,8 @@
 "use client";
 
-// Plomberie commune aux trois jeux : le jour courant, la reprise après
-// rafraîchissement, et l'enregistrement du résultat. Les jeux ne parlent jamais
-// directement au stockage — uniquement à ce hook.
+// Plumbing shared by all three games: the current day, resume-after-refresh, and
+// recording the result. The games never talk to storage directly — only to this
+// hook.
 
 import { useCallback, useEffect, useRef } from "react";
 import { useState } from "react";
@@ -11,11 +11,10 @@ import { dailyStore, useDailyState, useHydrated } from "./store";
 import type { PuzzleId, PuzzleProgress } from "./types";
 
 export function useDay(): number {
-  // Figé pour la durée du montage : une bascule en cours de partie est traitée
-  // à la validation du résultat (cf. commitPuzzle), pas par un re-rendu.
-  // L'initialiseur paresseux de `useState` n'est exécuté qu'au premier rendu,
-  // ce qui fige la valeur sans passer par un ref (interdit en lecture pendant
-  // le rendu par la règle `react-hooks/refs`).
+  // Frozen for the lifetime of the mount: a rollover mid-game is handled when the
+  // result is committed (see commitPuzzle), not by a re-render. `useState`'s lazy
+  // initialiser runs only on the first render, which freezes the value without a
+  // ref — reading one during render is forbidden by the `react-hooks/refs` rule.
   const [day] = useState(() => dayIndex());
   return day;
 }
@@ -28,22 +27,20 @@ type Options<S> = {
   savable: boolean; // partie en cours ET quotidienne
 };
 
-// Reprise et sauvegarde d'une grille du jour, dans UN SEUL effet.
+// Resume and save for a daily puzzle, in ONE single effect.
 //
-// Les deux tiennent dans le même effet parce que leur ORDRE est le bug. Au
-// premier rendu client, `useSyncExternalStore` rend encore l'instantané SERVEUR
-// — un stockage vide. Séparés en deux effets, la reprise ne voit donc rien à
-// restaurer, tandis que la sauvegarde, elle, s'exécute aussitôt et écrit la
-// grille vierge par-dessus la partie enregistrée : elle est perdue avant même
-// que le vrai stockage n'ait été lu.
+// They belong in the same effect because their ORDER is the bug. On the first
+// client render `useSyncExternalStore` still returns the SERVER snapshot — an
+// empty store. Split into two effects, the resume therefore finds nothing to
+// restore while the save runs in the same commit and writes the pristine board
+// over the saved game: it is lost before the real store has even been read.
 //
-// Ce n'était pas qu'une perte de progression : le compteur d'essais repartant
-// de zéro, un simple rafraîchissement redonnait le score maximal sur une grille
-// déjà à moitié jouée.
+// This was not just lost progress: with the attempt counter back at zero, a
+// simple refresh handed back full points on a half-played puzzle.
 //
-// Ici, la première passe pour une grille donnée tranche la reprise et REND LA
-// MAIN sans écrire. La passe suivante — déclenchée par le changement d'état que
-// la reprise vient de provoquer — sauvegarde l'état restauré.
+// Here the first pass for a given puzzle settles the resume and RETURNS without
+// writing. The next pass — triggered by the state change the resume just caused
+// — saves the restored state.
 export function useDailyPuzzle<S>({
   id,
   day,
@@ -59,24 +56,23 @@ export function useDailyPuzzle<S>({
       : undefined;
   const saved = entry?.state as S | undefined;
 
-  // `useCallback` n'est PAS cosmétique ici. `save` et `commit` sont des
-  // dépendances d'effets qui écrivent dans le store ; le store notifie, le
-  // composant se re-rend. Sans identité stable, l'effet se redéclencherait à
-  // chaque rendu et boucherait à l'infini.
+  // `useCallback` is NOT cosmetic here. `save` and `commit` are effect
+  // dependencies whose bodies write to the store; the store notifies, the
+  // component re-renders. Without a stable identity the effect would re-fire on
+  // every render and loop forever.
   const save = useCallback(
     (gameState: S) => dailyStore.saveProgress(day, id, gameState),
     [day, id],
   );
-  // `day` est le jour du TIRAGE. Le store relit l'horloge au moment de
-  // l'écriture : c'est l'écart entre les deux qui fait exister le garde-fou
-  // « bascule pendant la partie ».
+  // `day` is the DRAW day. The store re-reads the clock at write time: the gap
+  // between the two is what makes the "rollover mid-game" guard exist.
   const commit = useCallback(
     (result: PuzzleProgress) => dailyStore.commit(day, id, result),
     [day, id],
   );
 
-  // Dernière grille dont la reprise a été tranchée. Un ref, pas un état : on ne
-  // le lit que dans l'effet, et le modifier ne doit pas provoquer de rendu.
+  // Last puzzle whose resume has been settled. A ref, not state: it is only read
+  // inside the effect, and changing it must not trigger a render.
   const repriseTranchee = useRef<PuzzleId | null>(null);
 
   useEffect(() => {
@@ -86,7 +82,7 @@ export function useDailyPuzzle<S>({
       repriseTranchee.current = id;
       if (saved !== undefined) {
         onRestore(saved);
-        return; // surtout pas de sauvegarde avant que la reprise ait atterri
+        return; // never save before the resume has landed
       }
     }
 
@@ -94,7 +90,7 @@ export function useDailyPuzzle<S>({
   }, [hydrated, id, saved, onRestore, savable, state, save]);
 
   return {
-    // La grille du jour est-elle déjà terminée ?
+    // Is today's puzzle already finished?
     done: entry !== undefined && entry.status !== "playing",
     points: entry?.points ?? 0,
     commit,

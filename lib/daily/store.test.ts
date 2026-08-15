@@ -4,9 +4,9 @@ import { dayIndex } from "./clock";
 import { dailyStore, useDailyState } from "./store";
 import { EMPTY_PERSISTED, STORAGE_KEY } from "./types";
 
-// Le store lit l'horloge lui-même : les tests doivent donc parler du VRAI jour
-// courant, pas d'un numéro arbitraire.
-const aujourdhui = () => dayIndex();
+// The store reads the clock itself, so the tests must speak in terms of the REAL
+// current day, not an arbitrary number.
+const today = () => dayIndex();
 
 describe("dailyStore", () => {
   beforeEach(() => {
@@ -14,28 +14,28 @@ describe("dailyStore", () => {
     dailyStore.reset();
   });
 
-  it("part d'un état neuf", () => {
+  it("starts from a fresh state", () => {
     expect(dailyStore.getSnapshot().meta).toEqual(EMPTY_PERSISTED.meta);
   });
 
-  it("le snapshot serveur est stable (pas de boucle de rendu)", () => {
+  it("the server snapshot is stable (no render loop)", () => {
     expect(dailyStore.getServerSnapshot()).toBe(dailyStore.getServerSnapshot());
   });
 
-  it("notifie les abonnés à chaque écriture", () => {
-    let appels = 0;
-    const desabonner = dailyStore.subscribe(() => appels++);
-    dailyStore.commit(aujourdhui(), "guessr", {
+  it("notifies subscribers on every write", () => {
+    let calls = 0;
+    const unsubscribe = dailyStore.subscribe(() => calls++);
+    dailyStore.commit(today(), "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
-    expect(appels).toBe(1);
-    desabonner();
+    expect(calls).toBe(1);
+    unsubscribe();
   });
 
-  it("écrit dans localStorage", () => {
-    dailyStore.commit(aujourdhui(), "guessr", {
+  it("writes to localStorage", () => {
+    dailyStore.commit(today(), "guessr", {
       status: "won",
       points: 200,
       state: null,
@@ -43,14 +43,14 @@ describe("dailyStore", () => {
     expect(localStorage.getItem(STORAGE_KEY)).toContain('"streak":1');
   });
 
-  it("rend un snapshot stable tant que rien ne change", () => {
+  it("returns a stable snapshot while nothing changes", () => {
     const a = dailyStore.getSnapshot();
     expect(dailyStore.getSnapshot()).toBe(a);
   });
 
-  it("rend un nouveau snapshot après une écriture", () => {
+  it("returns a new snapshot after a write", () => {
     const a = dailyStore.getSnapshot();
-    dailyStore.commit(aujourdhui(), "guessr", {
+    dailyStore.commit(today(), "guessr", {
       status: "won",
       points: 200,
       state: null,
@@ -58,11 +58,11 @@ describe("dailyStore", () => {
     expect(dailyStore.getSnapshot()).not.toBe(a);
   });
 
-  it("écarte un résultat tiré sous un autre jour", () => {
-    // C'est tout l'intérêt de laisser le store lire l'horloge : si l'appelant
-    // fournissait aussi le jour courant, il passerait la même valeur des deux
-    // côtés et le garde-fou ne se déclencherait jamais.
-    dailyStore.commit(aujourdhui() - 1, "guessr", {
+  it("discards a result drawn under a different day", () => {
+    // This is the whole point of letting the store read the clock: if the caller
+    // supplied the current day too, it would pass the same value on both sides
+    // and the guard would never fire.
+    dailyStore.commit(today() - 1, "guessr", {
       status: "won",
       points: 200,
       state: null,
@@ -71,74 +71,74 @@ describe("dailyStore", () => {
     expect(dailyStore.getSnapshot().meta.runScore).toBe(0);
   });
 
-  it("sauvegarde puis relit la progression d'une grille en cours", () => {
-    const jour = aujourdhui();
-    dailyStore.saveProgress(jour, "wordle-5", { guesses: ["ZYWOO"] });
+  it("saves then reads back the progress of an in-flight puzzle", () => {
+    const day = today();
+    dailyStore.saveProgress(day, "wordle-5", { guesses: ["ZYWOO"] });
     const p = dailyStore.getSnapshot().progress;
-    expect(p?.day).toBe(jour);
+    expect(p?.day).toBe(day);
     expect(p?.puzzles["wordle-5"]?.state).toEqual({ guesses: ["ZYWOO"] });
     expect(dailyStore.getSnapshot().meta.streak).toBe(0);
   });
 });
 
-describe("dailyStore — plusieurs onglets", () => {
+describe("dailyStore — multiple tabs", () => {
   beforeEach(() => {
     localStorage.clear();
     dailyStore.reset();
   });
 
-  it("n'écrase pas la grille terminée par un autre onglet", () => {
-    const jour = aujourdhui();
-    // Cet onglet a chargé son instantané…
+  it("does not erase a puzzle finished in another tab", () => {
+    const day = today();
+    // This tab has loaded its snapshot…
     dailyStore.getSnapshot();
-    // …puis un AUTRE onglet termine une grille et écrit dans le stockage.
+    // …then ANOTHER tab finishes a puzzle and writes to storage.
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
         version: 1,
         meta: {
           streak: 1,
-          lastPlayedDay: jour,
+          lastPlayedDay: day,
           runScore: 110,
           recordScore: 110,
         },
         progress: {
-          day: jour,
+          day: day,
           puzzles: {
             "wordle-5": { status: "won", points: 110, state: null },
           },
         },
       }),
     );
-    // Cet onglet termine ensuite une AUTRE grille.
-    dailyStore.commit(jour, "guessr", {
+    // This tab then finishes a DIFFERENT puzzle.
+    dailyStore.commit(day, "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
 
-    const apres = dailyStore.getSnapshot();
-    // Les deux grilles doivent coexister, et les deux scores s'additionner.
-    expect(Object.keys(apres.progress?.puzzles ?? {}).sort()).toEqual([
+    const after = dailyStore.getSnapshot();
+    // Both puzzles must coexist, and both scores must add up.
+    expect(Object.keys(after.progress?.puzzles ?? {}).sort()).toEqual([
       "guessr",
       "wordle-5",
     ]);
-    expect(apres.meta.runScore).toBe(310);
+    expect(after.meta.runScore).toBe(310);
   });
 
-  it("ne laisse pas re-marquer une grille terminée dans un autre onglet", () => {
-    const jour = aujourdhui();
+  it("does not let a puzzle finished in another tab be re-scored", () => {
+    const day = today();
     dailyStore.getSnapshot();
-    dailyStore.commit(jour, "guessr", {
+    dailyStore.commit(day, "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
     const score = dailyStore.getSnapshot().meta.runScore;
 
-    // Un autre onglet réécrit le document (sans le Guessr qu'il ne connaît pas
-    // encore) : après relecture, le Guessr reste marqué comme terminé ici.
-    dailyStore.commit(jour, "guessr", {
+    // Another tab rewrites the document (without the Guessr it does not know
+    // about yet): after the re-read, Guessr stays marked finished here.
+    dailyStore.commit(day, "guessr", {
       status: "won",
       points: 200,
       state: null,
@@ -153,11 +153,11 @@ describe("useDailyState", () => {
     dailyStore.reset();
   });
 
-  it("rend l'état courant et se met à jour", () => {
+  it("returns the current state and updates", () => {
     const { result } = renderHook(() => useDailyState());
     expect(result.current.meta.streak).toBe(0);
     act(() => {
-      dailyStore.commit(aujourdhui(), "guessr", {
+      dailyStore.commit(today(), "guessr", {
         status: "won",
         points: 200,
         state: null,

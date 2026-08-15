@@ -11,32 +11,32 @@ const persisted = (
   progress,
 });
 
-describe("reconcile — la série", () => {
-  it("laisse tout en place si on a déjà joué aujourd'hui", () => {
-    const avant = persisted({ streak: 5, lastPlayedDay: 100, runScore: 900 });
-    expect(reconcile(avant, 100).meta).toEqual(avant.meta);
+describe("reconcile — the streak", () => {
+  it("leaves everything alone when today was already played", () => {
+    const before = persisted({ streak: 5, lastPlayedDay: 100, runScore: 900 });
+    expect(reconcile(before, 100).meta).toEqual(before.meta);
   });
 
-  it("laisse la série intacte au lendemain, avant d'avoir joué", () => {
-    const apres = reconcile(
+  it("leaves the streak intact the next day, before playing", () => {
+    const after = reconcile(
       persisted({ streak: 5, lastPlayedDay: 100, runScore: 900 }),
       101,
     );
-    expect(apres.meta.streak).toBe(5);
-    expect(apres.meta.runScore).toBe(900);
+    expect(after.meta.streak).toBe(5);
+    expect(after.meta.runScore).toBe(900);
   });
 
-  it("casse la série et le score courant si un jour est manqué", () => {
-    const apres = reconcile(
+  it("breaks the streak and the run score when a day is missed", () => {
+    const after = reconcile(
       persisted({ streak: 5, lastPlayedDay: 100, runScore: 900 }),
       102,
     );
-    expect(apres.meta.streak).toBe(0);
-    expect(apres.meta.runScore).toBe(0);
+    expect(after.meta.streak).toBe(0);
+    expect(after.meta.runScore).toBe(0);
   });
 
-  it("préserve le record quand la série casse", () => {
-    const apres = reconcile(
+  it("preserves the record when the streak breaks", () => {
+    const after = reconcile(
       persisted({
         streak: 5,
         lastPlayedDay: 100,
@@ -45,11 +45,11 @@ describe("reconcile — la série", () => {
       }),
       102,
     );
-    expect(apres.meta.recordScore).toBe(900);
+    expect(after.meta.recordScore).toBe(900);
   });
 
-  it("supporte une absence de plusieurs mois", () => {
-    const apres = reconcile(
+  it("survives an absence of several months", () => {
+    const after = reconcile(
       persisted({
         streak: 40,
         lastPlayedDay: 100,
@@ -58,7 +58,7 @@ describe("reconcile — la série", () => {
       }),
       500,
     );
-    expect(apres.meta).toEqual({
+    expect(after.meta).toEqual({
       streak: 0,
       lastPlayedDay: 100,
       runScore: 0,
@@ -66,14 +66,14 @@ describe("reconcile — la série", () => {
     });
   });
 
-  it("ne casse rien pour un joueur qui n'a jamais joué", () => {
+  it("breaks nothing for a player who has never played", () => {
     expect(reconcile(persisted({}), 100).meta).toEqual(EMPTY_META);
   });
 });
 
-describe("reconcile — la progression du jour", () => {
-  it("jette la progression d'un jour révolu", () => {
-    const apres = reconcile(
+describe("reconcile — today's progress", () => {
+  it("discards progress from a past day", () => {
+    const after = reconcile(
       persisted(
         { lastPlayedDay: 100 },
         {
@@ -83,10 +83,10 @@ describe("reconcile — la progression du jour", () => {
       ),
       101,
     );
-    expect(apres.progress).toBeNull();
+    expect(after.progress).toBeNull();
   });
 
-  it("garde la progression du jour courant", () => {
+  it("keeps progress from the current day", () => {
     const progress = {
       day: 101,
       puzzles: { guessr: { status: "won" as const, points: 200, state: null } },
@@ -98,39 +98,39 @@ describe("reconcile — la progression du jour", () => {
 });
 
 describe("commitPuzzle", () => {
-  it("démarre une série à 1 au tout premier résultat", () => {
-    const apres = commitPuzzle(persisted({}), 100, "guessr", {
+  it("starts the streak at 1 on the very first result", () => {
+    const after = commitPuzzle(persisted({}), 100, "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
-    expect(apres.meta.streak).toBe(1);
-    expect(apres.meta.lastPlayedDay).toBe(100);
+    expect(after.meta.streak).toBe(1);
+    expect(after.meta.lastPlayedDay).toBe(100);
   });
 
-  it("applique ×1 au premier jour d'une série", () => {
-    const apres = commitPuzzle(persisted({}), 100, "guessr", {
+  it("applies ×1 on day one of a streak", () => {
+    const after = commitPuzzle(persisted({}), 100, "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
-    expect(apres.meta.runScore).toBe(200);
+    expect(after.meta.runScore).toBe(200);
   });
 
-  it("incrémente la série si la veille a été jouée", () => {
-    const apres = commitPuzzle(
+  it("increments the streak when yesterday was played", () => {
+    const after = commitPuzzle(
       persisted({ streak: 6, lastPlayedDay: 99 }),
       100,
       "guessr",
       { status: "won", points: 200, state: null },
     );
-    expect(apres.meta.streak).toBe(7);
-    // Série de 7 → ×1.5
-    expect(apres.meta.runScore).toBe(300);
+    expect(after.meta.streak).toBe(7);
+    // Streak of 7 → ×1.5
+    expect(after.meta.runScore).toBe(300);
   });
 
-  it("fige le multiplicateur pour les grilles suivantes du même jour", () => {
-    let etat = commitPuzzle(
+  it("freezes the multiplier for later puzzles the same day", () => {
+    let state = commitPuzzle(
       persisted({ streak: 6, lastPlayedDay: 99 }),
       100,
       "guessr",
@@ -140,36 +140,36 @@ describe("commitPuzzle", () => {
         state: null,
       },
     );
-    etat = commitPuzzle(etat, 100, "wordle-5", {
+    state = commitPuzzle(state, 100, "wordle-5", {
       status: "won",
       points: 100,
       state: null,
     });
-    expect(etat.meta.streak).toBe(7); // la série ne rebouge pas dans la journée
-    expect(etat.meta.runScore).toBe(300 + 150); // ×1.5 sur les deux
+    expect(state.meta.streak).toBe(7); // la série ne rebouge pas dans la journée
+    expect(state.meta.runScore).toBe(300 + 150); // ×1.5 sur les deux
   });
 
-  it("compte la journée même si la grille est perdue", () => {
-    const apres = commitPuzzle(persisted({}), 100, "guessr", {
+  it("counts the day even when the puzzle is lost", () => {
+    const after = commitPuzzle(persisted({}), 100, "guessr", {
       status: "lost",
       points: 0,
       state: null,
     });
-    expect(apres.meta.streak).toBe(1);
-    expect(apres.meta.runScore).toBe(0);
+    expect(after.meta.streak).toBe(1);
+    expect(after.meta.runScore).toBe(0);
   });
 
-  it("met le record à jour au fil de l'eau", () => {
-    const apres = commitPuzzle(persisted({ recordScore: 100 }), 100, "guessr", {
+  it("updates the record eagerly", () => {
+    const after = commitPuzzle(persisted({ recordScore: 100 }), 100, "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
-    expect(apres.meta.recordScore).toBe(200);
+    expect(after.meta.recordScore).toBe(200);
   });
 
-  it("ne baisse jamais le record", () => {
-    const apres = commitPuzzle(
+  it("never lowers the record", () => {
+    const after = commitPuzzle(
       persisted({ recordScore: 5000 }),
       100,
       "guessr",
@@ -179,16 +179,16 @@ describe("commitPuzzle", () => {
         state: null,
       },
     );
-    expect(apres.meta.recordScore).toBe(5000);
+    expect(after.meta.recordScore).toBe(5000);
   });
 
-  it("enregistre la progression de la grille", () => {
-    const apres = commitPuzzle(persisted({}), 100, "wordle-5", {
+  it("records the puzzle's progress", () => {
+    const after = commitPuzzle(persisted({}), 100, "wordle-5", {
       status: "won",
       points: 134,
       state: { guesses: ["ZYWOO"] },
     });
-    expect(apres.progress).toEqual({
+    expect(after.progress).toEqual({
       day: 100,
       puzzles: {
         "wordle-5": {
@@ -200,117 +200,117 @@ describe("commitPuzzle", () => {
     });
   });
 
-  it("ne recompte pas une grille déjà terminée le même jour", () => {
-    let etat = commitPuzzle(persisted({}), 100, "guessr", {
+  it("does not re-score a puzzle already finished that day", () => {
+    let state = commitPuzzle(persisted({}), 100, "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
-    const scoreApresPremier = etat.meta.runScore;
-    etat = commitPuzzle(etat, 100, "guessr", {
+    const scoreAfterFirst = state.meta.runScore;
+    state = commitPuzzle(state, 100, "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
-    expect(etat.meta.runScore).toBe(scoreApresPremier);
+    expect(state.meta.runScore).toBe(scoreAfterFirst);
   });
 
-  it("ignore un résultat dont le jour ne correspond plus", () => {
-    // Partie TIRÉE au jour 100, terminée après la bascule (on est au jour 101) :
-    // elle ne doit ni créditer la nouvelle journée ni prolonger la série.
-    const avant = persisted(
+  it("ignores a result whose day no longer matches", () => {
+    // DRAWN on day 100, finished after the rollover (we are on day 101): it must
+    // neither credit the new day nor extend the streak.
+    const before = persisted(
       { streak: 5, lastPlayedDay: 100, runScore: 900 },
       { day: 100, puzzles: {} },
     );
-    const apres = commitPuzzle(
-      avant,
+    const after = commitPuzzle(
+      before,
       101, // jour courant
       "guessr",
       { status: "won", points: 200, state: null },
       100, // jour du tirage
     );
-    expect(apres.meta).toEqual(avant.meta);
-    expect(apres.progress).toBeNull();
+    expect(after.meta).toEqual(before.meta);
+    expect(after.progress).toBeNull();
   });
 
-  it("écarte le résultat périmé SANS effacer la journée en cours", () => {
-    // Le piège : rendre `progress: null` sans condition efface les grilles
-    // déjà terminées aujourd'hui, qui redeviennent alors marquables. Le score
-    // du jour serait compté deux fois.
-    let etat = commitPuzzle(
+  it("discards the stale result WITHOUT erasing the current day", () => {
+    // The trap: returning `progress: null` unconditionally erases puzzles already
+    // finished today, which then become scorable again. The day's score would be
+    // counted twice.
+    let state = commitPuzzle(
       persisted({ streak: 5, lastPlayedDay: 100, runScore: 900 }),
       101,
       "guessr",
       { status: "won", points: 200, state: null },
     );
-    const scoreApresGuessr = etat.meta.runScore;
+    const scoreAfterGuessr = state.meta.runScore;
 
-    // Une partie tirée la veille se termine maintenant : elle ne compte pas...
-    etat = commitPuzzle(
-      etat,
+    // A game drawn yesterday finishes now: it does not count...
+    state = commitPuzzle(
+      state,
       101,
       "wordle-5",
       { status: "won", points: 300, state: null },
       100,
     );
-    expect(etat.meta.runScore).toBe(scoreApresGuessr);
-    // ...et ne doit pas avoir effacé le Guessr déjà terminé aujourd'hui.
-    expect(etat.progress?.puzzles.guessr?.status).toBe("won");
+    expect(state.meta.runScore).toBe(scoreAfterGuessr);
+    // ...and must not have erased the Guessr already finished today.
+    expect(state.progress?.puzzles.guessr?.status).toBe("won");
 
     // Donc rejouer le Guessr ne rapporte toujours rien.
-    etat = commitPuzzle(etat, 101, "guessr", {
+    state = commitPuzzle(state, 101, "guessr", {
       status: "won",
       points: 200,
       state: null,
     });
-    expect(etat.meta.runScore).toBe(scoreApresGuessr);
+    expect(state.meta.runScore).toBe(scoreAfterGuessr);
   });
 });
 
 describe("saveProgress", () => {
-  it("enregistre l'avancement sans toucher à la série ni au score", () => {
-    const avant = persisted({ streak: 4, lastPlayedDay: 100, runScore: 900 });
-    const apres = saveProgress(avant, 100, "wordle-5", { guesses: ["ZYWOO"] });
-    expect(apres.meta).toEqual(avant.meta);
-    expect(apres.progress?.puzzles["wordle-5"]).toEqual({
+  it("saves progress without touching the streak or the score", () => {
+    const before = persisted({ streak: 4, lastPlayedDay: 100, runScore: 900 });
+    const after = saveProgress(before, 100, "wordle-5", { guesses: ["ZYWOO"] });
+    expect(after.meta).toEqual(before.meta);
+    expect(after.progress?.puzzles["wordle-5"]).toEqual({
       status: "playing",
       points: 0,
       state: { guesses: ["ZYWOO"] },
     });
   });
 
-  it("une grille sauvegardée puis terminée rapporte bien ses points", () => {
-    // Sans cette assertion, restreindre le test « déjà terminée » au seul
-    // `status !== undefined` passerait inaperçu — et TOUTE grille reprise
-    // après un rafraîchissement vaudrait alors zéro.
-    let etat = saveProgress(persisted({}), 100, "wordle-5", {
+  it("a saved then finished puzzle does score its points", () => {
+    // Without this assertion, narrowing the "already finished" check to just
+    // `status !== undefined` would go unnoticed — and EVERY puzzle resumed after
+    // a refresh would then be worth zero.
+    let state = saveProgress(persisted({}), 100, "wordle-5", {
       guesses: ["ZYWOO"],
     });
-    etat = commitPuzzle(etat, 100, "wordle-5", {
+    state = commitPuzzle(state, 100, "wordle-5", {
       status: "won",
       points: 134,
       state: { guesses: ["ZYWOO"] },
     });
-    expect(etat.meta.runScore).toBe(134);
-    expect(etat.meta.streak).toBe(1);
+    expect(state.meta.runScore).toBe(134);
+    expect(state.meta.streak).toBe(1);
   });
 
-  it("ne réécrit pas par-dessus une grille déjà terminée", () => {
-    let etat = commitPuzzle(persisted({}), 100, "guessr", {
+  it("does not overwrite a puzzle already finished", () => {
+    let state = commitPuzzle(persisted({}), 100, "guessr", {
       status: "won",
       points: 200,
       state: { rows: ["final"] },
     });
-    etat = saveProgress(etat, 100, "guessr", { rows: ["écrasé"] });
-    expect(etat.progress?.puzzles.guessr?.status).toBe("won");
-    expect(etat.progress?.puzzles.guessr?.points).toBe(200);
+    state = saveProgress(state, 100, "guessr", { rows: ["écrasé"] });
+    expect(state.progress?.puzzles.guessr?.status).toBe("won");
+    expect(state.progress?.puzzles.guessr?.points).toBe(200);
   });
 
-  it("ne ressuscite pas l'état d'une partie de la veille", () => {
-    // Onglet ouvert avant la bascule qui sauvegarde après : l'état de la veille
-    // ne doit pas être réécrit sous la date du jour, sinon la grille du
-    // lendemain reprend avec les essais d'hier.
-    const avant = persisted(
+  it("does not resurrect yesterday's game state", () => {
+    // A tab opened before the rollover saving after it: yesterday's state must
+    // not be rewritten under today's date, or the next day's puzzle resumes with
+    // yesterday's guesses.
+    const before = persisted(
       { lastPlayedDay: 100 },
       {
         day: 100,
@@ -323,22 +323,22 @@ describe("saveProgress", () => {
         },
       },
     );
-    const apres = saveProgress(
-      avant,
+    const after = saveProgress(
+      before,
       101,
       "wordle-5",
       { guesses: ["HIER", "ENCORE"] },
       100, // tirée au jour 100
     );
-    expect(apres.progress).toBeNull();
+    expect(after.progress).toBeNull();
   });
 });
 
-describe("reconcile — horloge reculée", () => {
-  it("traite un dernier jour joué dans le futur comme une rupture", () => {
-    // Le joueur recule l'horloge de sa machine : sans ce garde-fou, la série
-    // resterait accrochée à un score qu'elle ne peut plus justifier.
-    const apres = reconcile(
+describe("reconcile — clock wound back", () => {
+  it("treats a last-played-day in the future as a break", () => {
+    // The player winds their machine's clock back: without this guard the streak
+    // would stay attached to a score it can no longer justify.
+    const after = reconcile(
       persisted({
         streak: 9,
         lastPlayedDay: 200,
@@ -347,8 +347,8 @@ describe("reconcile — horloge reculée", () => {
       }),
       100,
     );
-    expect(apres.meta.streak).toBe(0);
-    expect(apres.meta.runScore).toBe(0);
-    expect(apres.meta.recordScore).toBe(9200);
+    expect(after.meta.streak).toBe(0);
+    expect(after.meta.runScore).toBe(0);
+    expect(after.meta.recordScore).toBe(9200);
   });
 });

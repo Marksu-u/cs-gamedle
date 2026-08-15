@@ -16,7 +16,7 @@ export type MorelessAction =
   | { type: "RESTORE"; state: GameState }
   | { type: "GIVE_UP" };
 
-// État de départ : écran de sélection de catégorie.
+// Starting state: the category selection screen.
 export function createInitialState(day: number): GameState {
   return {
     category: null,
@@ -34,7 +34,7 @@ export function createInitialState(day: number): GameState {
   };
 }
 
-// Lance (ou relance) une catégorie : construit la séquence du jour et arme le 1er duel.
+// Starts (or restarts) a category: builds the day's sequence and arms the first duel.
 function startCategory(
   data: MorelessData,
   category: Category,
@@ -61,8 +61,8 @@ function startCategory(
   };
 }
 
-// Factory : reducer fermé sur `data` + le jour → pur et testable, tirage
-// seedé hors des composants.
+// Factory: the reducer closes over `data` + the day → pure and testable, with the
+// seeded draw kept out of the components.
 export function createMorelessReducer(data: MorelessData, day: number) {
   return function reducer(state: GameState, action: MorelessAction): GameState {
     switch (action.type) {
@@ -95,8 +95,8 @@ export function createMorelessReducer(data: MorelessData, day: number) {
         if (state.round >= TOTAL_ROUNDS) {
           return { ...state, status: "finished" };
         }
-        // Chaîne moreless : le challenger révélé devient TOUJOURS la prochaine
-        // ancre (on ne choisit pas de la garder) → aucun joueur dominant ne reste.
+        // More-or-less chain: the revealed challenger ALWAYS becomes the next
+        // anchor (there is no option to keep it) → no dominant player lingers.
         return {
           ...state,
           anchor: state.challenger,
@@ -115,8 +115,8 @@ export function createMorelessReducer(data: MorelessData, day: number) {
           : createInitialState(day);
 
       case "GIVE_UP": {
-        // Abandon possible seulement en cours de partie (playing/revealed) : on
-        // termine en conservant le score déjà acquis, la bannière de fin s'affiche.
+        // Giving up is only possible mid-run (playing/revealed): it
+        // ends the run keeping the score already earned, and the end banner shows.
         if (state.status !== "playing" && state.status !== "revealed")
           return state;
         return { ...state, status: "finished" };

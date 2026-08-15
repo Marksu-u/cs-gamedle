@@ -1,15 +1,14 @@
-// Barème des points. Toutes les fonctions sont pures : elles ne lisent ni l'heure,
-// ni le stockage, ni l'état d'un reducer. Elles sont appelées au moment où une
-// grille atteint un statut terminal.
+// The points table. Every function here is pure: none reads the clock, storage,
+// or a reducer's state. They are called when a puzzle reaches a terminal status.
 //
-// Principe commun aux trois jeux : on part d'une base liée à la difficulté, puis
-// on retranche ce que le joueur a consommé (essais, indices).
+// The principle is the same across all three games: start from a difficulty-based
+// figure, then subtract what the player spent (tries, hints).
 
 import { MAX_ATTEMPTS } from "@/lib/wordle/types";
 
 // ---------------------------------------------------------------- Wordle
 
-// Base croissante avec la longueur du mot : un 8 lettres vaut plus qu'un 3 lettres.
+// Base grows with tag length: an 8-letter answer is worth more than a 3-letter one.
 function wordleBase(length: number): number {
   return 60 + (length - 3) * 12;
 }
@@ -34,8 +33,8 @@ export function wordlePoints({
 
 // ---------------------------------------------------------------- Guessr
 
-// Essais illimités : décroissance continue plutôt que couperet, avec un plancher
-// pour qu'une partie longue rapporte tout de même quelque chose.
+// Unlimited tries, so a continuous decay rather than a cliff, with a floor so a
+// long game still pays something.
 const GUESSR_BASE = 200;
 const GUESSR_FLOOR = 40;
 
@@ -64,8 +63,8 @@ export function molPoints(correct: number): number {
 
 // ---------------------------------------------------------- Multiplicateur
 
-// Paliers : lisibles, avec des objectifs visibles. La série prise en compte
-// INCLUT le jour en cours, donc le premier jour d'une série est à ×1.
+// Tiers: readable, with visible milestones. The streak used INCLUDES the current
+// day, so day one of a streak scores at ×1.
 const TIERS: [seuil: number, mult: number][] = [
   [60, 2.5],
   [30, 2],

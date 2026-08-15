@@ -1,30 +1,30 @@
 import { hashSeed, mulberry32 } from "./rng";
 
-// Tirage quotidien anti-répétition, commun aux neuf flux du projet.
+// Anti-repeat daily draw, shared by the project's nine streams.
 //
-// Modèle : une suite de paquets mélangés (une permutation complète par « époque »),
-// découpés en créneaux d'exactement `count` cartes. Un tirage est TOUJOURS une
-// tranche d'un seul paquet — il ne déborde jamais sur le suivant. C'est ce qui
-// rend structurellement impossible le doublon à l'intérieur d'une même journée.
+// Model: a run of shuffled decks (one full permutation per "epoch"), cut into
+// slots of exactly `count` cards. A draw is ALWAYS a slice of a single deck —
+// it never spills into the next one. That is what makes a duplicate inside one
+// day structurally impossible.
 //
-// Le seul endroit où une carte peut revenir trop tôt est la couture entre deux
-// époques ; une fenêtre de refroidissement l'y interdit (cf. `applyCooldown`).
+// The only place a card can come back too early is the seam between two epochs;
+// a cooldown window forbids it there (see `applyCooldown`).
 
-// Nombre de tirages complets que contient un paquet. Le reste (`n % count`) n'est
-// pas servi pour cette époque ; l'époque suivante étant mélangée différemment,
-// aucune carte n'est durablement écartée.
+// How many complete draws a deck holds. The remainder (`n % count`) is not
+// served for that epoch; since the next epoch is shuffled differently, no card
+// is permanently left out.
 export function runsPerDeck(poolSize: number, count: number): number {
   return Math.floor(poolSize / count);
 }
 
-// Taille de la zone protégée à la couture : au moins un tirage entier, sinon un
-// quart du pool. C'est ce nombre qui fixe l'écart minimal garanti entre deux
-// occurrences d'une même carte.
+// Size of the protected zone at the seam: at least one whole draw, otherwise a
+// quarter of the pool. This number sets the guaranteed minimum gap between two
+// appearances of the same card.
 export function cooldownSize(poolSize: number, count: number): number {
   return Math.max(count, Math.floor(poolSize / 4));
 }
 
-// Mélange brut d'une époque : Fisher-Yates seedé sur (flux, époque).
+// Raw shuffle for one epoch: Fisher-Yates seeded on (stream, epoch).
 function buildDeck<T>(
   pool: readonly T[],
   streamId: string,
@@ -39,13 +39,13 @@ function buildDeck<T>(
   return deck;
 }
 
-// Écarte de la tête du paquet les cartes servies en fin d'époque précédente :
-// chaque carte « récente » trouvée dans les `cooldown` premières positions est
-// échangée avec la première carte non récente située au-delà.
+// Pushes cards served at the end of the previous epoch out of the deck's head:
+// every "recent" card found in the first `cooldown` positions is swapped with
+// the first non-recent card beyond that zone.
 //
-// La réparation est au mieux : si la zone d'échange ne contient plus aucune carte
-// non récente, la carte reste en place. Cela ne peut arriver que si `count`
-// dépasse la moitié du pool — aucun flux du projet n'est dans ce cas.
+// The repair is best-effort: if the swap zone holds no non-recent card left, the
+// card stays put. That can only happen when `count` exceeds half the pool — no
+// stream in this project does.
 function applyCooldown<T>(
   deck: T[],
   recent: ReadonlySet<T>,
@@ -62,13 +62,13 @@ function applyCooldown<T>(
   }
 }
 
-// Un paquet réparé est entièrement déterminé par (pool, flux, count, époque) :
-// on le garde pour la session afin que la chaîne ci-dessous ne soit parcourue
-// qu'une fois. Sans ce cache, chaque appel repaierait le chemin depuis l'époque 0.
+// A repaired deck is fully determined by (pool, stream, count, epoch), so it is
+// kept for the session and the chain below is walked only once. Without this
+// cache every call would replay the path from epoch 0.
 //
-// Le pool fait partie de la clé, via l'identité du tableau : deux pools distincts
-// servis par le même flux ne doivent pas se partager un paquet. Un WeakMap évite
-// d'avoir à hacher le contenu du pool à chaque appel, ce qui annulerait le cache.
+// The pool is part of the key, by array identity: two distinct pools served by
+// the same stream must not share a deck. A WeakMap avoids hashing the pool's
+// contents on every call, which would defeat the cache.
 const decks = new WeakMap<object, Map<string, readonly unknown[]>>();
 
 function deckFor<T>(
@@ -88,20 +88,19 @@ function deckFor<T>(
 
   const n = pool.length;
   const cooldown = cooldownSize(n, count);
-  // Cartes RÉELLEMENT servies par une époque : le reste (`n % count`) n'a jamais
-  // été montré au joueur, il n'a donc pas à être protégé.
+  // Cards an epoch ACTUALLY serves: the remainder (`n % count`) was never shown
+  // to the player, so it does not need protecting.
   const usedEnd = runsPerDeck(n, count) * count;
 
-  // Chaîne itérative depuis l'époque 0. Le point important : `recent` est lu sur
-  // le paquet RÉPARÉ de l'époque précédente, jamais sur son mélange brut.
+  // Iterative chain from epoch 0. The key point: `recent` is read from the
+  // REPAIRED deck of the previous epoch, never from its raw shuffle.
   //
-  // Un raccourci à profondeur 1 (lire le mélange brut) serait tentant, mais il
-  // est faux dès que la réparation déplace des cartes dans la zone servie : les
-  // cartes réellement servies la veille disparaissent alors de `recent` et
-  // reviennent aussitôt. Mesuré sur More or Lessr, ce raccourci laissait 2,8
-  // joueurs en commun d'un jour à l'autre au lieu de 0.
+  // A depth-1 shortcut (reading the raw shuffle) is tempting but wrong as soon
+  // as the repair moves cards inside the served zone: the cards actually served
+  // yesterday then vanish from `recent` and come straight back. Measured on
+  // More or Lessr, that shortcut left 2.8 players shared day to day instead of 0.
   //
-  // Le coût est linéaire en `epoch`, payé une seule fois grâce au cache.
+  // The cost is linear in `epoch`, paid once thanks to the cache.
   let deck = buildDeck<T>(pool, streamId, 0);
   for (let e = 1; e <= epoch; e++) {
     const next = buildDeck<T>(pool, streamId, e);
@@ -116,7 +115,7 @@ function deckFor<T>(
   return deck;
 }
 
-// Tirage du jour `day` pour le flux `streamId` : `count` éléments distincts.
+// Draw for day `day` on stream `streamId`: `count` distinct items.
 export function draw<T>(
   pool: readonly T[],
   streamId: string,
@@ -132,8 +131,8 @@ export function draw<T>(
       `count invalide pour « ${streamId} » : ${count} (pool de ${n}).`,
     );
   }
-  // Un `day` négatif ou non entier produirait un `slot` négatif, donc une tranche
-  // décalée ou vide — un tirage silencieusement faux plutôt qu'une erreur.
+  // A negative or non-integer `day` would produce a negative `slot`, hence a
+  // shifted or empty slice — a silently wrong draw rather than an error.
   if (!Number.isInteger(day) || day < 0) {
     throw new Error(`day invalide pour « ${streamId} » : ${day}.`);
   }

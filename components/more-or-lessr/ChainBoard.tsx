@@ -31,8 +31,8 @@ export default function ChainBoard({
 }: Props) {
   const label = category === "rating" ? "Peak rating" : "Prize money";
 
-  // Le flash vert/rouge porte sur la carte cliquée. On retrouve laquelle via la
-  // direction : "more" = on a cliqué le challenger, "less" = on a cliqué l'ancre.
+  // The green/red flash applies to the clicked card. Which one is recovered from
+  // the direction: "more" = the challenger was clicked, "less" = the anchor.
   function cardState(
     which: "anchor" | "challenger",
   ): "idle" | "correct" | "wrong" {
@@ -69,7 +69,7 @@ export default function ChainBoard({
         <span className="cs2-display self-center text-xl font-extrabold text-[color:var(--accent-hot)] italic">
           VS
         </span>
-        {/* Challenger : caché. Le cliquer = parier qu'il a PLUS que l'ancre.
+        {/* Challenger: hidden. Clicking it = betting it is MORE than the anchor.
             key sur le pseudo : rejoue l'animation d'entrée à chaque challenger. */}
         <div
           key={challenger.name}

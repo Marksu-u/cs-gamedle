@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { dailySequence, practiceSequence } from "./selection";
 import { TOTAL_ROUNDS, type MorelessData } from "./types";
 
-// Fixture : 28 joueurs, comme le pool réel (le tirage exige pool >= count).
+// Fixture: 28 players, like the real pool (the draw requires pool >= count).
 const data: MorelessData = {
   game: "test",
   players: Array.from({ length: 28 }, (_, i) => ({
@@ -15,36 +15,36 @@ const data: MorelessData = {
 };
 
 describe("dailySequence", () => {
-  it("renvoie TOTAL_ROUNDS + 1 joueurs", () => {
+  it("returns TOTAL_ROUNDS + 1 players", () => {
     expect(dailySequence(data, 100, "rating")).toHaveLength(TOTAL_ROUNDS + 1);
   });
 
-  it("est déterministe (même jour + catégorie → même séquence)", () => {
+  it("is deterministic (same day + category → same sequence)", () => {
     expect(dailySequence(data, 100, "rating")).toEqual(
       dailySequence(data, 100, "rating"),
     );
   });
 
-  it("diffère selon la catégorie", () => {
+  it("differs by category", () => {
     expect(dailySequence(data, 100, "rating")).not.toEqual(
       dailySequence(data, 100, "prize"),
     );
   });
 
-  it("diffère selon le jour", () => {
+  it("differs by day", () => {
     expect(dailySequence(data, 100, "rating")).not.toEqual(
       dailySequence(data, 101, "rating"),
     );
   });
 
-  it("ne contient jamais de doublon", () => {
+  it("never contains a duplicate", () => {
     for (let day = 0; day < 500; day++) {
       const seq = dailySequence(data, day, "rating");
       expect(new Set(seq.map((p) => p.name)).size).toBe(seq.length);
     }
   });
 
-  it("lève une erreur si le pool est trop petit", () => {
+  it("throws when the pool is too small", () => {
     const small: MorelessData = {
       game: "t",
       players: data.players.slice(0, 5),
@@ -54,24 +54,24 @@ describe("dailySequence", () => {
 });
 
 describe("practiceSequence", () => {
-  it("renvoie TOTAL_ROUNDS + 1 joueurs distincts", () => {
+  it("returns TOTAL_ROUNDS + 1 players distincts", () => {
     const seq = practiceSequence(data);
     expect(seq).toHaveLength(TOTAL_ROUNDS + 1);
     expect(new Set(seq.map((p) => p.name)).size).toBe(seq.length);
   });
 
-  it("varie d'un appel à l'autre", () => {
+  it("varies from call to call", () => {
     const a = practiceSequence(data)
       .map((p) => p.name)
       .join();
     const b = practiceSequence(data)
       .map((p) => p.name)
       .join();
-    // Deux mélanges aléatoires de 28 joueurs : la collision est négligeable.
+    // Two random shuffles of 28 players: a collision is negligible.
     expect(a).not.toBe(b);
   });
 
-  it("lève si le pool est trop petit", () => {
+  it("throws when the pool is too small", () => {
     const small: MorelessData = {
       game: "t",
       players: data.players.slice(0, 5),
@@ -79,10 +79,9 @@ describe("practiceSequence", () => {
     expect(() => practiceSequence(small)).toThrow();
   });
 
-  it("ne remonte PAS la chaîne des époques (entraînement instantané)", () => {
-    // Le tirage quotidien remonte ~10 000 époques pour la journée courante ;
-    // l'entraînement doit rester en dessous de la milliseconde, sinon chaque
-    // clic sur « Rejouer » gèle l'interface.
+  it("does NOT walk the epoch chain (instant practice)", () => {
+    // The daily draw walks ~10,000 epochs for the current day; practice must stay
+    // under a millisecond, otherwise every "Play again" click freezes the UI.
     const t0 = performance.now();
     for (let i = 0; i < 50; i++) practiceSequence(data);
     expect((performance.now() - t0) / 50).toBeLessThan(1);

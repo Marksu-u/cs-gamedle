@@ -1,41 +1,40 @@
-// La machine à états de la série et du score. Deux fonctions PURES : aucune
-// lecture d'horloge, aucun accès au stockage. Le jour courant est toujours
-// passé en argument, ce qui rend chaque transition testable directement.
+// The streak and score state machine. Two PURE functions: no clock reads, no
+// storage access. The current day is always passed in, which makes every
+// transition directly testable.
 
 import { streakMultiplier } from "./scoring";
 import type { Persisted, Progress, PuzzleId, PuzzleProgress } from "./types";
 
-// Appelée au chargement : aligne l'état persisté sur le jour courant.
+// Called on load: aligns the persisted state with the current day.
 //
-// - dernier jour joué === aujourd'hui   → rien à faire
-// - dernier jour joué === hier          → série intacte, journée pas encore jouée
-// - dernier jour joué plus ancien       → un jour a été manqué : série et score courant à zéro
+// - last played day === today      → nothing to do
+// - last played day === yesterday  → streak intact, today not played yet
+// - anything older                 → a day was missed: streak and run score to zero
 //
-// Le record n'a rien à faire ici : il est maintenu au fil de l'eau par
-// `commitPuzzle`, donc il est déjà à sa valeur maximale quand on arrive ici.
+// The record has no business here: `commitPuzzle` maintains it eagerly, so it
+// is already at its maximum by the time we get here.
 export function reconcile(state: Persisted, today: number): Persisted {
   const progress = state.progress?.day === today ? state.progress : null;
   const { lastPlayedDay } = state.meta;
 
-  // `lastPlayedDay > today` n'arrive pas avec une horloge UTC monotone, mais
-  // arrive si le joueur recule l'horloge de sa machine. On traite ce cas comme
-  // une rupture : sinon une série resterait accrochée à un score qu'elle ne
-  // pourrait plus justifier.
-  const jamaisJoue = lastPlayedDay < 0;
-  const serieRompue =
-    !jamaisJoue && (lastPlayedDay < today - 1 || lastPlayedDay > today);
-  const meta = serieRompue
+  // `lastPlayedDay > today` cannot happen with a monotonic UTC clock, but does
+  // if the player winds their machine's clock back. Treat it as a break:
+  // otherwise a streak would stay attached to a score it can no longer justify.
+  const neverPlayed = lastPlayedDay < 0;
+  const streakBroken =
+    !neverPlayed && (lastPlayedDay < today - 1 || lastPlayedDay > today);
+  const meta = streakBroken
     ? { ...state.meta, streak: 0, runScore: 0 }
     : state.meta;
 
   return { ...state, meta, progress };
 }
 
-// Appelée quand une grille atteint un statut terminal (gagnée OU perdue).
+// Called when a puzzle reaches a terminal status (won OR lost).
 //
-// `drawnDay` est le jour sous lequel la grille a été tirée : s'il ne correspond
-// plus au jour courant, la bascule a eu lieu pendant la partie et le résultat
-// est écarté (sans quoi une partie de la veille créditerait le lendemain).
+// `drawnDay` is the day the puzzle was drawn under: if it no longer matches
+// today, the rollover happened mid-game and the result is discarded (otherwise
+// yesterday's game would credit today).
 export function commitPuzzle(
   state: Persisted,
   today: number,
@@ -43,25 +42,25 @@ export function commitPuzzle(
   result: PuzzleProgress,
   drawnDay: number = today,
 ): Persisted {
-  // On écarte CE résultat, pas la journée : `reconcile` ne jette la progression
-  // que si elle date d'un jour révolu. Rendre `progress: null` sans condition
-  // effacerait les grilles légitimement terminées aujourd'hui — qui
-  // redeviendraient alors marquables une seconde fois.
+  // Discard THIS result, not the day: `reconcile` only drops progress that
+  // genuinely belongs to a past day. Returning `progress: null` unconditionally
+  // would erase puzzles legitimately finished today — which would then become
+  // scorable a second time.
   if (drawnDay !== today) return reconcile(state, today);
 
   const base = reconcile(state, today);
   const progress: Progress = base.progress ?? { day: today, puzzles: {} };
 
-  // Une grille déjà terminée aujourd'hui ne rapporte pas deux fois.
-  const dejaTerminee =
+  // A puzzle already finished today does not score twice.
+  const alreadyFinished =
     progress.puzzles[id]?.status !== undefined &&
     progress.puzzles[id]?.status !== "playing";
-  if (dejaTerminee) return base;
+  if (alreadyFinished) return base;
 
-  // La série se met à jour au PREMIER résultat de la journée, avant le calcul
-  // du multiplicateur : le premier jour d'une série est donc bien à ×1.
-  const premiereDuJour = base.meta.lastPlayedDay !== today;
-  const streak = premiereDuJour
+  // The streak updates on the FIRST result of the day, before the multiplier is
+  // read: day one of a streak therefore scores at ×1.
+  const firstOfTheDay = base.meta.lastPlayedDay !== today;
+  const streak = firstOfTheDay
     ? base.meta.lastPlayedDay === today - 1
       ? base.meta.streak + 1
       : 1
@@ -82,14 +81,14 @@ export function commitPuzzle(
   };
 }
 
-// Enregistre l'avancement d'une grille NON terminée (reprise après rafraîchissement).
-// Ne touche ni la série ni les scores.
+// Saves the progress of an UNFINISHED puzzle (resume after a refresh).
+// Touches neither the streak nor the scores.
 //
-// `drawnDay` joue le même rôle que dans `commitPuzzle`, et pour la même raison :
-// un onglet ouvert avant la bascule continue de sauvegarder après. Sans ce
-// garde-fou, l'état d'une partie de la veille serait réécrit sous la date du
-// jour, et la grille du lendemain reprendrait avec les essais de la veille —
-// évalués contre une autre réponse.
+// `drawnDay` plays the same role as in `commitPuzzle`, for the same reason: a
+// tab opened before the rollover keeps saving after it. Without this guard,
+// yesterday's game state would be rewritten under today's date, and tomorrow's
+// puzzle would resume with yesterday's guesses — evaluated against a different
+// answer.
 export function saveProgress(
   state: Persisted,
   today: number,
@@ -105,7 +104,7 @@ export function saveProgress(
     progress.puzzles[id]?.status !== undefined &&
     progress.puzzles[id]?.status !== "playing"
   ) {
-    return base; // grille déjà terminée : on ne réécrit pas par-dessus
+    return base; // already finished: do not overwrite
   }
   return {
     ...base,

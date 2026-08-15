@@ -16,7 +16,7 @@ describe("evaluateGuess", () => {
   });
 
   it("present pour une lettre bien devinée mais mal placée", () => {
-    // cible DOG, essai GOD : O bien placé, G et D présents ailleurs.
+    // target DOG, guess GOD: O in place, G and D present elsewhere.
     expect(evaluateGuess("GOD", "DOG")).toEqual([
       "present",
       "correct",
@@ -25,7 +25,7 @@ describe("evaluateGuess", () => {
   });
 
   it("ne sur-marque pas un caractère en double (cible n'en a qu'un)", () => {
-    // cible ROPZ (un seul O), essai OOOO : seul le O bien placé compte.
+    // target ROPZ (a single O), guess OOOO: only the correctly placed O counts.
     expect(evaluateGuess("OOOO", "ROPZ")).toEqual([
       "absent",
       "correct",
@@ -35,7 +35,7 @@ describe("evaluateGuess", () => {
   });
 
   it("gère les chiffres comme des caractères normaux", () => {
-    // cible B1T, essai T1B : 1 bien placé, B et T présents.
+    // target B1T, guess T1B: 1 in place, B and T present.
     expect(evaluateGuess("T1B", "B1T")).toEqual([
       "present",
       "correct",

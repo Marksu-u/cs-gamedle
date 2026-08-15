@@ -8,7 +8,7 @@ export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "en";
 
 // Shown in the language switcher, in each language's own name — a French
-// speaker looks for "Français", not "French".
+// speaker looks for "Francais", not "French".
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   fr: "Français",

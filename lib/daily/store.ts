@@ -1,9 +1,9 @@
 "use client";
 
-// Pont entre la couche pure et React. Le rendu serveur ne doit jamais toucher
-// `localStorage` : `getServerSnapshot` rend un état neutre, figé, et l'état réel
-// n'apparaît qu'après hydratation. D'où l'affichage d'un tiret plutôt que d'un
-// zéro trompeur tant que `hydrated` est faux (cf. composants d'affichage).
+// Bridge between the pure layer and React. Server rendering must never touch
+// `localStorage`: `getServerSnapshot` returns a neutral, frozen state, and the
+// real one appears only after hydration. Hence the dash rather than a misleading
+// zero while `hydrated` is false (see the display components).
 
 import { useSyncExternalStore } from "react";
 import { dayIndex } from "./clock";
@@ -23,8 +23,8 @@ let snapshot: Persisted = EMPTY_PERSISTED;
 let charge = false;
 const listeners = new Set<Listener>();
 
-// Le snapshot serveur DOIT être une référence stable : en rendre une nouvelle à
-// chaque appel ferait boucler `useSyncExternalStore`.
+// The server snapshot MUST be a stable reference: returning a new one on every
+// call would make `useSyncExternalStore` loop forever.
 const SERVER_SNAPSHOT: Persisted = EMPTY_PERSISTED;
 
 function emettre(suivant: Persisted) {
@@ -33,22 +33,21 @@ function emettre(suivant: Persisted) {
   for (const l of listeners) l();
 }
 
-// Base d'une écriture : l'état RELU dans le stockage, pas l'instantané en
-// mémoire.
+// Base for a write: the state RE-READ from storage, not the in-memory snapshot.
 //
-// Le stockage est partagé entre tous les onglets, et une écriture réécrit le
-// document entier. En partant de l'instantané en mémoire, un onglet ouvert avant
-// qu'un autre ne termine une grille écrasait ce résultat — points compris — et
-// la grille redevenait marquable. Neuf grilles par jour rendent le multi-onglets
-// banal, pas exotique.
+// Storage is shared by every tab, and a write rewrites the whole document.
+// Starting from the in-memory snapshot meant a tab opened before another
+// finished a puzzle would erase that result — points included — and the puzzle
+// became scorable again. With nine puzzles a day, playing across tabs is normal,
+// not exotic.
 //
-// Relire avant chaque écriture transforme cela en lecture-modification-écriture :
-// le seul cas encore perdant est deux écritures dans la même milliseconde.
+// Re-reading before each write turns this into read-modify-write: the only
+// remaining losing case is two writes within the same millisecond.
 function base(): Persisted {
   return reconcile(load(), dayIndex());
 }
 
-// Un autre onglet a écrit : on réaligne cet onglet-ci sur le stockage.
+// Another tab wrote: realign this one with storage.
 function surStorage(e: StorageEvent) {
   if (e.key !== null && e.key !== STORAGE_KEY) return;
   snapshot = base();
@@ -69,7 +68,7 @@ export const dailyStore = {
     };
   },
 
-  // Première lecture : on charge depuis le stockage et on aligne sur le jour courant.
+  // First read: load from storage and align with the current day.
   getSnapshot(): Persisted {
     if (!charge) {
       charge = true;
@@ -82,24 +81,23 @@ export const dailyStore = {
     return SERVER_SNAPSHOT;
   },
 
-  // Enregistre un résultat terminal.
+  // Records a terminal result.
   //
-  // `drawnDay` est le jour sous lequel la grille a été TIRÉE ; le jour courant
-  // est relu ici, au moment de l'écriture. C'est ce décalage qui fait exister le
-  // garde-fou « bascule pendant la partie » : si l'appelant fournissait aussi le
-  // jour courant, il passerait la même valeur des deux côtés et le garde-fou
-  // serait mort-né.
+  // `drawnDay` is the day the puzzle was DRAWN under; the current day is re-read
+  // here, at write time. That gap is what makes the "rollover mid-game" guard
+  // exist at all: if the caller supplied the current day too, it would pass the
+  // same value on both sides and the guard would be stillborn.
   commit(drawnDay: number, id: PuzzleId, result: PuzzleProgress) {
     emettre(commitPuzzle(base(), dayIndex(), id, result, drawnDay));
   },
 
-  // Sauvegarde l'avancement d'une grille en cours, sans toucher aux scores.
-  // Même raisonnement que `commit` pour `drawnDay`.
+  // Saves the progress of an in-flight puzzle, without touching the scores.
+  // Same reasoning as `commit` for `drawnDay`.
   saveProgress(drawnDay: number, id: PuzzleId, gameState: unknown) {
     emettre(saveProgress(base(), dayIndex(), id, gameState, drawnDay));
   },
 
-  // Réservé aux tests.
+  // Test-only.
   reset() {
     charge = false;
     snapshot = EMPTY_PERSISTED;
@@ -115,8 +113,8 @@ export function useDailyState(): Persisted {
   );
 }
 
-// `false` pendant le rendu serveur et le premier rendu client : les composants
-// s'en servent pour afficher un tiret au lieu d'un score faux.
+// `false` during server rendering and the first client render: components use it
+// to show a dash instead of a wrong score.
 export function useHydrated(): boolean {
   return useSyncExternalStore(
     () => () => {},

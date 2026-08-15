@@ -1,7 +1,7 @@
-// RNG déterministe sans dépendance : même graine → même séquence. C'est ce qui
-// permet un « défi du jour » identique pour tous (graine = date + catégorie).
+// Dependency-free deterministic RNG: same seed → same sequence. That is what
+// makes a "daily challenge" identical for everyone (seed = stream + epoch).
 
-// Hash 32 bits d'une chaîne (xmur3) : transforme "2026-06-24-rating" en graine.
+// 32-bit string hash (xmur3): turns "guessr-7" into a seed.
 export function hashSeed(str: string): number {
   let h = 1779033703 ^ str.length;
   for (let i = 0; i < str.length; i++) {
@@ -13,8 +13,8 @@ export function hashSeed(str: string): number {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
-// mulberry32 : rend une fonction qui produit un float [0,1) à chaque appel,
-// séquence reproductible pour une graine donnée.
+// mulberry32: returns a function yielding a float in [0,1) on each call, with a
+// reproducible sequence for a given seed.
 export function mulberry32(seed: number): () => number {
   let a = seed;
   return function () {

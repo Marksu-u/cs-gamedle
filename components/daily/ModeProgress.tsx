@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 import { useDailyState, useHydrated } from "@/lib/daily/store";
 import type { PuzzleId } from "@/lib/daily/types";
 
-// Grilles quotidiennes rattachées à chaque mode de l'accueil. L'ordre et le
-// nombre viennent du périmètre : 6 Wordle, 1 Guessr, 2 More or Lessr.
+// Daily puzzles attached to each mode on the home page. The order and count come
+// from the scope: 6 Wordle, 1 Guessr, 2 More or Lessr.
 const PUZZLES_PAR_MODE: Record<string, PuzzleId[]> = {
   wordle: [
     "wordle-3",

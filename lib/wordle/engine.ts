@@ -1,14 +1,15 @@
 import type { KeyState, TileState } from "./types";
 
-// Algorithme Wordle en DEUX passes. Indispensable pour les doublons : on marque
-// d'abord tous les "correct" et on décompte les occurrences restantes de la
-// cible, sinon un caractère deviné en double serait marqué "present" trop de fois.
+// TWO-pass Wordle algorithm. Essential for duplicates: we mark
+// all the "correct" ones first and count down the target's remaining
+// occurrences, otherwise a doubled guessed character would be marked "present"
+// too many times.
 export function evaluateGuess(guess: string, target: string): TileState[] {
   const g = guess.toUpperCase();
   const t = target.toUpperCase();
   const states: TileState[] = new Array(g.length).fill("absent");
 
-  // Compte des caractères de la cible encore "disponibles" pour un marquage present.
+  // Count of target characters still "available" to be marked present.
   const remaining: Record<string, number> = {};
   for (const ch of t) remaining[ch] = (remaining[ch] ?? 0) + 1;
 
@@ -20,7 +21,7 @@ export function evaluateGuess(guess: string, target: string): TileState[] {
     }
   }
 
-  // Passe 2 — "present" : tant qu'il reste une occurrence à consommer, sinon absent.
+  // Pass 2 — "present": while an occurrence remains to consume, otherwise absent.
   for (let i = 0; i < g.length; i++) {
     if (states[i] === "correct") continue;
     const ch = g[i];
@@ -33,8 +34,8 @@ export function evaluateGuess(guess: string, target: string): TileState[] {
   return states;
 }
 
-// Priorité des états pour colorer le clavier : un caractère garde son meilleur
-// état rencontré (un "absent" ne doit jamais écraser un "correct" déjà obtenu).
+// State priority for colouring the keyboard: a character keeps the best state it
+// has reached (an "absent" must never overwrite a "correct" already earned).
 const RANK: Record<KeyState, number> = {
   unused: 0,
   absent: 1,
@@ -58,8 +59,8 @@ export function deriveKeyStates(
       if (RANK[s] > RANK[cur]) map.set(g[i], s);
     }
   }
-  // Indices : un caractère indicé apparaît "present" au clavier, sans jamais
-  // rétrograder un "correct" déjà obtenu par le jeu.
+  // Hints: a hinted character shows as "present" on the keyboard, without ever
+  // downgrading a "correct" already earned in play.
   for (const ch of hintedChars) {
     const key = ch.toUpperCase();
     const cur = map.get(key) ?? "unused";

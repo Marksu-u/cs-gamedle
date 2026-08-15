@@ -5,11 +5,11 @@ import { EMPTY_PERSISTED, STORAGE_KEY, type Persisted } from "./types";
 describe("load", () => {
   beforeEach(() => localStorage.clear());
 
-  it("rend un état neuf quand rien n'est stocké", () => {
+  it("returns a fresh state when nothing is stored", () => {
     expect(load()).toEqual(EMPTY_PERSISTED);
   });
 
-  it("relit ce qui a été écrit", () => {
+  it("reads back what was written", () => {
     const etat: Persisted = {
       version: 1,
       meta: { streak: 3, lastPlayedDay: 100, runScore: 500, recordScore: 900 },
@@ -19,12 +19,12 @@ describe("load", () => {
     expect(load()).toEqual(etat);
   });
 
-  it("repart de zéro sur un JSON corrompu", () => {
+  it("starts over on corrupt JSON", () => {
     localStorage.setItem(STORAGE_KEY, "{ pas du json");
     expect(load()).toEqual(EMPTY_PERSISTED);
   });
 
-  it("repart de zéro sur une version inconnue", () => {
+  it("starts over on an unknown version", () => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({ version: 99, meta: {}, progress: null }),
@@ -32,7 +32,7 @@ describe("load", () => {
     expect(load()).toEqual(EMPTY_PERSISTED);
   });
 
-  it("repart de zéro si `meta` est absent", () => {
+  it("starts over when `meta` is missing", () => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({ version: 1, progress: null }),
@@ -40,7 +40,7 @@ describe("load", () => {
     expect(load()).toEqual(EMPTY_PERSISTED);
   });
 
-  it("repart de zéro si un champ de `meta` n'est pas un nombre", () => {
+  it("starts over when a `meta` field is not a number", () => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
@@ -52,9 +52,9 @@ describe("load", () => {
     expect(load()).toEqual(EMPTY_PERSISTED);
   });
 
-  it("repart de zéro si `progress` n'a pas de `puzzles`", () => {
-    // Les appelants indexent `progress.puzzles[id]` : une forme partielle les
-    // faisait lever, ce qui revenait au même qu'une exception d'ici.
+  it("starts over when `progress` has no `puzzles`", () => {
+    // Callers index into `progress.puzzles[id]`: a partial shape made them throw,
+    // which amounts to the same thing as an exception from here.
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
@@ -66,7 +66,7 @@ describe("load", () => {
     expect(load().progress).toBeNull();
   });
 
-  it("ne lève pas si localStorage est inaccessible", () => {
+  it("does not throw when localStorage is unreachable", () => {
     const spy = vi
       .spyOn(Storage.prototype, "getItem")
       .mockImplementation(() => {
@@ -82,7 +82,7 @@ describe("save", () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => vi.restoreAllMocks());
 
-  it("ne lève pas si le quota est dépassé", () => {
+  it("does not throw when the quota is exceeded", () => {
     const spy = vi
       .spyOn(Storage.prototype, "setItem")
       .mockImplementation(() => {

@@ -1,7 +1,7 @@
-// Types partagés du jeu « More or Lessr ». Génériques (indépendants de CS2) pour
-// rester réutilisables sur un autre univers.
+// Shared types for the More or Lessr game. Generic (not CS2-specific) so they
+// stay reusable for another universe.
 
-// Un pro comparable. `peak_year` est indicatif (affiché), jamais comparé.
+// A comparable pro. `peak_year` is indicative (displayed), never compared.
 export type Player = {
   name: string;
   team: string;
@@ -17,10 +17,10 @@ export type MorelessData = { game: string; players: Player[] };
 // Les deux stats comparables.
 export type Category = "rating" | "prize";
 
-// Sens de la réponse : le challenger a-t-il « plus » ou « moins » que l'ancre ?
+// Direction of the answer: does the challenger have "more" or "less" than the anchor?
 export type Direction = "more" | "less";
 
-// Écran courant : sélection → jeu → révélation du round → fin.
+// Current screen: selection → play → round reveal → end.
 export type Status = "select" | "playing" | "revealed" | "finished";
 
 export type GameState = {
@@ -38,5 +38,5 @@ export type GameState = {
   day: number; // jour sous lequel la séquence a été tirée
 };
 
-// 10 rounds → 11 joueurs consommés par partie.
+// 10 rounds → 11 players consumed per run.
 export const TOTAL_ROUNDS = 10;

@@ -8,8 +8,8 @@ type Props = {
   practice?: boolean;
 };
 
-// Ligne de score affichée sous chaque bannière de résultat. En entraînement, on
-// dit explicitement que rien n'est compté — sinon le joueur croit marquer.
+// Score line shown under every result banner. In practice mode it says outright
+// that nothing counts — otherwise the player thinks they are scoring.
 export default function PointsLine({ points, detail, practice }: Props) {
   const t = useTranslations("game");
   if (practice) {
