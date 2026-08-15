@@ -1,3 +1,6 @@
+"use client";
+
+import { useFormatter } from "next-intl";
 import { statValue } from "@/lib/more-or-lessr/compare";
 import { nationToFlag } from "@/lib/more-or-lessr/flags";
 import type { Category, Player } from "@/lib/more-or-lessr/types";
@@ -10,12 +13,6 @@ type Props = {
   onPick?: () => void; // absent → card not clickable (disabled)
 };
 
-// Rating: 2 decimals. Prize: $ with thousands separators.
-function formatValue(player: Player, category: Category): string {
-  const v = statValue(player, category);
-  return category === "rating" ? v.toFixed(2) : "$" + v.toLocaleString("en-US");
-}
-
 // You answer by CLICKING the card you think is bigger (see ChainBoard).
 export default function PlayerCard({
   player,
@@ -24,6 +21,26 @@ export default function PlayerCard({
   state = "idle",
   onPick,
 }: Props) {
+  const format = useFormatter();
+
+  // Rating: 2 decimals. Prize: whole dollars.
+  //
+  // Both go through the locale rather than a fixed "en-US", so a French player
+  // reads "1,12" and "1 500 000 $" instead of the American forms. The prize uses
+  // `narrowSymbol`: the standard French rendering of USD is "$US", but the
+  // French catalogue already writes the bare "$" and the scene is dollars only.
+  function formatValue(p: Player): string {
+    const v = statValue(p, category);
+    return category === "rating"
+      ? format.number(v, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : format.number(v, {
+          style: "currency",
+          currency: "USD",
+          currencyDisplay: "narrowSymbol",
+          maximumFractionDigits: 0,
+        });
+  }
+
   const ring =
     state === "correct"
       ? "border-[color:var(--wordle-correct)]"
@@ -49,7 +66,7 @@ export default function PlayerCard({
         className="mt-1 min-h-7 text-xl font-bold text-[color:var(--accent)]"
         aria-live="polite"
       >
-        {revealed ? formatValue(player, category) : "?"}
+        {revealed ? formatValue(player) : "?"}
       </span>
     </button>
   );
