@@ -1,4 +1,7 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 type Props = {
   label: string;
@@ -39,6 +42,8 @@ export default function GameModeCard({
   icon,
   progress,
 }: Props) {
+  const t = useTranslations("nav");
+
   return (
     <Link
       href={href}
@@ -69,7 +74,7 @@ export default function GameModeCard({
         {description}
       </p>
       <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-[color:var(--accent-hot)] uppercase">
-        Jouer
+        {t("play")}
         <svg
           width="15"
           height="15"

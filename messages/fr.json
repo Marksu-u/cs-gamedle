@@ -1,0 +1,167 @@
+{
+  "site": {
+    "name": "CS2 Gamedle"
+  },
+  "nav": {
+    "backToHub": "← Retour au hub",
+    "play": "Jouer",
+    "language": "Langue"
+  },
+  "home": {
+    "eyebrow": "Wordle • Guessr",
+    "tagline": "Le hub des mini-jeux CS2. Choisis ton mode : devine le pseudo du jour ou identifie le pro."
+  },
+  "score": {
+    "streak": "Série",
+    "score": "Score",
+    "record": "Record",
+    "nextPuzzle": "Prochaine grille",
+    "pending": "—"
+  },
+  "modes": {
+    "wordle": {
+      "label": "Wordle",
+      "description": "Devine le pseudo du jour en 6 essais. Indices couleur à chaque tentative."
+    },
+    "guessr": {
+      "label": "Guessr",
+      "description": "Retrouve le joueur pro à partir d'indices : équipe, rôle, nationalité, âge."
+    },
+    "more-or-lessr": {
+      "label": "More or Lessr",
+      "description": "Deux pros, une stat cachée : clique sur le plus grand. Rating ou prize money, 10 rounds."
+    }
+  },
+  "menu": {
+    "options": "Options",
+    "hint": "Indice",
+    "help": "Aide",
+    "giveUp": "Abandonner",
+    "close": "Fermer"
+  },
+  "game": {
+    "howToPlay": "Comment jouer",
+    "playAgain": "Rejouer",
+    "practice": "S'entraîner",
+    "practiceNotCounted": "Entraînement — ne compte pas",
+    "points": "{points} pts",
+    "hintsUsed": "{used}/{max}"
+  },
+  "wordle": {
+    "eyebrow": "Counter-Strike 2 · Wordle",
+    "title": "Devine le pseudo",
+    "tagLength": "Longueur du pseudo",
+    "solved": "Gagné !",
+    "missed": "Perdu",
+    "answerWas": "Le pseudo était",
+    "detailWon": "trouvé en {attempts, plural, one {# essai} other {# essais}}, {hints, plural, =0 {aucun indice} one {# indice} other {# indices}}",
+    "detailLost": "grille perdue",
+    "help": {
+      "items": [
+        "Devine le pseudo d'un joueur pro CS en 6 essais. Chaque essai doit être un pseudo du pool.",
+        "🟩 vert = bon caractère bien placé · 🟨 jaune = présent mais mal placé · ⬛ gris = absent.",
+        "Les onglets changent la longueur du pseudo : un board indépendant par longueur.",
+        "💡 L'indice révèle un caractère de la réponse (marqué en jaune sur le clavier) et ne consomme pas d'essai.",
+        "Certains pseudos contiennent des chiffres."
+      ]
+    }
+  },
+  "guessr": {
+    "eyebrow": "Counter-Strike 2 · Guessr",
+    "title": "Devine le joueur",
+    "subtitle": "Un joueur pro par jour. Essais illimités, indices à chaque proposition.",
+    "placeholder": "Tape le pseudo d'un joueur…",
+    "foundIn": "Trouvé en {attempts, plural, one {# essai} other {# essais}}",
+    "gaveUp": "Abandonné — la réponse était",
+    "detail": "trouvé en {attempts, plural, one {# essai} other {# essais}}, {hints, plural, =0 {aucun indice} one {# indice} other {# indices}}",
+    "detailGaveUp": "abandonné",
+    "columns": {
+      "player": "Joueur",
+      "nationality": "Nationalité",
+      "team": "Équipe",
+      "formerTeams": "Anciennes équipes",
+      "role": "Rôle",
+      "age": "Âge",
+      "majors": "Majors",
+      "tournaments": "Tournois"
+    },
+    "help": {
+      "items": [
+        "🎯 Trouve le joueur pro CS mystère.",
+        "⌨️ Propose un pseudo du pool : chaque proposition remplit une ligne comparant 7 attributs.",
+        "🟩 Vert = valeur exacte.",
+        "🟨 Orange = partiellement commun (anciennes équipes / rôles).",
+        "⬜ Gris = aucun lien.",
+        "▲ = la valeur de la cible est plus haute, ▼ plus basse (âge, majors, tournois).",
+        "♾️ Essais illimités.",
+        "💡 L'indice révèle une colonne de la réponse mais compte comme un essai (max {maxHints})."
+      ]
+    }
+  },
+  "moreOrLessr": {
+    "eyebrow": "Counter-Strike 2 · More or Lessr",
+    "title": "Plus ou moins ?",
+    "categories": {
+      "rating": "Rating",
+      "prize": "Prize money",
+      "ratingHint": "Qui a le meilleur peak rating ?",
+      "prizeHint": "Qui a gagné le plus de $ ?"
+    },
+    "higher": "HAUTE",
+    "lower": "BASSE",
+    "peakRating": "Peak rating",
+    "prizeMoney": "Prize money",
+    "finished": "Terminé",
+    "perfect": "Sans faute !",
+    "changeCategory": "Changer de catégorie",
+    "detail": "{score, plural, one {# bonne réponse} other {# bonnes réponses}} sur {total}",
+    "help": {
+      "items": [
+        "Choisis une catégorie : rating HLTV ou gains en carrière.",
+        "Deux joueurs s'affichent : la valeur de gauche (l'ancre) est visible, celle du challenger est cachée.",
+        "Devine si le challenger a une valeur plus HAUTE ou plus BASSE que l'ancre.",
+        "Juste ou faux, le challenger devient la nouvelle ancre et la chaîne continue.",
+        "Les 10 rounds se jouent jusqu'au bout : une mauvaise réponse ne termine pas la partie.",
+        "Chaque bonne réponse rapporte, et un sans-faute donne un bonus.",
+        "Abandonner termine la partie immédiatement en gardant le score acquis."
+      ]
+    }
+  },
+  "errors": {
+    "notFound": {
+      "eyebrow": "Erreur 404",
+      "title": "Page introuvable",
+      "body": "Cette page n'existe pas. Les grilles du jour, elles, sont bien là."
+    },
+    "unexpected": {
+      "eyebrow": "Erreur inattendue",
+      "title": "Ça a cassé",
+      "body": "La partie du jour est enregistrée localement : elle devrait être toujours là après un nouvel essai.",
+      "retry": "Réessayer"
+    }
+  },
+  "seo": {
+    "home": {
+      "title": "CS2 Gamedle — 9 grilles quotidiennes Counter-Strike 2",
+      "description": "Neuf grilles quotidiennes sur la scène Counter-Strike 2 : Wordle, Guessr et More or Lessr. Nouvelles chaque jour à 3h UTC, les mêmes pour tout le monde."
+    },
+    "wordle": {
+      "title": "Wordle CS2 — devine le pseudo du jour",
+      "description": "Six grilles par jour, une par longueur de pseudo (3 à 8 lettres). Six essais, indices couleur, une série à tenir."
+    },
+    "guessr": {
+      "title": "Guessr CS2 — devine le joueur pro du jour",
+      "description": "Un joueur pro par jour à retrouver via son équipe, son rôle, sa nationalité, son âge et son palmarès. Essais illimités."
+    },
+    "more-or-lessr": {
+      "title": "More or Lessr CS2 — plus ou moins ?",
+      "description": "Deux pros, une stat cachée : rating HLTV ou prize money. Dix rounds, deux catégories par jour."
+    },
+    "ogTagline": "9 grilles par jour, les mêmes pour tout le monde",
+    "ogBadges": {
+      "rotation": "Rotation à 3h UTC",
+      "streak": "Série",
+      "score": "Score & record"
+    }
+  }
+}

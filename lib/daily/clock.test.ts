@@ -37,7 +37,6 @@ describe("dayIndex", () => {
   });
 });
 
-
 describe("msUntilNextRotation", () => {
   it("rend 1 s une seconde avant la bascule", () => {
     expect(msUntilNextRotation(at(2026, 8, 14, 2, 59, 59))).toBe(1000);

@@ -9,7 +9,13 @@ type Props = {
   shake: boolean; // essai invalide sur la rangée courante
 };
 
-export default function GuessRow({ length, letters, states, revealed, shake }: Props) {
+export default function GuessRow({
+  length,
+  letters,
+  states,
+  revealed,
+  shake,
+}: Props) {
   return (
     <div
       className={`grid gap-1.5 ${shake ? "animate-[wordle-shake_0.4s_ease]" : ""}`}

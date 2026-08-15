@@ -17,6 +17,7 @@ import HelpModal from "@/components/HelpModal";
 import { deriveKeyStates } from "@/lib/wordle/engine";
 import { availableLengths } from "@/lib/wordle/selection";
 import { wordlePoints } from "@/lib/daily/scoring";
+import { useTranslations } from "next-intl";
 import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { PuzzleId } from "@/lib/daily/types";
 import {
@@ -31,6 +32,9 @@ import {
 } from "./reducer";
 
 export default function WordleGame({ data }: { data: WordleData }) {
+  const t = useTranslations("wordle");
+  const menu = useTranslations("menu");
+  const game = useTranslations("game");
   const lengths = availableLengths(data);
   const defaultLength = lengths.includes(5) ? 5 : lengths[0];
   // Longueur max (8 ici) : sert à dimensionner les tuiles de TOUS les boards de
@@ -157,7 +161,7 @@ export default function WordleGame({ data }: { data: WordleData }) {
   const menuItems: GameMenuItem[] = [
     {
       id: "hint",
-      label: "Indice",
+      label: menu("hint"),
       icon: "hint",
       // Le plafond est appliqué par le reducer ; sans ces deux lignes le bouton
       // restait allumé au-delà et ne faisait plus rien.
@@ -170,13 +174,13 @@ export default function WordleGame({ data }: { data: WordleData }) {
     },
     {
       id: "help",
-      label: "Aide",
+      label: menu("help"),
       icon: "help",
       onSelect: () => setHelpOpen(true),
     },
     {
       id: "giveup",
-      label: "Abandonner",
+      label: menu("giveUp"),
       icon: "giveup",
       disabled: board.status !== "playing",
       onSelect: () => dispatch({ type: "GIVE_UP" }),
@@ -227,26 +231,12 @@ export default function WordleGame({ data }: { data: WordleData }) {
       <HelpModal
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
-        title="Comment jouer"
+        title={game("howToPlay")}
       >
         <ul className="space-y-2">
-          <li>
-            Devine le pseudo d’un joueur pro CS en 6 essais. Chaque essai doit
-            être un pseudo du pool.
-          </li>
-          <li>
-            🟩 vert = bon caractère bien placé, 🟨 jaune = présent mais mal
-            placé, ⬛ gris = absent.
-          </li>
-          <li>
-            Les onglets changent la longueur du pseudo : un board indépendant
-            par longueur.
-          </li>
-          <li>
-            💡 L’indice révèle un caractère de la réponse (marqué en jaune sur
-            le clavier) et ne consomme pas d’essai.
-          </li>
-          <li>Certains pseudos contiennent des chiffres.</li>
+          {(t.raw("help.items") as string[]).map((_, i) => (
+            <li key={i}>{t(`help.items.${i}`)}</li>
+          ))}
         </ul>
       </HelpModal>
     </div>

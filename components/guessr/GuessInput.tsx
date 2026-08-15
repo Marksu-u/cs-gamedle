@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useMemo, useState } from "react";
 import { norm } from "@/lib/guessr/compare";
 import type { Player } from "@/lib/guessr/types";
@@ -17,6 +19,7 @@ export default function GuessInput({
   disabled,
   onGuess,
 }: Props) {
+  const t = useTranslations("guessr");
   const [query, setQuery] = useState("");
   const guessed = useMemo(
     () => new Set(guessedNames.map(norm)),
@@ -46,7 +49,7 @@ export default function GuessInput({
         onKeyDown={(e) => {
           if (e.key === "Enter" && suggestions[0]) submit(suggestions[0].name);
         }}
-        placeholder="Tape le pseudo d'un joueur…"
+        placeholder={t("placeholder")}
         className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-sm text-foreground placeholder:text-[color:var(--muted)] focus:border-[color:var(--accent)] focus:outline-none"
       />
       {suggestions.length > 0 && (

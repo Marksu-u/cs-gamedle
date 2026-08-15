@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 // Icônes monochromes (trait `currentColor`) pour rester dans la direction
 // artistique CS2 — les emojis couleur juraient avec le reste du thème.
@@ -35,7 +36,7 @@ function Icon({ name }: { name: GameMenuIcon }) {
 
 export type GameMenuItem = {
   id: string;
-  label: string; // ex. "Indice"
+  label: string; // e.g. "Hint"
   icon: GameMenuIcon; // clé d'icône monochrome (cf. ICON_PATHS)
   note?: string; // ex. "2/4" — affiché à droite, discret
   disabled?: boolean;
@@ -45,6 +46,7 @@ export type GameMenuItem = {
 // Menu déroulant compact (bouton burger) réutilisé par les trois jeux CS pour
 // regrouper les actions annexes (indice / aide / abandon) au même endroit.
 export default function GameMenu({ items }: { items: GameMenuItem[] }) {
+  const t = useTranslations("menu");
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -76,8 +78,8 @@ export default function GameMenu({ items }: { items: GameMenuItem[] }) {
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Options"
-        title="Options"
+        aria-label={t("options")}
+        title={t("options")}
         onClick={() => setOpen((v) => !v)}
         className="rounded-md border border-[color:var(--border)] bg-[var(--surface)] p-2 text-[color:var(--muted)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
       >

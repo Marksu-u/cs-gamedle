@@ -116,6 +116,10 @@ describe("équilibrage global", () => {
     expect(molPoints(10) * 2).toBe(360);
     // 840 + 200 + 360 : le total d'une journée parfaite. Il n'existe que sous
     // forme d'assertion — aucun écran ne l'affiche, donc pas de constante.
-    expect(wordle + guessrPoints({ guesses: 1, hints: 0, won: true }) + molPoints(10) * 2).toBe(1400);
+    expect(
+      wordle +
+        guessrPoints({ guesses: 1, hints: 0, won: true }) +
+        molPoints(10) * 2,
+    ).toBe(1400);
   });
 });

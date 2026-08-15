@@ -8,11 +8,15 @@ import GuessInput from "@/components/guessr/GuessInput";
 import ResultBanner from "@/components/guessr/ResultBanner";
 import { MAX_HINTS } from "@/lib/guessr/hints";
 import { guessrPoints } from "@/lib/daily/scoring";
+import { useTranslations } from "next-intl";
 import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { GameState, GuessrData } from "@/lib/guessr/types";
 import { createGuessrReducer, createInitialState } from "./reducer";
 
 export default function GuessrGame({ data }: { data: GuessrData }) {
+  const t = useTranslations("guessr");
+  const menu = useTranslations("menu");
+  const game = useTranslations("game");
   const day = useDay();
   const reducer = useMemo(() => createGuessrReducer(data, day), [data, day]);
   const [state, dispatch] = useReducer(reducer, undefined, () =>
@@ -56,7 +60,7 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
   const menuItems: GameMenuItem[] = [
     {
       id: "hint",
-      label: "Indice",
+      label: menu("hint"),
       icon: "hint",
       note: `${hintsUsed}/${MAX_HINTS}`,
       disabled: hintsUsed >= MAX_HINTS || state.status !== "playing",
@@ -64,13 +68,13 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
     },
     {
       id: "help",
-      label: "Aide",
+      label: menu("help"),
       icon: "help",
       onSelect: () => setHelpOpen(true),
     },
     {
       id: "giveup",
-      label: "Abandonner",
+      label: menu("giveUp"),
       icon: "giveup",
       disabled: state.status !== "playing",
       onSelect: () => dispatch({ type: "GIVE_UP" }),
@@ -119,26 +123,12 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
       <HelpModal
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
-        title="Comment jouer"
+        title={game("howToPlay")}
       >
         <ul className="space-y-2">
-          <li>🎯 Trouve le joueur pro CS mystère.</li>
-          <li>
-            ⌨️ Propose un pseudo du pool : chaque proposition remplit une ligne
-            comparant 7 attributs.
-          </li>
-          <li>🟩 Vert = valeur exacte.</li>
-          <li>🟨 Orange = partiellement commun (anciennes équipes / rôles).</li>
-          <li>⬜ Gris = aucun lien.</li>
-          <li>
-            ▲ = la valeur de la cible est plus haute, ▼ plus basse (âge, majors,
-            tournois).
-          </li>
-          <li>♾️ Essais illimités.</li>
-          <li>
-            💡 L’indice révèle une colonne de la réponse mais compte comme un
-            essai (max {MAX_HINTS}).
-          </li>
+          {(t.raw("help.items") as string[]).map((_, i) => (
+            <li key={i}>{t(`help.items.${i}`, { maxHints: MAX_HINTS })}</li>
+          ))}
         </ul>
       </HelpModal>
     </div>

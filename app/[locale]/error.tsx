@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
-// Filet de sécurité pour toute exception non rattrapée du rendu client. Sans ce
-// fichier, Next affiche son écran d'erreur générique — anglais, sans issue, et
-// sans le thème du site.
+// Safety net for any uncaught client render exception. Without this file Next
+// shows its generic error screen — no way out, and none of the site's theme.
 export default function Error({
   error,
   reset,
@@ -13,22 +13,24 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("errors.unexpected");
+  const nav = useTranslations("nav");
+
   useEffect(() => {
-    // Pas de service de reporting branché : au moins la console garde la trace.
+    // No reporting service wired up: the console at least keeps a trace.
     console.error(error);
   }, [error]);
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center px-6 text-center">
       <p className="mb-2 text-xs tracking-[0.25em] text-[color:var(--accent-hot)] uppercase">
-        Erreur inattendue
+        {t("eyebrow")}
       </p>
       <h1 className="cs2-display text-foreground text-4xl font-extrabold uppercase italic">
-        Ça a cassé
+        {t("title")}
       </h1>
       <p className="mt-3 max-w-[46ch] text-sm text-[color:var(--muted)]">
-        La partie du jour est enregistrée localement : elle devrait être
-        toujours là après un nouvel essai.
+        {t("body")}
       </p>
       <div className="mt-7 flex gap-3">
         <button
@@ -36,13 +38,13 @@ export default function Error({
           onClick={reset}
           className="rounded-md bg-[var(--accent)] px-5 py-2 text-xs font-semibold tracking-widest text-black uppercase transition hover:bg-[var(--accent-hot)]"
         >
-          Réessayer
+          {t("retry")}
         </button>
         <Link
           href="/"
           className="rounded-md border border-[color:var(--border)] px-5 py-2 text-xs font-semibold tracking-widest uppercase transition hover:border-[color:var(--accent)]"
         >
-          Retour au hub
+          {nav("backToHub")}
         </Link>
       </div>
     </main>

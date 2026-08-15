@@ -1,6 +1,7 @@
 "use client";
 
 import { useDay } from "@/lib/daily/useDailyPuzzle";
+import { useTranslations } from "next-intl";
 import { useDailyState, useHydrated } from "@/lib/daily/store";
 import type { PuzzleId } from "@/lib/daily/types";
 
@@ -20,6 +21,7 @@ const PUZZLES_PAR_MODE: Record<string, PuzzleId[]> = {
 };
 
 export default function ModeProgress({ modeId }: { modeId: string }) {
+  const t = useTranslations("score");
   const state = useDailyState();
   const hydrated = useHydrated();
   const day = useDay();
@@ -43,7 +45,7 @@ export default function ModeProgress({ modeId }: { modeId: string }) {
           : "text-[color:var(--muted)]"
       }`}
     >
-      {hydrated ? `${faites}/${ids.length}` : `—/${ids.length}`}
+      {hydrated ? `${faites}/${ids.length}` : `${t("pending")}/${ids.length}`}
     </span>
   );
 }

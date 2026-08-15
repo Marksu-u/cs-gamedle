@@ -10,7 +10,13 @@ type Props = {
   onDelete: () => void;
 };
 
-export default function Keyboard({ keyStates, flashKey, onKey, onEnter, onDelete }: Props) {
+export default function Keyboard({
+  keyStates,
+  flashKey,
+  onKey,
+  onEnter,
+  onDelete,
+}: Props) {
   function press(label: string) {
     if (label === "ENTER") return onEnter();
     if (label === "DEL") return onDelete();

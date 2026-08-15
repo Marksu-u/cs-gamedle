@@ -1,24 +1,42 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import guessrData from "@/app/data/cs2/guessr_players.json";
 import GuessrGame from "./GuessrGame";
 import type { GuessrData } from "@/lib/guessr/types";
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/seo";
-export const metadata: Metadata = pageMetadata("/guessr");
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { buildMetadata } from "@/lib/seo";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return buildMetadata("/guessr", locale);
+}
 
-export default function CsGuessrPage() {
+export default async function CsGuessrPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  // Required for static rendering: without it this page opts into
+  // dynamic rendering as soon as it reads a translation.
+  setRequestLocale(locale);
+  const t = await getTranslations("guessr");
+  const nav = await getTranslations("nav");
+
   return (
     <main className="flex min-h-dvh flex-col items-center px-4 py-10">
       <header className="mb-6 text-center">
         <p className="mb-2 text-xs tracking-[0.25em] text-[color:var(--accent)] uppercase">
-          Counter-Strike 2 · Guessr
+          {t("eyebrow")}
         </p>
         <h1 className="cs2-display text-foreground text-4xl font-extrabold uppercase italic">
-          Devine le joueur
+          {t("title")}
         </h1>
         <p className="mt-2 max-w-md text-sm text-[color:var(--muted)]">
-          Un joueur pro par jour. Essais illimités, indices à chaque
-          proposition.
+          {t("subtitle")}
         </p>
       </header>
 
@@ -28,7 +46,7 @@ export default function CsGuessrPage() {
         href="/"
         className="mt-8 inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-[color:var(--accent-hot)] uppercase"
       >
-        ← Retour au hub
+        {nav("backToHub")}
       </Link>
     </main>
   );

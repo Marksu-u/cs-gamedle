@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { nationToFlag } from "@/lib/more-or-lessr/flags";
 import PointsLine from "@/components/daily/PointsLine";
 import type { Player } from "@/lib/guessr/types";
@@ -9,7 +12,7 @@ type Props = {
   hints: number;
   practice?: boolean;
   onPractice: () => void;
-  gaveUp?: boolean; // variante abandon : révèle la réponse en rouge
+  gaveUp?: boolean; // give-up variant: reveals the answer in red
 };
 
 export default function ResultBanner({
@@ -21,6 +24,9 @@ export default function ResultBanner({
   onPractice,
   gaveUp,
 }: Props) {
+  const t = useTranslations("guessr");
+  const g = useTranslations("game");
+
   return (
     <div
       className={`mt-6 w-full max-w-md rounded-xl border p-5 text-center ${
@@ -34,9 +40,7 @@ export default function ResultBanner({
           gaveUp ? "text-red-400" : "text-emerald-400"
         }`}
       >
-        {gaveUp
-          ? "Abandonné — la réponse était"
-          : `Trouvé en ${attempts} essai${attempts > 1 ? "s" : ""}`}
+        {gaveUp ? t("gaveUp") : t("foundIn", { attempts })}
       </p>
       <h2 className="cs2-display mt-1 text-3xl font-extrabold uppercase italic">
         {nationToFlag(target.nationality)} {target.name}
@@ -53,15 +57,7 @@ export default function ResultBanner({
       )}
       <PointsLine
         points={points}
-        detail={
-          gaveUp
-            ? "abandonné"
-            : `trouvé en ${attempts} essai${attempts > 1 ? "s" : ""}, ${
-                hints === 0
-                  ? "aucun indice"
-                  : `${hints} indice${hints > 1 ? "s" : ""}`
-              }`
-        }
+        detail={gaveUp ? t("detailGaveUp") : t("detail", { attempts, hints })}
         practice={practice}
       />
       <button
@@ -69,7 +65,7 @@ export default function ResultBanner({
         onClick={onPractice}
         className="mt-4 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold tracking-widest uppercase hover:bg-white/10"
       >
-        {practice ? "Rejouer" : "S'entraîner"}
+        {practice ? g("playAgain") : g("practice")}
       </button>
     </div>
   );

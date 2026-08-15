@@ -3,7 +3,8 @@ import type { TileState } from "@/lib/wordle/types";
 // Couleurs d'état dérivées des tokens du thème CS2 (cf. cs2-theme.css).
 const STATE_CLASS: Record<TileState, string> = {
   empty: "border-[color:var(--border)] bg-transparent text-foreground",
-  absent: "border-transparent bg-[var(--wordle-absent)] text-[color:var(--muted)]",
+  absent:
+    "border-transparent bg-[var(--wordle-absent)] text-[color:var(--muted)]",
   present: "border-transparent bg-[var(--wordle-present)] text-black",
   correct: "border-transparent bg-[var(--wordle-correct)] text-black",
 };

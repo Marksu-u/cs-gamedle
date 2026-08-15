@@ -85,7 +85,12 @@ describe("compareGuess", () => {
     expect(r.current_team.match).toBe("miss");
     expect(r.previous_teams.match).toBe("partial");
     expect(r.role.match).toBe("partial");
-    expect(r.age).toEqual({ kind: "number", match: "miss", value: 22, direction: "up" });
+    expect(r.age).toEqual({
+      kind: "number",
+      match: "miss",
+      value: 22,
+      direction: "up",
+    });
     expect(r.tournaments_won.match).toBe("exact");
   });
 });

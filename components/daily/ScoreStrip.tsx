@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { msUntilNextRotation } from "@/lib/daily/clock";
 import { streakMultiplier } from "@/lib/daily/scoring";
 import { useDailyState, useHydrated } from "@/lib/daily/store";
@@ -35,24 +36,29 @@ function useCountdown(): string {
 }
 
 export default function ScoreStrip() {
+  const t = useTranslations("score");
   const { meta } = useDailyState();
   const hydrated = useHydrated();
   const countdown = useCountdown();
 
   // Tant que l'hydratation n'a pas eu lieu, on affiche un tiret : mieux vaut
   // un vide qu'un zéro faux qui clignote vers la vraie valeur.
-  const v = (n: number) => (hydrated ? String(n) : "—");
+  const v = (n: number) => (hydrated ? String(n) : t("pending"));
   const mult = streakMultiplier(meta.streak);
 
   return (
     <div className="mb-6 grid grid-cols-2 gap-4 rounded-xl border border-[color:var(--border)] bg-[var(--surface)] p-4 sm:grid-cols-4">
       <Stat
-        label="Série"
-        value={hydrated ? `${meta.streak}${mult > 1 ? ` ×${mult}` : ""}` : "—"}
+        label={t("streak")}
+        value={
+          hydrated
+            ? `${meta.streak}${mult > 1 ? ` ×${mult}` : ""}`
+            : t("pending")
+        }
       />
-      <Stat label="Score" value={v(meta.runScore)} />
-      <Stat label="Record" value={v(meta.recordScore)} />
-      <Stat label="Prochaine grille" value={countdown} />
+      <Stat label={t("score")} value={v(meta.runScore)} />
+      <Stat label={t("record")} value={v(meta.recordScore)} />
+      <Stat label={t("nextPuzzle")} value={countdown} />
     </div>
   );
 }

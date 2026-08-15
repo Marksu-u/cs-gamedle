@@ -1,0 +1,167 @@
+{
+  "site": {
+    "name": "CS2 Gamedle"
+  },
+  "nav": {
+    "backToHub": "← Back to the hub",
+    "play": "Play",
+    "language": "Language"
+  },
+  "home": {
+    "eyebrow": "Wordle • Guessr",
+    "tagline": "The CS2 mini-game hub. Pick your mode: guess today's tag or name the pro."
+  },
+  "score": {
+    "streak": "Streak",
+    "score": "Score",
+    "record": "Record",
+    "nextPuzzle": "Next puzzle",
+    "pending": "—"
+  },
+  "modes": {
+    "wordle": {
+      "label": "Wordle",
+      "description": "Guess today's player tag in 6 tries. Colour clues on every attempt."
+    },
+    "guessr": {
+      "label": "Guessr",
+      "description": "Track down the pro from clues: team, role, nationality, age."
+    },
+    "more-or-lessr": {
+      "label": "More or Lessr",
+      "description": "Two pros, one hidden stat: pick the bigger. Rating or prize money, 10 rounds."
+    }
+  },
+  "menu": {
+    "options": "Options",
+    "hint": "Hint",
+    "help": "Help",
+    "giveUp": "Give up",
+    "close": "Close"
+  },
+  "game": {
+    "howToPlay": "How to play",
+    "playAgain": "Play again",
+    "practice": "Practice",
+    "practiceNotCounted": "Practice — doesn't count",
+    "points": "{points} pts",
+    "hintsUsed": "{used}/{max}"
+  },
+  "wordle": {
+    "eyebrow": "Counter-Strike 2 · Wordle",
+    "title": "Guess the tag",
+    "tagLength": "Tag length",
+    "solved": "Solved!",
+    "missed": "Missed",
+    "answerWas": "The tag was",
+    "detailWon": "found in {attempts, plural, one {# try} other {# tries}}, {hints, plural, =0 {no hints} one {# hint} other {# hints}}",
+    "detailLost": "puzzle missed",
+    "help": {
+      "items": [
+        "Guess a CS pro's tag in 6 tries. Every guess must be a tag from the pool.",
+        "🟩 green = right character, right spot · 🟨 amber = present but misplaced · ⬛ grey = absent.",
+        "The tabs switch tag length: each length is its own independent board.",
+        "💡 A hint reveals one character of the answer (marked amber on the keyboard) and does not use up a try.",
+        "Some tags contain digits."
+      ]
+    }
+  },
+  "guessr": {
+    "eyebrow": "Counter-Strike 2 · Guessr",
+    "title": "Name the pro",
+    "subtitle": "One pro a day. Unlimited tries, clues on every guess.",
+    "placeholder": "Type a player's tag…",
+    "foundIn": "Found in {attempts, plural, one {# try} other {# tries}}",
+    "gaveUp": "Gave up — the answer was",
+    "detail": "found in {attempts, plural, one {# try} other {# tries}}, {hints, plural, =0 {no hints} one {# hint} other {# hints}}",
+    "detailGaveUp": "gave up",
+    "columns": {
+      "player": "Player",
+      "nationality": "Nationality",
+      "team": "Team",
+      "formerTeams": "Former teams",
+      "role": "Role",
+      "age": "Age",
+      "majors": "Majors",
+      "tournaments": "Tournaments"
+    },
+    "help": {
+      "items": [
+        "🎯 Find the mystery CS pro.",
+        "⌨️ Guess a tag from the pool: each guess fills a row comparing 7 attributes.",
+        "🟩 Green = exact match.",
+        "🟨 Amber = partial overlap (former teams / roles).",
+        "⬜ Grey = no overlap.",
+        "▲ = the target's value is higher, ▼ lower (age, majors, tournaments).",
+        "♾️ Unlimited tries.",
+        "💡 A hint reveals one column of the answer but counts as a try (max {maxHints})."
+      ]
+    }
+  },
+  "moreOrLessr": {
+    "eyebrow": "Counter-Strike 2 · More or Lessr",
+    "title": "More or less?",
+    "categories": {
+      "rating": "Rating",
+      "prize": "Prize money",
+      "ratingHint": "Who has the better peak rating?",
+      "prizeHint": "Who has earned more $?"
+    },
+    "higher": "HIGHER",
+    "lower": "LOWER",
+    "peakRating": "Peak rating",
+    "prizeMoney": "Prize money",
+    "finished": "Done",
+    "perfect": "Perfect run!",
+    "changeCategory": "Change category",
+    "detail": "{score, plural, one {# correct answer} other {# correct answers}} out of {total}",
+    "help": {
+      "items": [
+        "Pick a category: HLTV rating or career earnings.",
+        "Two players appear: the left value (the anchor) is visible, the challenger's is hidden.",
+        "Guess whether the challenger is HIGHER or LOWER than the anchor.",
+        "Right or wrong, the challenger becomes the next anchor and the chain continues.",
+        "All 10 rounds are played through — a wrong answer does not end the run.",
+        "Every correct answer scores, and a perfect 10 earns a bonus.",
+        "Giving up ends the run immediately, keeping the score earned so far."
+      ]
+    }
+  },
+  "errors": {
+    "notFound": {
+      "eyebrow": "Error 404",
+      "title": "Page not found",
+      "body": "This page doesn't exist. Today's puzzles, however, are right where you left them."
+    },
+    "unexpected": {
+      "eyebrow": "Unexpected error",
+      "title": "Something broke",
+      "body": "Today's progress is saved locally, so it should still be there after another try.",
+      "retry": "Try again"
+    }
+  },
+  "seo": {
+    "home": {
+      "title": "CS2 Gamedle — 9 daily Counter-Strike 2 puzzles",
+      "description": "Nine daily puzzles on the Counter-Strike 2 scene: Wordle, Guessr and More or Lessr. New every day at 3am UTC, the same for everyone."
+    },
+    "wordle": {
+      "title": "CS2 Wordle — guess today's player tag",
+      "description": "Six puzzles a day, one per tag length (3 to 8 letters). Six tries, colour clues, and a streak to keep alive."
+    },
+    "guessr": {
+      "title": "CS2 Guessr — name today's pro player",
+      "description": "One pro a day to identify from their team, role, nationality, age and trophies. Unlimited tries."
+    },
+    "more-or-lessr": {
+      "title": "CS2 More or Lessr — higher or lower?",
+      "description": "Two pros, one hidden stat: HLTV rating or prize money. Ten rounds, two categories a day."
+    },
+    "ogTagline": "9 puzzles a day, the same for everyone",
+    "ogBadges": {
+      "rotation": "Resets at 3am UTC",
+      "streak": "Streak",
+      "score": "Score & record"
+    }
+  }
+}

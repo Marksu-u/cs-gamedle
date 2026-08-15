@@ -2,7 +2,13 @@ import type { CSSProperties } from "react";
 import GuessRow from "./GuessRow";
 import { MAX_ATTEMPTS, type BoardState } from "@/lib/wordle/types";
 
-export default function Board({ board, maxLength }: { board: BoardState; maxLength: number }) {
+export default function Board({
+  board,
+  maxLength,
+}: {
+  board: BoardState;
+  maxLength: number;
+}) {
   // L'index de la rangée en cours = nombre d'essais déjà soumis.
   const currentRow = board.guesses.length;
   return (
@@ -25,7 +31,9 @@ export default function Board({ board, maxLength }: { board: BoardState; maxLeng
           <GuessRow
             key={r}
             length={board.length}
-            letters={submitted ? board.guesses[r] : isCurrent ? board.current : ""}
+            letters={
+              submitted ? board.guesses[r] : isCurrent ? board.current : ""
+            }
             states={submitted ? board.evaluations[r] : []}
             revealed={submitted}
             shake={isCurrent && board.invalid}

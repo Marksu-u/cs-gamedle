@@ -8,18 +8,18 @@ import { STORAGE_KEY } from "@/lib/daily/types";
 import { dailyWord } from "@/lib/wordle/selection";
 import type { WordleData } from "@/lib/wordle/types";
 import wordleData from "@/app/data/cs2/wordle.json";
+import messages from "@/messages/en.json";
+import { NextIntlClientProvider } from "next-intl";
 import WordleGame from "./WordleGame";
 
-// Reprise après rafraîchissement, testée à travers un VRAI cycle
-// rendu-serveur + hydratation.
+// Resume-after-refresh, tested through a REAL server-render + hydration cycle.
 //
-// C'est indispensable : monté uniquement côté client, le composant se répare
-// tout seul et le bug est invisible. Il n'apparaît qu'avec l'hydratation, parce
-// que le premier rendu client voit encore l'instantané serveur — donc un
-// stockage vide.
+// This matters: mounted client-side only, the component heals itself and the
+// bug is invisible. It only shows under hydration, because the first client
+// render still sees the server snapshot — an empty store.
 const data = wordleData as WordleData;
 
-function poserPartieEnCours(guesses: string[]) {
+function seedGameInProgress(guesses: string[]) {
   const day = dayIndex();
   const target = dailyWord(data, 5, day);
   localStorage.setItem(
@@ -63,59 +63,66 @@ function poserPartieEnCours(guesses: string[]) {
   );
 }
 
-async function hydrater() {
-  const html = renderToString(<WordleGame data={data} />);
+async function hydrate() {
+  // WordleGame reads translations, so both the server render and the
+  // hydration must be wrapped exactly as the real layout wraps them.
+  const tree = (
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <WordleGame data={data} />
+    </NextIntlClientProvider>
+  );
+  const html = renderToString(tree);
   const container = document.createElement("div");
   container.innerHTML = html;
   document.body.appendChild(container);
   await act(async () => {
-    hydrateRoot(container, <WordleGame data={data} />);
+    hydrateRoot(container, tree);
   });
   return container;
 }
 
-function grillesStockees() {
+function storedPuzzles() {
   const brut = localStorage.getItem(STORAGE_KEY);
   return brut ? JSON.parse(brut).progress?.puzzles : undefined;
 }
 
-describe("reprise d'une grille quotidienne après rafraîchissement", () => {
+describe("resuming a daily puzzle after a refresh", () => {
   beforeEach(() => {
     localStorage.clear();
     dailyStore.reset();
     document.body.innerHTML = "";
   });
 
-  it("ne perd pas les essais déjà joués", async () => {
-    poserPartieEnCours(["ADREN", "BLAST"]);
-    await hydrater();
-    expect(grillesStockees()?.["wordle-5"]?.state.guesses).toEqual([
+  it("does not lose the guesses already played", async () => {
+    seedGameInProgress(["ADREN", "BLAST"]);
+    await hydrate();
+    expect(storedPuzzles()?.["wordle-5"]?.state.guesses).toEqual([
       "ADREN",
       "BLAST",
     ]);
   });
 
-  it("réaffiche les essais dans la grille", async () => {
-    poserPartieEnCours(["ADREN"]);
-    const container = await hydrater();
-    // Les lettres du premier essai doivent être rendues dans les tuiles.
+  it("renders the guesses back into the grid", async () => {
+    seedGameInProgress(["ADREN"]);
+    const container = await hydrate();
+    // The first guess's letters must be rendered into the tiles.
     expect(container.textContent).toContain("A");
-    expect(grillesStockees()?.["wordle-5"]?.state.guesses).toEqual(["ADREN"]);
+    expect(storedPuzzles()?.["wordle-5"]?.state.guesses).toEqual(["ADREN"]);
   });
 
-  it("ne remet pas le compteur d'essais à zéro (sinon le score est rendu)", async () => {
-    // Le vrai coût du bug : trois essais consommés, puis rafraîchissement, et la
-    // grille repartait à zéro essai — donc au score maximal.
-    poserPartieEnCours(["ADREN", "BLAST", "CADIA"]);
-    await hydrater();
-    const essais = grillesStockees()?.["wordle-5"]?.state.guesses;
+  it("does not reset the attempt counter (which would hand the points back)", async () => {
+    // The real cost of the bug: three tries spent, then a refresh, and the
+    // board restarted at zero tries — hence at full score.
+    seedGameInProgress(["ADREN", "BLAST", "CADIA"]);
+    await hydrate();
+    const essais = storedPuzzles()?.["wordle-5"]?.state.guesses;
     expect(essais).toHaveLength(3);
   });
 
-  it("laisse le stockage intact quand il n'y a rien à reprendre", async () => {
-    await hydrater();
-    // Aucune partie en cours : rien ne doit être inventé avant que le joueur joue.
-    const grilles = grillesStockees();
+  it("leaves storage alone when there is nothing to resume", async () => {
+    await hydrate();
+    // No game in progress: nothing should be invented before the player plays.
+    const grilles = storedPuzzles();
     expect(grilles?.["wordle-5"]?.state?.guesses ?? []).toEqual([]);
   });
 });

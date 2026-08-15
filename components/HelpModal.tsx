@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useEffect } from "react";
 
 type Props = {
@@ -11,6 +13,7 @@ type Props = {
 
 // Pop-up d'aide générique (règles du jeu), partagée par les trois jeux CS.
 export default function HelpModal({ open, onClose, title, children }: Props) {
+  const t = useTranslations("menu");
   // Escape ne doit fermer que si la modale est réellement affichée.
   useEffect(() => {
     if (!open) return;
@@ -40,7 +43,7 @@ export default function HelpModal({ open, onClose, title, children }: Props) {
           </h2>
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t("close")}
             onClick={onClose}
             className="hover:text-foreground text-[color:var(--muted)] transition"
           >

@@ -1,4 +1,10 @@
-import type { Direction, FieldResult, GuessResult, Match, Player } from "./types";
+import type {
+  Direction,
+  FieldResult,
+  GuessResult,
+  Match,
+  Player,
+} from "./types";
 
 // Normalisation commune des comparaisons texte : insensible casse + espaces.
 export function norm(s: string): string {
@@ -47,6 +53,9 @@ export function compareGuess(guess: Player, target: Player): GuessResult {
     role: compareSet(guess.role, target.role),
     age: compareNumber(guess.age, target.age),
     majors: compareNumber(guess.majors, target.majors),
-    tournaments_won: compareNumber(guess.tournaments_won, target.tournaments_won),
+    tournaments_won: compareNumber(
+      guess.tournaments_won,
+      target.tournaments_won,
+    ),
   };
 }

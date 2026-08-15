@@ -7,6 +7,7 @@ import CategorySelect from "@/components/more-or-lessr/CategorySelect";
 import ChainBoard from "@/components/more-or-lessr/ChainBoard";
 import ResultBanner from "@/components/more-or-lessr/ResultBanner";
 import { molPoints } from "@/lib/daily/scoring";
+import { useTranslations } from "next-intl";
 import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { PuzzleId } from "@/lib/daily/types";
 import type { GameState, MorelessData } from "@/lib/more-or-lessr/types";
@@ -15,6 +16,9 @@ import { createInitialState, createMorelessReducer } from "./reducer";
 const REVEAL_MS = 1400; // temps d'affichage du résultat avant le round suivant
 
 export default function MorelessGame({ data }: { data: MorelessData }) {
+  const t = useTranslations("moreOrLessr");
+  const menu = useTranslations("menu");
+  const game = useTranslations("game");
   const day = useDay();
   // Reducer mémoïsé : fermé sur `data` + le jour (fige la grille du jour pour la session).
   const reducer = useMemo(() => createMorelessReducer(data, day), [data, day]);
@@ -60,13 +64,13 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
   const menuItems: GameMenuItem[] = [
     {
       id: "help",
-      label: "Aide",
+      label: menu("help"),
       icon: "help",
       onSelect: () => setHelpOpen(true),
     },
     {
       id: "give-up",
-      label: "Abandonner",
+      label: menu("giveUp"),
       icon: "giveup",
       disabled: state.status === "select" || state.status === "finished",
       onSelect: () => dispatch({ type: "GIVE_UP" }),
@@ -118,28 +122,12 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
       <HelpModal
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
-        title="Comment jouer"
+        title={game("howToPlay")}
       >
         <ul className="list-disc space-y-2 pl-4">
-          <li>Choisis une catégorie : rating HLTV ou gains en carrière.</li>
-          <li>
-            Deux joueurs s’affichent : la valeur de gauche (l’ancre) est
-            visible, celle du challenger est cachée.
-          </li>
-          <li>
-            Devine si le challenger a une valeur plus <strong>HAUTE</strong> ou
-            plus <strong>BASSE</strong> que l’ancre.
-          </li>
-          <li>
-            Bonne réponse : +1 point, la chaîne continue — le challenger devient
-            la nouvelle ancre.
-          </li>
-          <li>Mauvaise réponse : la partie est terminée.</li>
-          <li>Ton score est la longueur de ta série de bonnes réponses.</li>
-          <li>
-            Abandonner termine la partie immédiatement en gardant le score
-            acquis.
-          </li>
+          {(t.raw("help.items") as string[]).map((_, i) => (
+            <li key={i}>{t(`help.items.${i}`)}</li>
+          ))}
         </ul>
       </HelpModal>
     </div>

@@ -13,7 +13,6 @@ export type PuzzleId =
   | "mol-rating"
   | "mol-prize";
 
-
 // Une grille est soit en cours, soit terminée (gagnée ou perdue). L'abandon
 // compte comme terminé : la journée est jouée, les points valent 0.
 export type PuzzleStatus = "playing" | "won" | "lost";

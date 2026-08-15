@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import GuessRow, { HintRow } from "./GuessRow";
 import type { GridRow } from "@/lib/guessr/types";
 
@@ -13,6 +16,7 @@ const HEADERS = [
 ];
 
 export default function GuessGrid({ rows }: { rows: GridRow[] }) {
+  const t = useTranslations("guessr.columns");
   if (rows.length === 0) return null;
   return (
     <div className="w-full overflow-x-auto">
@@ -23,7 +27,7 @@ export default function GuessGrid({ rows }: { rows: GridRow[] }) {
               key={h}
               className="px-1 text-center text-[10px] tracking-[0.08em] text-[color:var(--muted)] uppercase"
             >
-              {h}
+              {t(h)}
             </div>
           ))}
         </div>

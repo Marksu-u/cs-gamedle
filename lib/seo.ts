@@ -1,96 +1,96 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import {
+  defaultLocale,
+  locales,
+  LOCALE_TAGS,
+  type Locale,
+} from "@/i18n/routing";
 
-// Configuration partagée par les métadonnées, le sitemap, robots.txt et l'image
-// de partage. Un seul endroit à changer le jour où le domaine bouge.
+// Shared by metadata, the sitemap, robots.txt and the share image. One place to
+// change the day the domain moves.
 
-// L'URL de production n'est pas devinable depuis le dépôt : elle vient de
-// l'environnement. Le repli sert au dev et aux tests — s'il se retrouve en
-// production, les balises Open Graph pointeront vers localhost et les aperçus
-// de partage seront vides.
+// The production URL cannot be guessed from the repo, so it comes from the
+// environment. The fallback is for dev and tests — if it reaches production the
+// Open Graph tags will point at localhost and share previews will be blank.
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const SITE_NAME = "CS2 Gamedle";
 
-export const SITE_DESCRIPTION =
-  "Neuf grilles quotidiennes sur la scène Counter-Strike 2 : Wordle, Guessr et More or Lessr. Nouvelles chaque jour à 3h UTC, les mêmes pour tout le monde.";
-
-// Une entrée par page indexable. Sert aux métadonnées ET au sitemap, pour que
-// les deux ne puissent pas diverger.
-export const PAGES = [
-  {
-    path: "/",
-    title: "CS2 Gamedle — 9 grilles quotidiennes Counter-Strike 2",
-    description: SITE_DESCRIPTION,
-    priority: 1,
-  },
-  {
-    path: "/wordle",
-    title: "Wordle CS2 — devine le pseudo du jour",
-    description:
-      "Six grilles par jour, une par longueur de pseudo (3 à 8 lettres). Six essais, indices couleur, une série à tenir.",
-    priority: 0.8,
-  },
-  {
-    path: "/guessr",
-    title: "Guessr CS2 — devine le joueur pro du jour",
-    description:
-      "Un joueur pro par jour à retrouver via son équipe, son rôle, sa nationalité, son âge et son palmarès. Essais illimités.",
-    priority: 0.8,
-  },
-  {
-    path: "/more-or-lessr",
-    title: "More or Lessr CS2 — plus ou moins ?",
-    description:
-      "Deux pros, une stat cachée : rating HLTV ou prize money. Dix rounds, deux catégories par jour.",
-    priority: 0.8,
-  },
+// Indexable routes. Titles and descriptions live in the message catalogues,
+// keyed by these same paths, so a page cannot be listed here and left
+// untranslated.
+export const ROUTES = [
+  { path: "/", key: "home", priority: 1 },
+  { path: "/wordle", key: "wordle", priority: 0.8 },
+  { path: "/guessr", key: "guessr", priority: 0.8 },
+  { path: "/more-or-lessr", key: "more-or-lessr", priority: 0.8 },
 ] as const;
 
-export function pageUrl(path: string): string {
-  return path === "/" ? SITE_URL : `${SITE_URL}${path}`;
+export type RoutePath = (typeof ROUTES)[number]["path"];
+
+// The default locale is unprefixed (`/wordle`), the others are prefixed
+// (`/fr/wordle`) — matching `localePrefix: "as-needed"` in i18n/routing.ts.
+export function localePath(path: string, locale: string): string {
+  const prefix = locale === defaultLocale ? "" : `/${locale}`;
+  return path === "/" ? prefix || "/" : `${prefix}${path}`;
 }
 
-// Métadonnées complètes d'une page.
+export function pageUrl(path: string, locale: string): string {
+  const p = localePath(path, locale);
+  return p === "/" ? SITE_URL : `${SITE_URL}${p}`;
+}
+
+// Full metadata for one page in one locale.
 //
-// À écrire ici et pas page par page : Next REMPLACE les objets `openGraph` et
-// `twitter` du layout au lieu de les fusionner champ par champ. Une page qui
-// déclare juste un titre perd donc l'image de partage et repasse la carte
-// Twitter en « summary » — la vignette disparaît sans que rien ne le signale.
-export function pageMetadata(path: string): Metadata {
-  const page = PAGES.find((p) => p.path === path);
-  if (!page) throw new Error(`Page inconnue dans lib/seo.ts : ${path}`);
+// Written here rather than page by page because Next REPLACES the `openGraph`
+// and `twitter` objects from the layout instead of merging them field by field.
+// A page that declares only a title loses the share image and drops the Twitter
+// card back to "summary" — the thumbnail disappears with nothing to signal it.
+export async function buildMetadata(
+  path: RoutePath,
+  locale: string,
+): Promise<Metadata> {
+  const route = ROUTES.find((r) => r.path === path);
+  if (!route) throw new Error(`Unknown route in lib/seo.ts: ${path}`);
+
+  const t = await getTranslations({ locale, namespace: "seo" });
+  const title = t(`${route.key}.title`);
+  const description = t(`${route.key}.description`);
 
   const images = [
-    {
-      url: "/opengraph-image",
-      width: 1200,
-      height: 630,
-      alt: `${SITE_NAME} — ${page.title}`,
-    },
+    { url: "/opengraph-image", width: 1200, height: 630, alt: title },
   ];
 
+  // hreflang: tells search engines these URLs are the same page in different
+  // languages, so they rank the right one per user instead of treating them as
+  // duplicates. `x-default` points at the language served to everyone else.
+  const languages = Object.fromEntries([
+    ...locales.map((l) => [l, localePath(path, l)]),
+    ["x-default", localePath(path, defaultLocale)],
+  ]);
+
   return {
-    // `absolute` court-circuite le gabarit « %s — CS2 Gamedle » du layout : les
-    // titres ci-dessus sont déjà complets, le suffixe les ferait bégayer
-    // (« Wordle CS2 — devine le pseudo du jour — CS2 Gamedle »).
-    title: { absolute: page.title },
-    description: page.description,
-    alternates: { canonical: page.path },
+    metadataBase: new URL(SITE_URL),
+    title: { absolute: title },
+    description,
+    applicationName: SITE_NAME,
+    alternates: { canonical: localePath(path, locale), languages },
     openGraph: {
       type: "website",
-      locale: "fr_FR",
+      locale: LOCALE_TAGS[locale as Locale] ?? LOCALE_TAGS[defaultLocale],
+      // Lets a crawler discover the other languages from any one page.
+      alternateLocale: locales
+        .filter((l) => l !== locale)
+        .map((l) => LOCALE_TAGS[l]),
       siteName: SITE_NAME,
-      title: page.title,
-      description: page.description,
-      url: pageUrl(page.path),
+      title,
+      description,
+      url: pageUrl(path, locale),
       images,
     },
-    twitter: {
-      card: "summary_large_image",
-      title: page.title,
-      description: page.description,
-      images,
-    },
+    twitter: { card: "summary_large_image", title, description, images },
+    robots: { index: true, follow: true },
   };
 }
