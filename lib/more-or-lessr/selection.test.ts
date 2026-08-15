@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dailySequence } from "./selection";
+import { dailySequence, practiceSequence } from "./selection";
 import { TOTAL_ROUNDS, type MorelessData } from "./types";
 
 // Fixture : 28 joueurs, comme le pool réel (le tirage exige pool >= count).
@@ -50,5 +50,41 @@ describe("dailySequence", () => {
       players: data.players.slice(0, 5),
     };
     expect(() => dailySequence(small, 100, "rating")).toThrow();
+  });
+});
+
+describe("practiceSequence", () => {
+  it("renvoie TOTAL_ROUNDS + 1 joueurs distincts", () => {
+    const seq = practiceSequence(data);
+    expect(seq).toHaveLength(TOTAL_ROUNDS + 1);
+    expect(new Set(seq.map((p) => p.name)).size).toBe(seq.length);
+  });
+
+  it("varie d'un appel à l'autre", () => {
+    const a = practiceSequence(data)
+      .map((p) => p.name)
+      .join();
+    const b = practiceSequence(data)
+      .map((p) => p.name)
+      .join();
+    // Deux mélanges aléatoires de 28 joueurs : la collision est négligeable.
+    expect(a).not.toBe(b);
+  });
+
+  it("lève si le pool est trop petit", () => {
+    const small: MorelessData = {
+      game: "t",
+      players: data.players.slice(0, 5),
+    };
+    expect(() => practiceSequence(small)).toThrow();
+  });
+
+  it("ne remonte PAS la chaîne des époques (entraînement instantané)", () => {
+    // Le tirage quotidien remonte ~10 000 époques pour la journée courante ;
+    // l'entraînement doit rester en dessous de la milliseconde, sinon chaque
+    // clic sur « Rejouer » gèle l'interface.
+    const t0 = performance.now();
+    for (let i = 0; i < 50; i++) practiceSequence(data);
+    expect((performance.now() - t0) / 50).toBeLessThan(1);
   });
 });

@@ -1,5 +1,5 @@
 import { isCorrectGuess } from "@/lib/more-or-lessr/compare";
-import { dailySequence } from "@/lib/more-or-lessr/selection";
+import { dailySequence, practiceSequence } from "@/lib/more-or-lessr/selection";
 import {
   TOTAL_ROUNDS,
   type Category,
@@ -41,11 +41,10 @@ function startCategory(
   day: number,
   mode: "daily" | "practice",
 ): GameState {
-  // En entraînement, on tire sur un jour arbitraire hors plage réelle : la
-  // séquence est valide et variée, sans jamais coïncider avec une manche du jour.
-  const seedDay =
-    mode === "daily" ? day : 1_000_000 + Math.floor(Math.random() * 1_000_000);
-  const sequence = dailySequence(data, seedDay, category);
+  const sequence =
+    mode === "daily"
+      ? dailySequence(data, day, category)
+      : practiceSequence(data);
   return {
     category,
     sequence,

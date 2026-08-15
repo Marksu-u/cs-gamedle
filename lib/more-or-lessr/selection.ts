@@ -23,3 +23,31 @@ export function dailySequence(
   }
   return draw(data.players, `mol-${category}`, day, need);
 }
+
+// Séquence d'ENTRAÎNEMENT : simple mélange aléatoire, hors rotation.
+//
+// Elle ne passe volontairement pas par `draw`. Le tirage quotidien remonte la
+// chaîne des époques depuis l'origine pour garantir ses écarts ; à 11 joueurs
+// par jour cela fait ~10 000 tours pour la journée courante, amortis par le
+// cache. Un jour tiré au hasard rate le cache à chaque fois — l'entraînement
+// gelait l'interface près d'une seconde à chaque clic sur « Rejouer ».
+//
+// L'entraînement ne rapporte rien et n'a pas à être identique d'un joueur à
+// l'autre : aucune de ces garanties ne lui sert.
+export function practiceSequence(
+  data: MorelessData,
+  rand: () => number = Math.random,
+): Player[] {
+  const need = TOTAL_ROUNDS + 1;
+  if (data.players.length < need) {
+    throw new Error(
+      `Pool insuffisant : ${data.players.length} joueurs, ${need} requis.`,
+    );
+  }
+  const pool = [...data.players];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, need);
+}

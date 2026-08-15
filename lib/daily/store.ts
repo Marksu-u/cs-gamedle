@@ -11,6 +11,7 @@ import { commitPuzzle, reconcile, saveProgress } from "./reconcile";
 import { load, save } from "./storage";
 import {
   EMPTY_PERSISTED,
+  STORAGE_KEY,
   type Persisted,
   type PuzzleId,
   type PuzzleProgress,
@@ -32,11 +33,39 @@ function emettre(suivant: Persisted) {
   for (const l of listeners) l();
 }
 
+// Base d'une écriture : l'état RELU dans le stockage, pas l'instantané en
+// mémoire.
+//
+// Le stockage est partagé entre tous les onglets, et une écriture réécrit le
+// document entier. En partant de l'instantané en mémoire, un onglet ouvert avant
+// qu'un autre ne termine une grille écrasait ce résultat — points compris — et
+// la grille redevenait marquable. Neuf grilles par jour rendent le multi-onglets
+// banal, pas exotique.
+//
+// Relire avant chaque écriture transforme cela en lecture-modification-écriture :
+// le seul cas encore perdant est deux écritures dans la même milliseconde.
+function base(): Persisted {
+  return reconcile(load(), dayIndex());
+}
+
+// Un autre onglet a écrit : on réaligne cet onglet-ci sur le stockage.
+function surStorage(e: StorageEvent) {
+  if (e.key !== null && e.key !== STORAGE_KEY) return;
+  snapshot = base();
+  for (const l of listeners) l();
+}
+
 export const dailyStore = {
   subscribe(listener: Listener) {
+    if (listeners.size === 0 && typeof window !== "undefined") {
+      window.addEventListener("storage", surStorage);
+    }
     listeners.add(listener);
     return () => {
       listeners.delete(listener);
+      if (listeners.size === 0 && typeof window !== "undefined") {
+        window.removeEventListener("storage", surStorage);
+      }
     };
   },
 
@@ -61,15 +90,13 @@ export const dailyStore = {
   // jour courant, il passerait la même valeur des deux côtés et le garde-fou
   // serait mort-né.
   commit(drawnDay: number, id: PuzzleId, result: PuzzleProgress) {
-    emettre(commitPuzzle(this.getSnapshot(), dayIndex(), id, result, drawnDay));
+    emettre(commitPuzzle(base(), dayIndex(), id, result, drawnDay));
   },
 
   // Sauvegarde l'avancement d'une grille en cours, sans toucher aux scores.
   // Même raisonnement que `commit` pour `drawnDay`.
   saveProgress(drawnDay: number, id: PuzzleId, gameState: unknown) {
-    emettre(
-      saveProgress(this.getSnapshot(), dayIndex(), id, gameState, drawnDay),
-    );
+    emettre(saveProgress(base(), dayIndex(), id, gameState, drawnDay));
   },
 
   // Réservé aux tests.

@@ -81,6 +81,72 @@ describe("dailyStore", () => {
   });
 });
 
+describe("dailyStore — plusieurs onglets", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    dailyStore.reset();
+  });
+
+  it("n'écrase pas la grille terminée par un autre onglet", () => {
+    const jour = aujourdhui();
+    // Cet onglet a chargé son instantané…
+    dailyStore.getSnapshot();
+    // …puis un AUTRE onglet termine une grille et écrit dans le stockage.
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        meta: {
+          streak: 1,
+          lastPlayedDay: jour,
+          runScore: 110,
+          recordScore: 110,
+        },
+        progress: {
+          day: jour,
+          puzzles: {
+            "wordle-5": { status: "won", points: 110, state: null },
+          },
+        },
+      }),
+    );
+    // Cet onglet termine ensuite une AUTRE grille.
+    dailyStore.commit(jour, "guessr", {
+      status: "won",
+      points: 200,
+      state: null,
+    });
+
+    const apres = dailyStore.getSnapshot();
+    // Les deux grilles doivent coexister, et les deux scores s'additionner.
+    expect(Object.keys(apres.progress?.puzzles ?? {}).sort()).toEqual([
+      "guessr",
+      "wordle-5",
+    ]);
+    expect(apres.meta.runScore).toBe(310);
+  });
+
+  it("ne laisse pas re-marquer une grille terminée dans un autre onglet", () => {
+    const jour = aujourdhui();
+    dailyStore.getSnapshot();
+    dailyStore.commit(jour, "guessr", {
+      status: "won",
+      points: 200,
+      state: null,
+    });
+    const score = dailyStore.getSnapshot().meta.runScore;
+
+    // Un autre onglet réécrit le document (sans le Guessr qu'il ne connaît pas
+    // encore) : après relecture, le Guessr reste marqué comme terminé ici.
+    dailyStore.commit(jour, "guessr", {
+      status: "won",
+      points: 200,
+      state: null,
+    });
+    expect(dailyStore.getSnapshot().meta.runScore).toBe(score);
+  });
+});
+
 describe("useDailyState", () => {
   beforeEach(() => {
     localStorage.clear();
