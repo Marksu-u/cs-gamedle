@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DAY_MS, dayIndex, dayLabel, msUntilNextRotation } from "./clock";
+import { DAY_MS, dayIndex, msUntilNextRotation } from "./clock";
 
 // Instants absolus (ms epoch) : aucun de ces tests ne dépend du fuseau de l'hôte.
 const at = (y: number, m: number, d: number, h = 0, min = 0, s = 0) =>
@@ -37,15 +37,6 @@ describe("dayIndex", () => {
   });
 });
 
-describe("dayLabel", () => {
-  it("rend la date calendaire de la bascule", () => {
-    expect(dayLabel(dayIndex(at(2026, 8, 14, 3, 0, 0)))).toBe("2026-08-14");
-  });
-
-  it("rend la veille juste avant la bascule", () => {
-    expect(dayLabel(dayIndex(at(2026, 8, 14, 2, 59, 59)))).toBe("2026-08-13");
-  });
-});
 
 describe("msUntilNextRotation", () => {
   it("rend 1 s une seconde avant la bascule", () => {

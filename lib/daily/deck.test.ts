@@ -94,6 +94,46 @@ describe("draw — garanties anti-répétition", () => {
   });
 });
 
+describe("draw — écart réel en JOURS (ce que le joueur ressent)", () => {
+  // `cooldown` se compte en TIRAGES. À `count = 1` un tirage vaut une journée,
+  // mais More or Lessr en consomme 11 par jour : l'écart y est bien plus court
+  // en jours. La doc a déjà affirmé « ⌊pool/4⌋ jours » pour tout le monde ;
+  // c'était faux pour les deux flux MoL. Ces valeurs le figent.
+  function ecartMinJours(
+    items: string[],
+    streamId: string,
+    count: number,
+    jours: number,
+  ): number {
+    const vu = new Map<string, number>();
+    let min = Infinity;
+    for (let day = 0; day < jours; day++) {
+      for (const item of draw(items, streamId, day, count)) {
+        const precedent = vu.get(item);
+        if (precedent !== undefined) min = Math.min(min, day - precedent);
+        vu.set(item, day);
+      }
+    }
+    return min;
+  }
+
+  it.each(FLUX)(
+    "%s : une cible ne revient pas avant ⌊pool/4⌋ JOURS",
+    (streamId, n) => {
+      expect(ecartMinJours(pool(n), streamId, 1, 2000)).toBeGreaterThan(
+        cooldownSize(n, 1),
+      );
+    },
+  );
+
+  it("More or Lessr : l'écart est de 2 jours, pas de 7", () => {
+    // 11 joueurs par jour : les 12 tirages d'écart tiennent dans ~1 jour. Ce
+    // n'est pas un défaut, c'est l'unité qui change — mais il ne faut pas le
+    // documenter comme 7 jours.
+    expect(ecartMinJours(pool(28), "mol-rating", 11, 2000)).toBe(2);
+  });
+});
+
 describe("draw — déterminisme", () => {
   it("même (flux, jour) → même tirage", () => {
     const items = pool(28);

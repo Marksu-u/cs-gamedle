@@ -52,6 +52,20 @@ describe("load", () => {
     expect(load()).toEqual(EMPTY_PERSISTED);
   });
 
+  it("repart de zéro si `progress` n'a pas de `puzzles`", () => {
+    // Les appelants indexent `progress.puzzles[id]` : une forme partielle les
+    // faisait lever, ce qui revenait au même qu'une exception d'ici.
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        meta: { streak: 1, lastPlayedDay: 1, runScore: 0, recordScore: 0 },
+        progress: { day: 1 },
+      }),
+    );
+    expect(load().progress).toBeNull();
+  });
+
   it("ne lève pas si localStorage est inaccessible", () => {
     const spy = vi
       .spyOn(Storage.prototype, "getItem")

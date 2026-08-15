@@ -86,10 +86,12 @@ grilles quotidiennes** (six Wordle — une par longueur —, un Guessr, deux Mor
 identiques pour tout le monde, qui basculent à **03:00 UTC** quel que soit le fuseau du
 joueur (`lib/daily/clock.ts`).
 
-Le tirage est une suite de permutations seedées, découpées en créneaux : une manche ne peut
-donc pas contenir deux fois la même cible, et une cible ne revient pas avant `⌊pool/4⌋`
-jours. Chaque jeu garde son `lib/<mode>/selection.ts`, qui n'est plus qu'une enveloppe
-autour de `draw`.
+Le tirage est une suite de permutations seedées, découpées en créneaux : un tirage ne peut
+donc pas contenir deux fois la même cible. Pour les sept flux à une cible par jour (Wordle,
+Guessr), une cible ne revient pas avant `⌊pool/4⌋` **jours** — de 7 jours pour Guessr à
+22 pour le Wordle 5 lettres. More or Lessr consomme 11 joueurs par jour sur un pool de 28 :
+l'écart y vaut 12 **tirages**, soit environ une journée. Chaque jeu garde son
+`lib/<mode>/selection.ts`, qui n'est plus qu'une enveloppe autour de `draw`.
 
 **La progression** — série, points, score courant, record — vit elle aussi dans
 `lib/daily/`, et n'est stockée que dans le `localStorage` : toujours aucun compte, aucune

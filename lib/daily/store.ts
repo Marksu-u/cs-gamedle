@@ -6,7 +6,7 @@
 // zéro trompeur tant que `hydrated` est faux (cf. composants d'affichage).
 
 import { useSyncExternalStore } from "react";
-import { dayIndex, msUntilNextRotation } from "./clock";
+import { dayIndex } from "./clock";
 import { commitPuzzle, reconcile, saveProgress } from "./reconcile";
 import { load, save } from "./storage";
 import {
@@ -124,5 +124,3 @@ export function useHydrated(): boolean {
     () => false,
   );
 }
-
-export { dayIndex, msUntilNextRotation };

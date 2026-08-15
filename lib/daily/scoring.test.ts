@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  DAILY_MAX,
   guessrPoints,
   molPoints,
   streakMultiplier,
@@ -105,7 +104,7 @@ describe("streakMultiplier", () => {
   });
 });
 
-describe("DAILY_MAX", () => {
+describe("équilibrage global", () => {
   it("vaut 1400 — 840 Wordle + 200 Guessr + 360 More or Lessr", () => {
     const wordle = [3, 4, 5, 6, 7, 8].reduce(
       (t, len) =>
@@ -115,6 +114,8 @@ describe("DAILY_MAX", () => {
     expect(wordle).toBe(840);
     expect(guessrPoints({ guesses: 1, hints: 0, won: true })).toBe(200);
     expect(molPoints(10) * 2).toBe(360);
-    expect(DAILY_MAX).toBe(1400);
+    // 840 + 200 + 360 : le total d'une journée parfaite. Il n'existe que sous
+    // forme d'assertion — aucun écran ne l'affiche, donc pas de constante.
+    expect(wordle + guessrPoints({ guesses: 1, hints: 0, won: true }) + molPoints(10) * 2).toBe(1400);
   });
 });

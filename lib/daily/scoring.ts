@@ -80,7 +80,3 @@ export function streakMultiplier(streak: number): number {
   }
   return 1;
 }
-
-// Total théorique d'une journée parfaite : sert à afficher une progression
-// ("620 / 1400") et à cadrer l'équilibrage.
-export const DAILY_MAX = 1400;

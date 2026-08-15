@@ -48,6 +48,10 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
     r.kind === "guess" ? [r.result.player.name] : [],
   );
   const hintsUsed = state.rows.filter((r) => r.kind === "hint").length;
+  // Les lignes d'indice ne sont pas des essais : les compter faisait afficher
+  // « trouvé en 5 essais » pour 3 propositions et 2 indices, alors que le calcul
+  // des points, lui, n'en comptait bien que 3.
+  const guessCount = guessedNames.length;
 
   const menuItems: GameMenuItem[] = [
     {
@@ -90,7 +94,7 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
       {state.status === "won" && (
         <ResultBanner
           target={state.target}
-          attempts={state.rows.length}
+          attempts={guessCount}
           points={points}
           hints={hintsUsed}
           practice={state.mode === "practice"}
@@ -102,7 +106,7 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
         <ResultBanner
           gaveUp
           target={state.target}
-          attempts={state.rows.length}
+          attempts={guessCount}
           points={points}
           hints={hintsUsed}
           practice={state.mode === "practice"}

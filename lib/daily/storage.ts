@@ -23,17 +23,27 @@ function isMeta(value: unknown): value is Meta {
   );
 }
 
+// `puzzles` doit être un objet : les appelants y indexent directement
+// (`progress.puzzles[id]`). Valider `day` seul rendait une forme sur laquelle
+// ils levaient — le module ne levait pas lui-même, mais faisait lever les
+// autres, ce qui revient au même pour le joueur.
+function parseProgress(value: unknown): Persisted["progress"] {
+  if (typeof value !== "object" || value === null) return null;
+  const p = value as Record<string, unknown>;
+  if (typeof p.day !== "number") return null;
+  if (typeof p.puzzles !== "object" || p.puzzles === null) return null;
+  return p as unknown as Persisted["progress"];
+}
+
 function parse(raw: string): Persisted {
   const data = JSON.parse(raw) as Record<string, unknown>;
   if (data.version !== STORAGE_VERSION) return EMPTY_PERSISTED;
   if (!isMeta(data.meta)) return EMPTY_PERSISTED;
-  const progress =
-    typeof data.progress === "object" &&
-    data.progress !== null &&
-    typeof (data.progress as Record<string, unknown>).day === "number"
-      ? (data.progress as Persisted["progress"])
-      : null;
-  return { version: STORAGE_VERSION, meta: data.meta, progress };
+  return {
+    version: STORAGE_VERSION,
+    meta: data.meta,
+    progress: parseProgress(data.progress),
+  };
 }
 
 export function load(): Persisted {

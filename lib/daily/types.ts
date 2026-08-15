@@ -13,17 +13,6 @@ export type PuzzleId =
   | "mol-rating"
   | "mol-prize";
 
-export const PUZZLE_IDS: PuzzleId[] = [
-  "wordle-3",
-  "wordle-4",
-  "wordle-5",
-  "wordle-6",
-  "wordle-7",
-  "wordle-8",
-  "guessr",
-  "mol-rating",
-  "mol-prize",
-];
 
 // Une grille est soit en cours, soit terminée (gagnée ou perdue). L'abandon
 // compte comme terminé : la journée est jouée, les points valent 0.

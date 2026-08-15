@@ -13,11 +13,6 @@ export function dayIndex(now: number = Date.now()): number {
   return Math.floor((now - OFFSET_MS) / DAY_MS);
 }
 
-// Date calendaire du jour où la bascule a eu lieu, pour l'affichage ("2026-08-14").
-export function dayLabel(index: number): string {
-  return new Date(index * DAY_MS).toISOString().slice(0, 10);
-}
-
 // Millisecondes restantes avant la prochaine bascule (compte à rebours de l'accueil).
 export function msUntilNextRotation(now: number = Date.now()): number {
   return (dayIndex(now) + 1) * DAY_MS + OFFSET_MS - now;

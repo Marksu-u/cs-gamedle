@@ -19,7 +19,11 @@ import { availableLengths } from "@/lib/wordle/selection";
 import { wordlePoints } from "@/lib/daily/scoring";
 import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { PuzzleId } from "@/lib/daily/types";
-import type { BoardState, WordleData } from "@/lib/wordle/types";
+import {
+  MAX_HINTS,
+  type BoardState,
+  type WordleData,
+} from "@/lib/wordle/types";
 import {
   createInitialState,
   createWordleReducer,
@@ -155,8 +159,13 @@ export default function WordleGame({ data }: { data: WordleData }) {
       id: "hint",
       label: "Indice",
       icon: "hint",
+      // Le plafond est appliqué par le reducer ; sans ces deux lignes le bouton
+      // restait allumé au-delà et ne faisait plus rien.
+      note: `${board.hintedChars.length}/${MAX_HINTS}`,
       disabled:
-        board.status !== "playing" || hintCandidates(board).length === 0,
+        board.status !== "playing" ||
+        board.hintedChars.length >= MAX_HINTS ||
+        hintCandidates(board).length === 0,
       onSelect: () => dispatch({ type: "HINT" }),
     },
     {
