@@ -16,3 +16,14 @@ export function dayIndex(now: number = Date.now()): number {
 export function msUntilNextRotation(now: number = Date.now()): number {
   return (dayIndex(now) + 1) * DAY_MS + OFFSET_MS - now;
 }
+
+// Day the first puzzle was served. Written as a date rather than a raw index so
+// the number stays checkable by eye.
+export const LAUNCH_DAY = dayIndex(Date.UTC(2026, 7, 15, ROTATION_HOUR_UTC));
+
+// The number a player sees in a shared result. `dayIndex` is around 20 000 and
+// reads like a build number; a calendar date would be ambiguous either side of
+// the 03:00 rollover.
+export function puzzleNumber(day: number): number {
+  return day - LAUNCH_DAY + 1;
+}

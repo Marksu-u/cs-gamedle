@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { DAY_MS, dayIndex, msUntilNextRotation } from "./clock";
+import {
+  DAY_MS,
+  dayIndex,
+  LAUNCH_DAY,
+  msUntilNextRotation,
+  puzzleNumber,
+} from "./clock";
 
 // Absolute instants (epoch ms): none of these tests depends on the host timezone.
 const at = (y: number, m: number, d: number, h = 0, min = 0, s = 0) =>
@@ -34,6 +40,16 @@ describe("dayIndex", () => {
     const b = dayIndex(t);
     process.env.TZ = tz;
     expect(a).toBe(b);
+  });
+});
+
+describe("puzzleNumber", () => {
+  it("numbers launch day as 1", () => {
+    expect(puzzleNumber(LAUNCH_DAY)).toBe(1);
+  });
+
+  it("counts one per day after launch", () => {
+    expect(puzzleNumber(LAUNCH_DAY + 226)).toBe(227);
   });
 });
 
