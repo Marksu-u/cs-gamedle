@@ -41,6 +41,34 @@ La page se recharge automatiquement à chaque modification.
 Copier [`.env.example`](.env.example) en `.env.local` et renseigner la valeur.
 **Sans elle, les aperçus de partage pointent vers `localhost` et restent vides.**
 
+## Langues
+
+Le site est en **anglais par défaut** et disponible en **français**.
+
+| Langue   | URL                 |
+| -------- | ------------------- |
+| Anglais  | `/`, `/wordle`      |
+| Français | `/fr`, `/fr/wordle` |
+
+L'anglais n'est pas préfixé : ses URL restent les URL canoniques. Un visiteur dont
+le navigateur est en français est redirigé vers `/fr` à la première visite, et son
+choix est ensuite mémorisé dans un cookie. Les balises `hreflang` déclarent les
+deux versions à Google, `x-default` pointant sur l'anglais.
+
+**Ajouter une langue** demande trois choses, et rien d'autre :
+
+1. le code dans `locales` (`i18n/routing.ts`) ;
+2. un fichier `messages/<code>.json` ;
+3. une entrée dans `LOCALE_LABELS` et `LOCALE_TAGS`.
+
+`messages/messages.test.ts` refuse ensuite tout catalogue auquel il manque une clé,
+qui en a une en trop, qui contient une valeur vide, ou dont les variables
+d'interpolation ne correspondent pas à la référence anglaise. Le sitemap, les
+métadonnées et le sélecteur de langue se mettent à jour tout seuls.
+
+Les textes d'interface vivent **uniquement** dans `messages/` — jamais en dur dans un
+composant.
+
 ## Scripts
 
 | Commande               | Rôle                                               |
