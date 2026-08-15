@@ -103,6 +103,7 @@ app/data/cs2/           # la donnée : wordle.json, guessr_players.json, more-or
 components/             # UI partagée (GameMenu, HelpModal, GameModeCard) + un dossier par mode
 lib/                    # logique pure, testée, sans React : un dossier par mode
 lib/daily/              # rotation quotidienne, barème, série, persistance (partagé)
+lib/share/              # texte de partage : glyphes, constructeurs purs, presse-papiers
 data/modes.ts           # la liste des modes affichée sur l'accueil
 ```
 
@@ -135,6 +136,21 @@ jeu garde son `lib/<mode>/selection.ts`, qui n'est plus qu'une enveloppe autour 
 base de données. Le barème est dans `lib/daily/scoring.ts` (une fonction pure par jeu), la
 machine à états de la série dans `lib/daily/reconcile.ts`. Une fois la grille du jour
 terminée, « Rejouer » bascule en **entraînement** : cible hors rotation, aucun point.
+
+**Le partage** vit dans `lib/share/`. La règle : le texte partagé montre **la forme de la
+partie, jamais le contenu de la réponse**. La grille d'emojis du Wordle sort des
+`evaluations`, celle du Guessr des lignes de proposition — sans les pseudos essayés, qui
+sont eux-mêmes un spoiler, et sans les lignes d'indice, qui révéleraient quelle colonne est
+connue. More or Lessr partage la bande ✅/❌ de ses dix rounds. L'accueil partage la journée
+entière : une case par grille, plus le score et la série.
+
+`lib/share/format.ts` ne contient que des fonctions pures qui reçoivent un traducteur en
+paramètre — d'où des tests joués contre les **vrais** catalogues dans les deux langues
+(`format.test.ts`), qui vérifient à la fois qu'aucune clé brute ne fuit et qu'aucune réponse
+n'apparaît. `lib/share/useShare.ts` tient la dégradation : Web Share sur mobile
+(pointeur tactile), presse-papiers ailleurs, `<textarea>` + `execCommand` en origine non
+sécurisée, et un libellé d'échec en dernier recours — jamais d'exception. Le lien final
+passe par `pageUrl(path, locale)` : un joueur francophone partage une URL en `/fr`.
 
 **Le thème** vit dans `app/cs2-theme.css` sous la classe `.theme-cs2`, appliquée sur le `<body>`.
 Les composants consomment ses variables via des valeurs Tailwind arbitraires
