@@ -20,7 +20,10 @@ const RESET_MS = 2000;
 function touchFirst(): boolean {
   if (typeof navigator === "undefined") return false;
   if (typeof navigator.share !== "function") return false;
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+  if (
+    typeof window === "undefined" ||
+    typeof window.matchMedia !== "function"
+  ) {
     return false;
   }
   return window.matchMedia("(hover: none)").matches;

@@ -1,5 +1,6 @@
 import GameModeCard from "@/components/GameModeCard";
 import ScoreStrip from "@/components/daily/ScoreStrip";
+import DayShare from "@/components/daily/DayShare";
 import ModeProgress from "@/components/daily/ModeProgress";
 import { csModes } from "@/data/modes";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -60,6 +61,7 @@ export default async function Home({
         </p>
 
         <ScoreStrip />
+        <DayShare />
 
         <div className="mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
           {csModes.map((mode) => (

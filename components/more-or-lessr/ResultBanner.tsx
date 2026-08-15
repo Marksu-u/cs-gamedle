@@ -66,7 +66,12 @@ export default function ResultBanner({
         {!practice && (
           <ShareButton
             text={buildMolShare(
-              { day, category, results, url: pageUrl("/more-or-lessr", locale) },
+              {
+                day,
+                category,
+                results,
+                url: pageUrl("/more-or-lessr", locale),
+              },
               root,
             )}
           />

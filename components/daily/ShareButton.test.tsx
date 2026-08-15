@@ -39,7 +39,9 @@ describe("ShareButton", () => {
     await act(async () => {
       fireEvent.click(screen.getByRole("button"));
     });
-    expect(screen.getByRole("button", { name: "Copy failed" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Copy failed" }),
+    ).toBeInTheDocument();
     unmount();
   });
 });
