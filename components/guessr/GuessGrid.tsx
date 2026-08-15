@@ -4,16 +4,18 @@ import { useTranslations } from "next-intl";
 import GuessRow, { HintRow } from "./GuessRow";
 import type { GridRow } from "@/lib/guessr/types";
 
+// Column keys, in grid order. The labels come from the catalogue under
+// `guessr.columns` — these must stay in sync with the widths below.
 const HEADERS = [
-  "Joueur",
-  "Nationalité",
-  "Équipe",
-  "Anciennes équipes",
-  "Rôle",
-  "Âge",
-  "Majors",
-  "Tournois",
-];
+  "player",
+  "nationality",
+  "team",
+  "formerTeams",
+  "role",
+  "age",
+  "majors",
+  "tournaments",
+] as const;
 
 export default function GuessGrid({ rows }: { rows: GridRow[] }) {
   const t = useTranslations("guessr.columns");
