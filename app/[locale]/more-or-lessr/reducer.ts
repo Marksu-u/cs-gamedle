@@ -28,6 +28,7 @@ export function createInitialState(day: number): GameState {
     score: 0,
     lastGuess: null,
     lastCorrect: null,
+    results: [],
     status: "select",
     mode: "daily",
     day,
@@ -55,6 +56,7 @@ function startCategory(
     score: 0,
     lastGuess: null,
     lastCorrect: null,
+    results: [],
     status: "playing",
     mode,
     day,
@@ -69,8 +71,9 @@ export function createMorelessReducer(data: MorelessData, day: number) {
       case "START":
         return startCategory(data, action.category, day, "daily");
 
+      // A run saved before per-round results existed restores without them.
       case "RESTORE":
-        return action.state;
+        return { ...action.state, results: action.state.results ?? [] };
 
       case "GUESS": {
         if (state.status !== "playing" || !state.anchor || !state.challenger)
@@ -85,6 +88,7 @@ export function createMorelessReducer(data: MorelessData, day: number) {
           ...state,
           lastGuess: action.direction,
           lastCorrect: correct,
+          results: [...state.results, correct],
           score: state.score + (correct ? 1 : 0),
           status: "revealed",
         };

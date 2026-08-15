@@ -33,6 +33,7 @@ export type GameState = {
   score: number;
   lastGuess: Direction | null; // direction played (feedback during "revealed")
   lastCorrect: boolean | null; // feedback juste/faux pendant « revealed »
+  results: boolean[]; // one entry per answered round, in order — drives the shared strip
   status: Status;
   mode: "daily" | "practice"; // practice scores nothing
   day: number; // day the sequence was drawn under

@@ -4,6 +4,7 @@ import { dailySequence } from "@/lib/more-or-lessr/selection";
 import {
   TOTAL_ROUNDS,
   type Direction,
+  type GameState,
   type MorelessData,
   type Player,
 } from "@/lib/more-or-lessr/types";
@@ -126,6 +127,34 @@ describe("PRACTICE", () => {
     expect(s.status).toBe("playing");
     expect(s.category).toBe("rating");
     expect(s.mode).toBe("practice");
+  });
+});
+
+describe("per-round results", () => {
+  it("starts a run with an empty record", () => {
+    expect(started().results).toEqual([]);
+  });
+
+  it("records one entry per answer, in order", () => {
+    const s = started();
+    const wrong: Direction =
+      correctDir(s.anchor!, s.challenger!) === "more" ? "less" : "more";
+    const first = reducer(s, { type: "GUESS", direction: wrong });
+    const second = reducer(reducer(first, { type: "NEXT" }), {
+      type: "GUESS",
+      direction: "more",
+    });
+    expect(second.results[0]).toBe(false);
+    expect(second.results).toHaveLength(2);
+  });
+
+  it("restores a run saved before results existed", () => {
+    const ancien = { ...started(), results: undefined };
+    const restored = reducer(createInitialState(DAY), {
+      type: "RESTORE",
+      state: ancien as unknown as GameState,
+    });
+    expect(restored.results).toEqual([]);
   });
 });
 
