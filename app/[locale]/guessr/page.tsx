@@ -5,6 +5,7 @@ import type { GuessrData } from "@/lib/guessr/types";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { buildMetadata } from "@/lib/seo";
+import LanguageSwitcher from "@/components/daily/LanguageSwitcher";
 export async function generateMetadata({
   params,
 }: {
@@ -28,6 +29,11 @@ export default async function CsGuessrPage({
 
   return (
     <main className="flex min-h-dvh flex-col items-center px-4 py-10">
+      {/* The switcher is repeated on every page: a player deep in a game must be
+          able to change language without going back to the hub first. */}
+      <div className="mb-4 flex w-full max-w-lg justify-end">
+        <LanguageSwitcher />
+      </div>
       <header className="mb-6 text-center">
         <p className="mb-2 text-xs tracking-[0.25em] text-[color:var(--accent)] uppercase">
           {t("eyebrow")}
