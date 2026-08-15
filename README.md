@@ -32,6 +32,15 @@ npm run dev      # serveur de dev → http://localhost:3000
 
 La page se recharge automatiquement à chaque modification.
 
+## Configuration
+
+| Variable               | Rôle                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL` | URL publique, sans slash final. Alimente les balises Open Graph, le sitemap et `robots.txt`. |
+
+Copier [`.env.example`](.env.example) en `.env.local` et renseigner la valeur.
+**Sans elle, les aperçus de partage pointent vers `localhost` et restent vides.**
+
 ## Scripts
 
 | Commande               | Rôle                                               |
@@ -88,10 +97,10 @@ joueur (`lib/daily/clock.ts`).
 
 Le tirage est une suite de permutations seedées, découpées en créneaux : un tirage ne peut
 donc pas contenir deux fois la même cible. Pour les sept flux à une cible par jour (Wordle,
-Guessr), une cible ne revient pas avant `⌊pool/4⌋` **jours** — de 7 jours pour Guessr à
-22 pour le Wordle 5 lettres. More or Lessr consomme 11 joueurs par jour sur un pool de 28 :
-l'écart y vaut 12 **tirages**, soit environ une journée. Chaque jeu garde son
-`lib/<mode>/selection.ts`, qui n'est plus qu'une enveloppe autour de `draw`.
+Guessr), une cible ne revient pas avant `⌊pool/4⌋` **jours** — 29 jours pour Guessr
+(116 joueurs), 9 à 22 pour les Wordle selon la longueur. More or Lessr consomme 11 joueurs
+par jour sur un pool de 28 : l'écart y vaut 12 **tirages**, soit environ une journée. Chaque
+jeu garde son `lib/<mode>/selection.ts`, qui n'est plus qu'une enveloppe autour de `draw`.
 
 **La progression** — série, points, score courant, record — vit elle aussi dans
 `lib/daily/`, et n'est stockée que dans le `localStorage` : toujours aucun compte, aucune

@@ -2,6 +2,9 @@ import Link from "next/link";
 import morelessData from "@/app/data/cs2/more-or-lessr.json";
 import MorelessGame from "./MorelessGame";
 import type { MorelessData } from "@/lib/more-or-lessr/types";
+import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+export const metadata: Metadata = pageMetadata("/more-or-lessr");
 
 export default function CsMoreOrLessrPage() {
   return (

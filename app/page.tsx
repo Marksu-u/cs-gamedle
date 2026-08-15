@@ -2,6 +2,10 @@ import GameModeCard from "@/components/GameModeCard";
 import ScoreStrip from "@/components/daily/ScoreStrip";
 import ModeProgress from "@/components/daily/ModeProgress";
 import { csModes } from "@/data/modes";
+import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata("/");
 
 export default function Home() {
   return (

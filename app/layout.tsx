@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Saira_Condensed } from "next/font/google";
 import "./globals.css";
 import "./cs2-theme.css";
+import { PAGES, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,8 +22,45 @@ const sairaCondensed = Saira_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "Counter-Strike 2 — Mini-jeux",
-  description: "Wordle, Guessr et More or Lessr sur la scène Counter-Strike 2.",
+  // `metadataBase` rend absolues les URL relatives des balises Open Graph. Sans
+  // elle, Next avertit au build et les aperçus de partage restent vides.
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: PAGES[0].title,
+    // Les pages de jeu ne fournissent que leur nom : le suffixe est ajouté ici.
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "CS2",
+    "Counter-Strike 2",
+    "wordle",
+    "esport",
+    "quiz",
+    "jeu quotidien",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: SITE_NAME,
+    title: PAGES[0].title,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: PAGES[0].title,
+    description: SITE_DESCRIPTION,
+  },
+  // Le jeu se partage par lien : on veut être indexé.
+  robots: { index: true, follow: true },
+};
+
+// Barre d'adresse assortie au thème sombre sur mobile.
+export const viewport: Viewport = {
+  themeColor: "#0e0f12",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({

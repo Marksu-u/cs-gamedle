@@ -2,6 +2,9 @@ import Link from "next/link";
 import WordleGame from "./WordleGame";
 import wordleData from "@/app/data/cs2/wordle.json";
 import type { WordleData } from "@/lib/wordle/types";
+import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+export const metadata: Metadata = pageMetadata("/wordle");
 
 export default function CsWordlePage() {
   return (

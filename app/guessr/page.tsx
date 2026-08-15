@@ -2,6 +2,9 @@ import Link from "next/link";
 import guessrData from "@/app/data/cs2/guessr_players.json";
 import GuessrGame from "./GuessrGame";
 import type { GuessrData } from "@/lib/guessr/types";
+import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+export const metadata: Metadata = pageMetadata("/guessr");
 
 export default function CsGuessrPage() {
   return (
@@ -14,7 +17,8 @@ export default function CsGuessrPage() {
           Devine le joueur
         </h1>
         <p className="mt-2 max-w-md text-sm text-[color:var(--muted)]">
-          Un joueur pro par jour. Essais illimités, indices à chaque proposition.
+          Un joueur pro par jour. Essais illimités, indices à chaque
+          proposition.
         </p>
       </header>
 
