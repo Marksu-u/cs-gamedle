@@ -93,6 +93,10 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
         <ResultBanner
           score={state.score}
           points={points}
+          results={state.results}
+          // "finished" is only reachable through a started category.
+          category={state.category!}
+          day={state.day}
           practice={state.mode === "practice"}
           onReplay={() => dispatch({ type: "PRACTICE" })}
           onChangeCategory={() =>
