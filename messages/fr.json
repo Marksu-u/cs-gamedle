@@ -47,6 +47,31 @@
     "points": "{points} pts",
     "hintsUsed": "{used}/{max}"
   },
+  "share": {
+    "action": "Partager",
+    "copied": "Copié !",
+    "failed": "Échec de la copie",
+    "hints": "💡{hints}",
+    "gaveUp": "Abandon",
+    "wordle": {
+      "header": "{site} — Wordle {length} n°{number}",
+      "score": "{attempts}/{max}",
+      "missed": "X"
+    },
+    "guessr": {
+      "header": "{site} — Guessr n°{number}"
+    },
+    "mol": {
+      "header": "{site} — More or Lessr · {category} n°{number}",
+      "score": "{score}/{total}"
+    },
+    "day": {
+      "header": "{site} n°{number} — {points} pts",
+      "streak": "🔥 {streak}",
+      "streakMultiplied": "🔥 {streak} (×{multiplier})",
+      "row": "{mode} {squares}"
+    }
+  },
   "wordle": {
     "eyebrow": "Counter-Strike 2 · Wordle",
     "title": "Devine le pseudo",

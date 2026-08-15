@@ -47,6 +47,31 @@
     "points": "{points} pts",
     "hintsUsed": "{used}/{max}"
   },
+  "share": {
+    "action": "Share",
+    "copied": "Copied!",
+    "failed": "Copy failed",
+    "hints": "💡{hints}",
+    "gaveUp": "Gave up",
+    "wordle": {
+      "header": "{site} — Wordle {length} #{number}",
+      "score": "{attempts}/{max}",
+      "missed": "X"
+    },
+    "guessr": {
+      "header": "{site} — Guessr #{number}"
+    },
+    "mol": {
+      "header": "{site} — More or Lessr · {category} #{number}",
+      "score": "{score}/{total}"
+    },
+    "day": {
+      "header": "{site} #{number} — {points} pts",
+      "streak": "🔥 {streak}",
+      "streakMultiplied": "🔥 {streak} (×{multiplier})",
+      "row": "{mode} {squares}"
+    }
+  },
   "wordle": {
     "eyebrow": "Counter-Strike 2 · Wordle",
     "title": "Guess the tag",
