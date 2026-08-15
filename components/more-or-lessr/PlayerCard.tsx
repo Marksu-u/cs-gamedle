@@ -6,8 +6,8 @@ type Props = {
   player: Player;
   category: Category;
   revealed: boolean; // affiche la valeur seulement si vrai
-  state?: "idle" | "correct" | "wrong"; // flash de feedback après révélation
-  onPick?: () => void; // absent → carte non cliquable (désactivée)
+  state?: "idle" | "correct" | "wrong"; // feedback flash after the reveal
+  onPick?: () => void; // absent → card not clickable (disabled)
 };
 
 // Rating: 2 decimals. Prize: $ with thousands separators.

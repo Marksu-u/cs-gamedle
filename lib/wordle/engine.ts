@@ -54,7 +54,7 @@ export function deriveKeyStates(
     const states = evaluations[r];
     for (let i = 0; i < g.length; i++) {
       const s = states[i];
-      if (s === "empty") continue; // sécurité : les essais soumis n'ont pas d'empty
+      if (s === "empty") continue; // safety: submitted guesses contain no empty
       const cur = map.get(g[i]) ?? "unused";
       if (RANK[s] > RANK[cur]) map.set(g[i], s);
     }

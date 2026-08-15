@@ -16,14 +16,14 @@ export type WordleData = { game: string; words: Record<string, string[]> };
 export type BoardState = {
   target: string;
   length: number;
-  guesses: string[]; // essais soumis
-  evaluations: TileState[][]; // coloriage par essai (même index que guesses)
-  current: string; // saisie en cours (non soumise)
+  guesses: string[]; // submitted guesses
+  evaluations: TileState[][]; // colouring per guess (same index as guesses)
+  current: string; // current input (not submitted)
   status: GameStatus;
-  invalid: boolean; // flag transitoire : déclenche le shake puis est remis à false
-  hintedChars: string[]; // caractères révélés via indice (affichés "present" au clavier)
-  mode: "daily" | "practice"; // l'entraînement ne rapporte aucun point
-  day: number; // jour sous lequel la cible a été tirée
+  invalid: boolean; // transient flag: triggers the shake then resets to false
+  hintedChars: string[]; // characters revealed by a hint (shown "present" on the keyboard)
+  mode: "daily" | "practice"; // practice scores nothing
+  day: number; // day the target was drawn under
 };
 
 // Global state: every board plus the active tab.

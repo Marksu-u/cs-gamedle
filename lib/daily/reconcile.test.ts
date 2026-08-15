@@ -145,7 +145,7 @@ describe("commitPuzzle", () => {
       points: 100,
       state: null,
     });
-    expect(state.meta.streak).toBe(7); // la série ne rebouge pas dans la journée
+    expect(state.meta.streak).toBe(7); // the streak does not move again during the day
     expect(state.meta.runScore).toBe(300 + 150); // ×1.5 sur les deux
   });
 
@@ -328,7 +328,7 @@ describe("saveProgress", () => {
       101,
       "wordle-5",
       { guesses: ["HIER", "ENCORE"] },
-      100, // tirée au jour 100
+      100, // drawn on day 100
     );
     expect(after.progress).toBeNull();
   });

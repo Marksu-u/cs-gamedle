@@ -3,10 +3,10 @@ import type { TileState } from "@/lib/wordle/types";
 
 type Props = {
   length: number;
-  letters: string; // contenu de la rangée ("" si vide)
+  letters: string; // row contents ("" when empty)
   states: TileState[]; // coloriage ([] = tout empty)
-  revealed: boolean; // rangée déjà soumise
-  shake: boolean; // essai invalide sur la rangée courante
+  revealed: boolean; // row already submitted
+  shake: boolean; // invalid guess on the current row
 };
 
 export default function GuessRow({

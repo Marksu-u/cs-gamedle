@@ -7,12 +7,12 @@ import {
 } from "@/lib/more-or-lessr/types";
 
 type Props = {
-  anchor: Player; // valeur de référence, toujours visible
-  challenger: Player; // valeur cachée à deviner
+  anchor: Player; // reference value, always visible
+  challenger: Player; // hidden value to guess
   category: Category;
   round: number;
   score: number;
-  revealed: boolean; // round joué : on montre la valeur du challenger
+  revealed: boolean; // round played: the challenger's value is shown
   lastGuess: Direction | null;
   lastCorrect: boolean | null;
   onGuess: (direction: Direction) => void;

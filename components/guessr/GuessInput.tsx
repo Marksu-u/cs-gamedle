@@ -8,7 +8,7 @@ import type { Player } from "@/lib/guessr/types";
 
 type Props = {
   players: Player[];
-  guessedNames: string[]; // déjà proposés → exclus des suggestions
+  guessedNames: string[]; // already guessed → excluded from suggestions
   disabled?: boolean;
   onGuess: (name: string) => void;
 };

@@ -15,7 +15,7 @@ function wordleBase(length: number): number {
 
 export type WordleOutcome = {
   length: number;
-  attempt: number; // numéro de l'essai gagnant, 1..MAX_ATTEMPTS
+  attempt: number; // index of the winning try, 1..MAX_ATTEMPTS
   hints: number;
   won: boolean;
 };

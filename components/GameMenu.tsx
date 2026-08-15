@@ -37,7 +37,7 @@ function Icon({ name }: { name: GameMenuIcon }) {
 export type GameMenuItem = {
   id: string;
   label: string; // e.g. "Hint"
-  icon: GameMenuIcon; // clé d'icône monochrome (cf. ICON_PATHS)
+  icon: GameMenuIcon; // monochrome icon key (see ICON_PATHS)
   note?: string; // e.g. "2/4" — shown on the right, understated
   disabled?: boolean;
   onSelect: () => void; // the menu closes after selection

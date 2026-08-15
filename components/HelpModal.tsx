@@ -8,7 +8,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode; // contenu d'aide propre à chaque jeu
+  children: React.ReactNode; // help content specific to each game
 };
 
 // Generic help popup (game rules), shared by all three games.

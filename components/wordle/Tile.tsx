@@ -12,8 +12,8 @@ const STATE_CLASS: Record<TileState, string> = {
 type Props = {
   letter: string;
   state: TileState;
-  index: number; // colonne : sert au délai de flip en cascade (gauche→droite)
-  revealed: boolean; // rangée soumise → flip ; sinon pop léger à la frappe
+  index: number; // column: drives the cascading flip delay (left→right)
+  revealed: boolean; // submitted row → flip; otherwise a light pop on keypress
 };
 
 export default function Tile({ letter, state, index, revealed }: Props) {

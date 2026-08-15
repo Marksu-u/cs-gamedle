@@ -7,11 +7,11 @@ export type Player = {
   nationality: string; // nom de pays → drapeau (lib/more-or-lessr/flags)
   current_team: string;
   previous_teams: string[]; // ensemble, comparaison partielle
-  role: string[]; // rôles normalisés, comparaison partielle
+  role: string[]; // normalised roles, partial comparison
   age: number;
-  majors: number; // nb de Majors gagnés
-  tournaments_won: number; // nb de tournois S-tier gagnés
-  achievements: string[]; // texte affiché à la victoire
+  majors: number; // number of Majors won
+  tournaments_won: number; // number of S-tier tournaments won
+  achievements: string[]; // text shown on victory
 };
 
 // Forme du JSON (app/data/cs2/guessr_players.json).
@@ -32,7 +32,7 @@ export type FieldResult =
 // Complete result for one guess (all 8 columns).
 export type GuessResult = {
   player: Player;
-  correct: boolean; // le nom correspond à la cible
+  correct: boolean; // the name matches the target
   nationality: FieldResult;
   current_team: FieldResult;
   previous_teams: FieldResult;
@@ -61,9 +61,9 @@ export type GridRow =
 export type Status = "playing" | "won" | "gaveup";
 
 export type GameState = {
-  target: Player; // joueur du jour (caché)
-  rows: GridRow[]; // plus récent en tête (guesses ET indices)
+  target: Player; // player of the day (hidden)
+  rows: GridRow[]; // newest first (both guesses AND hints)
   status: Status;
-  mode: "daily" | "practice"; // l'entraînement ne rapporte aucun point
-  day: number; // jour sous lequel la cible a été tirée
+  mode: "daily" | "practice"; // practice scores nothing
+  day: number; // day the target was drawn under
 };

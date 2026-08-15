@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 type Props = {
   points: number;
-  detail: string; // ex. « trouvé en 1 essai, aucun indice »
+  detail: string; // e.g. "found in 1 try, no hints"
   practice?: boolean;
 };
 

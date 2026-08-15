@@ -22,8 +22,8 @@ export function useDay(): number {
 type Options<S> = {
   id: PuzzleId;
   day: number; // jour du TIRAGE
-  state: S; // état de jeu courant, celui qu'on sauvegarde
-  onRestore: (state: S) => void; // doit être stable (useCallback)
+  state: S; // current game state, the one being saved
+  onRestore: (state: S) => void; // must be stable (useCallback)
   savable: boolean; // partie en cours ET quotidienne
 };
 
