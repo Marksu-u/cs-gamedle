@@ -100,6 +100,8 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
           attempts={guessCount}
           points={points}
           hints={hintsUsed}
+          rows={state.rows}
+          day={state.day}
           practice={state.mode === "practice"}
           onPractice={() => dispatch({ type: "PRACTICE" })}
         />
@@ -112,6 +114,8 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
           attempts={guessCount}
           points={points}
           hints={hintsUsed}
+          rows={state.rows}
+          day={state.day}
           practice={state.mode === "practice"}
           onPractice={() => dispatch({ type: "PRACTICE" })}
         />
