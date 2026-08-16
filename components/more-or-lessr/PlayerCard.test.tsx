@@ -36,10 +36,13 @@ describe("PlayerCard value formatting", () => {
     rating.unmount();
   });
 
-  it("uses a comma for the decimal in French", () => {
+  it("keeps the HLTV dot in the rating, whatever the locale", () => {
+    // Deliberate: the rating is a published HLTV figure, not a quantity to be
+    // re-punctuated. "1,05" would look wrong to a French player who knows the
+    // site, so this one value stays out of the locale.
     const { container, unmount } = renderIn("fr", fr, "rating");
-    expect(container.textContent).toContain("1,12");
-    expect(container.textContent).not.toContain("1.12");
+    expect(container.textContent).toContain("1.12");
+    expect(container.textContent).not.toContain("1,12");
     unmount();
   });
 

@@ -23,16 +23,19 @@ export default function PlayerCard({
 }: Props) {
   const format = useFormatter();
 
-  // Rating: 2 decimals. Prize: whole dollars.
+  // Prize: whole dollars, formatted in the player's locale, so a French player
+  // reads "1 500 000 $" rather than the American form. `narrowSymbol` gives the
+  // bare "$": the standard French rendering of USD is "$US", but the French
+  // catalogue already writes "$" and the scene deals in dollars only.
   //
-  // Both go through the locale rather than a fixed "en-US", so a French player
-  // reads "1,12" and "1 500 000 $" instead of the American forms. The prize uses
-  // `narrowSymbol`: the standard French rendering of USD is "$US", but the
-  // French catalogue already writes the bare "$" and the scene is dollars only.
+  // The rating deliberately does NOT follow the locale. HLTV writes it "1.12"
+  // everywhere, and the scene reads it as a published figure rather than as a
+  // quantity to be re-punctuated — "1,05" would look wrong to a French player
+  // who knows the site.
   function formatValue(p: Player): string {
     const v = statValue(p, category);
     return category === "rating"
-      ? format.number(v, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      ? v.toFixed(2)
       : format.number(v, {
           style: "currency",
           currency: "USD",
