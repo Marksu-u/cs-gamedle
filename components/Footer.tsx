@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { X_URL } from "@/lib/legal";
 
 // The legal notice has to be "d'accès facile, direct et permanent" (LCEN
 // art. 6-III), so this sits in the locale layout and renders under every page —
@@ -26,6 +27,16 @@ export default function Footer() {
         <Link href="/cookies" className="hover:text-[color:var(--accent)]">
           {t("cookies")}
         </Link>
+        {/* External, so a plain anchor rather than the locale-aware Link. */}
+        <a
+          href={X_URL}
+          target="_blank"
+          rel="noopener noreferrer me"
+          aria-label={t("xLabel")}
+          className="hover:text-[color:var(--accent)]"
+        >
+          {t("x")}
+        </a>
       </nav>
       <p className="mt-4 text-center text-[0.65rem] text-[color:var(--muted)]">
         {t("disclaimer")}

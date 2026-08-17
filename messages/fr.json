@@ -161,6 +161,8 @@
     "privacy": "Confidentialité",
     "terms": "CGU",
     "cookies": "Cookies",
+    "x": "X",
+    "xLabel": "Suivre sur X",
     "disclaimer": "Projet de fan gratuit. Sans affiliation, approbation ni parrainage de Valve Corporation. Counter-Strike est une marque de Valve Corporation."
   },
   "legalPages": {
@@ -170,7 +172,7 @@
       "title": "Mentions légales",
       "publisher": {
         "heading": "Éditeur",
-        "body": "Le site est édité par une personne physique, à titre personnel et non commercial. Conformément à l'article 6-III-2 de la LCEN, un éditeur non professionnel peut ne pas faire figurer son identité sur cette page dès lors qu'il l'a communiquée à son hébergeur, ce qui est le cas ici.",
+        "body": "Le site est édité à titre personnel et non commercial par une personne physique. Ses coordonnées ont été communiquées à l'hébergeur, conformément à l'article 6-III-2 de la LCEN.",
         "director": "Directeur de la publication : {alias}.",
         "contact": "L'éditeur peut être contacté à l'adresse {email}."
       },
@@ -181,7 +183,8 @@
       },
       "ip": {
         "heading": "Propriété intellectuelle",
-        "body": "Le code, le design et les textes originaux du site appartiennent à l'éditeur. Toute reproduction ou adaptation, totale ou partielle, requiert son accord écrit préalable.",
+        "body": "Le code source du site est public et publié sous licence MIT : {repo}. Vous êtes libre de le réutiliser, de le modifier et de le redistribuer, en conservant la mention de copyright.",
+        "data": "La licence ne couvre que le code. Les jeux de données de joueurs sont des résultats compétitifs factuels, qui ne constituent pas une œuvre originale de l'éditeur : celui-ci n'accorde donc aucun droit sur eux, et quiconque les réutilise répond de sa propre situation au regard du droit d'auteur, du droit des bases de données et de la protection des données.",
         "valve": "Counter-Strike, Counter-Strike 2 et les marques associées sont la propriété de Valve Corporation. Ce site est un projet de fan indépendant, sans affiliation, approbation ni parrainage de Valve. Aucune ressource du jeu n'y est reproduite."
       },
       "data": {

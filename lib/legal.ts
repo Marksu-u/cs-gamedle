@@ -35,6 +35,14 @@ export const HOST = {
 // TODO: confirm this is accurate before going live.
 export const DATA_SOURCE = "HLTV.org";
 
+// Public source repository. Named in the legal notice because the IP clause has
+// to agree with the LICENSE file in it: the two contradicting each other is the
+// failure mode this constant exists to prevent.
+export const SOURCE_REPO = "github.com/Marksu-u/cs-gamedle";
+
+export const X_HANDLE = "marksu_u";
+export const X_URL = `https://x.com/${X_HANDLE}`;
+
 // Counts quoted in the privacy policy. Derived from the shipped datasets rather
 // than typed by hand, so the figures cannot go stale when the pools grow.
 import guessrData from "@/app/data/cs2/guessr_players.json";

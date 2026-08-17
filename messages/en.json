@@ -161,6 +161,8 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "cookies": "Cookies",
+    "x": "X",
+    "xLabel": "Follow on X",
     "disclaimer": "A free fan project. Not affiliated with, endorsed or sponsored by Valve Corporation. Counter-Strike is a trademark of Valve Corporation."
   },
   "legalPages": {
@@ -170,7 +172,7 @@
       "title": "Legal notice",
       "publisher": {
         "heading": "Publisher",
-        "body": "This site is published by an individual, on a personal and non-commercial basis. Under article 6-III-2 of the French LCEN, a non-professional publisher may withhold their identity from this page provided it has been given to the host, which is the case here.",
+        "body": "This site is published by an individual, on a personal and non-commercial basis. The publisher's details have been provided to the host, in accordance with article 6-III-2 of the French LCEN.",
         "director": "Publication director: {alias}.",
         "contact": "The publisher can be reached at {email}."
       },
@@ -181,7 +183,8 @@
       },
       "ip": {
         "heading": "Intellectual property",
-        "body": "The code, design and original texts of this site belong to the publisher. Reproduction or adaptation, in whole or in part, requires prior written agreement.",
+        "body": "The source code of this site is public and released under the MIT licence: {repo}. You are free to reuse, modify and redistribute it, keeping the copyright notice.",
+        "data": "The licence covers the code only. The player datasets are factual competitive results, not original work of the publisher, who therefore makes no grant over them; anyone reusing them answers for their own position under copyright, the EU database right and data protection law.",
         "valve": "Counter-Strike, Counter-Strike 2 and the associated marks are the property of Valve Corporation. This site is an independent fan project, with no affiliation to, endorsement by or sponsorship from Valve. No game asset is reproduced here."
       },
       "data": {

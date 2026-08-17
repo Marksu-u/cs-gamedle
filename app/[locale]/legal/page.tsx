@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import LegalPage, { Section } from "@/components/legal/LegalPage";
-import { CONTACT_EMAIL, DATA_SOURCE, HOST, PUBLISHER_ALIAS } from "@/lib/legal";
+import {
+  CONTACT_EMAIL,
+  DATA_SOURCE,
+  HOST,
+  PUBLISHER_ALIAS,
+  SOURCE_REPO,
+} from "@/lib/legal";
 import { buildMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -47,7 +53,8 @@ export default async function LegalNoticePage({
       </Section>
 
       <Section heading={t("notice.ip.heading")}>
-        <p>{t("notice.ip.body")}</p>
+        <p>{t("notice.ip.body", { repo: SOURCE_REPO })}</p>
+        <p>{t("notice.ip.data")}</p>
         <p>{t("notice.ip.valve")}</p>
       </Section>
 
