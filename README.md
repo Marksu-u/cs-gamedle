@@ -93,18 +93,21 @@ composant.
 ## Structure
 
 ```
-app/page.tsx            # sélecteur de mode (accueil)
-app/layout.tsx          # layout racine : polices, métadonnées, thème
-app/cs2-theme.css       # tokens de couleur du thème, sous la classe .theme-cs2
-app/wordle/             # page + reducer du Wordle
-app/guessr/             # page + reducer du Guessr
-app/more-or-lessr/      # page + reducer du More or Lessr
-app/data/cs2/           # la donnée : wordle.json, guessr_players.json, more-or-lessr.json
-components/             # UI partagée (GameMenu, HelpModal, GameModeCard) + un dossier par mode
-lib/                    # logique pure, testée, sans React : un dossier par mode
-lib/daily/              # rotation quotidienne, barème, série, persistance (partagé)
-lib/share/              # texte de partage : glyphes, constructeurs purs, presse-papiers
-data/modes.ts           # la liste des modes affichée sur l'accueil
+app/[locale]/page.tsx        # sélecteur de mode (accueil)
+app/[locale]/layout.tsx      # layout racine : polices, métadonnées, thème
+app/[locale]/wordle/         # page + reducer + composant de jeu du Wordle
+app/[locale]/guessr/         # page + reducer + composant de jeu du Guessr
+app/[locale]/more-or-lessr/  # page + reducer + composant de jeu du More or Lessr
+app/[locale]/legal/          # + privacy, terms, cookies : les quatre pages légales
+app/opengraph-image.tsx      # image de partage, une par langue — hors [locale] à dessein
+app/sitemap.ts               # sitemap, robots.ts, icônes : hors segment de langue
+app/cs2-theme.css            # tokens de couleur du thème, sous la classe .theme-cs2
+app/data/cs2/                # la donnée : wordle.json, guessr_players.json, more-or-lessr.json
+components/                  # UI partagée (GameMenu, HelpModal, GameModeCard) + un dossier par mode
+lib/                         # logique pure, testée, sans React : un dossier par mode
+lib/daily/                   # rotation quotidienne, barème, série, persistance (partagé)
+lib/share/                   # partage : tons, carte partagée, rendus texte et image, presse-papiers
+data/modes.ts                # la liste des modes affichée sur l'accueil
 ```
 
 ## Architecture
@@ -144,12 +147,29 @@ sont eux-mêmes un spoiler, et sans les lignes d'indice, qui révéleraient quel
 connue. More or Lessr partage la bande ✅/❌ de ses dix rounds. L'accueil partage la journée
 entière : une case par grille, plus le score et la série.
 
-`lib/share/format.ts` ne contient que des fonctions pures qui reçoivent un traducteur en
-paramètre — d'où des tests joués contre les **vrais** catalogues dans les deux langues
+Les constructeurs de `lib/share/format.ts` ne rendent pas une chaîne mais une **carte**
+(`lib/share/card.ts`) : un titre, une ligne de détail, et des lignes de _tons_
+(`correct`, `present`, `missed`, `blank`…). Deux rendus la consomment, et aucun des deux
+ne connaît l'autre — ajouter un mode, c'est construire une carte, pas toucher aux rendus.
+`cardToText` produit le bloc d'emojis, `lib/share/image.ts` le peint sur un canvas. Les
+tuiles y sont des rectangles et non les emojis : sur un canvas, ceux-ci sont rendus par la
+police système, à ses métriques, et la grille cesse d'être alignée.
+
+Ces constructeurs restent des fonctions pures qui reçoivent un traducteur en paramètre —
+d'où des tests joués contre les **vrais** catalogues dans les deux langues
 (`format.test.ts`), qui vérifient à la fois qu'aucune clé brute ne fuit et qu'aucune réponse
-n'apparaît. `lib/share/useShare.ts` tient la dégradation : Web Share sur mobile
-(pointeur tactile), presse-papiers ailleurs, `<textarea>` + `execCommand` en origine non
-sécurisée, et un libellé d'échec en dernier recours — jamais d'exception. Le lien final
+n'apparaît.
+
+`lib/share/useShare.ts` envoie **les deux charges en un seul clic** : un `ClipboardItem`
+qui porte à la fois `image/png` et `text/plain`. Discord ou X collent l'image, un champ de
+texte brut colle les carrés. C'est ce qui permet de préférer l'image sans rien perdre :
+une image collée dans un salon n'est pas cliquable, donc le lien ne survit que par le
+texte — et l'adresse est en plus dessinée dans l'image. Sur mobile (pointeur tactile), le
+fichier part dans la feuille de partage de l'OS via `canShare({ files })`.
+
+La dégradation reste la règle : image, puis texte, puis `<textarea>` + `execCommand` en
+origine non sécurisée, puis un libellé d'échec — jamais d'exception. Un navigateur sans
+`ClipboardItem` ou sans canvas retombe exactement sur l'ancien comportement. Le lien final
 passe par `pageUrl(path, locale)` : un joueur francophone partage une URL en `/fr`.
 
 **Le thème** vit dans `app/cs2-theme.css` sous la classe `.theme-cs2`, appliquée sur le `<body>`.
@@ -167,3 +187,37 @@ Les composants consomment ses variables via des valeurs Tailwind arbitraires
 - **Pas de `fetch` pour la donnée locale** : on `import` les JSON du repo.
 - **Formatage** : ne te bats pas avec le style — `npm run format`, ou active _format on save_
   (config VS Code fournie dans [`.vscode/`](.vscode/)).
+
+## Licence
+
+Le code de ce dépôt est publié sous **licence MIT** — voir [`LICENSE`](LICENSE).
+Vous êtes libre de le réutiliser, le modifier et le redistribuer, en conservant la
+mention de copyright.
+
+**La licence ne couvre que le code.** Les jeux de données joueurs
+(`app/data/cs2/`) sont des résultats factuels de compétition, et non une œuvre
+originale de l'éditeur : celui-ci ne concède donc aucun droit dessus. Quiconque les
+réutilise répond de sa propre situation au regard du droit d'auteur, du droit sui
+generis des bases de données et de la protection des données personnelles. Cloner
+ce dépôt ne vous transmet pas une autorisation sur la donnée, parce qu'il n'y en a
+aucune à transmettre.
+
+**Counter-Strike**, **Counter-Strike 2** et les marques associées appartiennent à
+**Valve Corporation**. Ce projet est un projet de fan indépendant, sans affiliation,
+approbation ni parrainage de Valve. Aucun asset du jeu n'est reproduit ici — le
+thème (`app/cs2-theme.css`) rejoue une palette, pas des fichiers.
+
+Ces trois paragraphes sont la version courte des pages légales du site
+(`/legal`, `/privacy`, `/terms`, `/cookies`), dont les textes vivent dans
+`messages/` sous la clé `legalPages` et les constantes dans
+[`lib/legal.ts`](lib/legal.ts). **En cas de divergence, ce sont les pages du site
+qui font foi** : ce README les résume, il ne les remplace pas. Un fork qui change
+d'éditeur doit reprendre `lib/legal.ts` avant toute mise en ligne — il y tient
+l'alias de l'éditeur, le contact et l'hébergeur.
+
+Un point à ne pas perdre de vue, et il est documenté en tête de `lib/legal.ts` :
+le site n'affiche ni nom réel ni adresse postale parce qu'il relève du régime
+**non professionnel** de l'article 6-III-2 de la LCEN. Cela cesse d'être vrai le
+jour où le site rapporte quoi que ce soit — publicité, bouton de don, parrainage,
+offre payante. L'éditeur devient alors professionnel au sens du 6-III-1, et les
+mentions doivent porter son identité complète.
