@@ -29,11 +29,7 @@ export default async function LegalNoticePage({
   const t = await getTranslations("legalPages");
 
   return (
-    <LegalPage
-      title={t("notice.title")}
-      updated={t("updated", { date: "2026-08-17" })}
-      back={t("back")}
-    >
+    <LegalPage title={t("notice.title")}>
       <Section heading={t("notice.publisher.heading")}>
         <p>{t("notice.publisher.body")}</p>
         <p>{t("notice.publisher.director", { alias: PUBLISHER_ALIAS })}</p>

@@ -16,6 +16,12 @@
 // Shown as the publication director. A pseudonym is enough under 6-III-2.
 export const PUBLISHER_ALIAS = "MarKsu";
 
+// Date shown on all four pages. One constant rather than four literals: the
+// whole point of the line is to tell a reader which version they are looking at,
+// which fails the moment the pages disagree. Bump it whenever the wording
+// changes in a way that matters.
+export const LAST_UPDATED = new Date("2026-08-17T00:00:00Z");
+
 // TODO: replace before going live. Also the GDPR contact for the player dataset,
 // so it has to be an address that is actually read.
 export const CONTACT_EMAIL = "TODO-contact@example.com";

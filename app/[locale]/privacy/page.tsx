@@ -23,11 +23,7 @@ export default async function PrivacyPage({
   const t = await getTranslations("legalPages");
 
   return (
-    <LegalPage
-      title={t("privacy.title")}
-      updated={t("updated", { date: "2026-08-17" })}
-      back={t("back")}
-    >
+    <LegalPage title={t("privacy.title")}>
       <Section heading={t("privacy.summary.heading")}>
         <p>{t("privacy.summary.body")}</p>
         <p>{t("privacy.summary.fonts")}</p>

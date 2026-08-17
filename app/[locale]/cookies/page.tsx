@@ -22,11 +22,7 @@ export default async function CookiesPage({
   const t = await getTranslations("legalPages");
 
   return (
-    <LegalPage
-      title={t("cookies.title")}
-      updated={t("updated", { date: "2026-08-17" })}
-      back={t("back")}
-    >
+    <LegalPage title={t("cookies.title")}>
       <Section heading={t("cookies.what.heading")}>
         <p>{t("cookies.what.body")}</p>
       </Section>

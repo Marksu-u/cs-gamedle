@@ -22,11 +22,7 @@ export default async function TermsPage({
   const t = await getTranslations("legalPages");
 
   return (
-    <LegalPage
-      title={t("terms.title")}
-      updated={t("updated", { date: "2026-08-17" })}
-      back={t("back")}
-    >
+    <LegalPage title={t("terms.title")}>
       <Section heading={t("terms.purpose.heading")}>
         <p>{t("terms.purpose.body")}</p>
       </Section>

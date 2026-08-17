@@ -1,18 +1,28 @@
 import type { ReactNode } from "react";
+import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import LanguageSwitcher from "@/components/daily/LanguageSwitcher";
+import { LAST_UPDATED } from "@/lib/legal";
 
 // Shell shared by the four legal pages. They differ only in their sections, so
-// the chrome — heading, last-updated line, back link — lives here once.
+// the chrome — heading, last-updated line, back link — lives here once, and the
+// pages pass nothing but their title.
 
 type Props = {
   title: string;
-  updated: string;
-  back: string;
   children: ReactNode;
 };
 
-export default function LegalPage({ title, updated, back, children }: Props) {
+export default async function LegalPage({ title, children }: Props) {
+  const t = await getTranslations("legalPages");
+  const format = await getFormatter();
+  // Month and year, formatted in the reader's language: "August 2026" reads as
+  // a date, "2026-08-17" reads as a database field.
+  const updated = t("updated", {
+    date: format.dateTime(LAST_UPDATED, { year: "numeric", month: "long" }),
+  });
+  const back = t("back");
+
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col px-6 py-10">
       <div className="mb-6 flex justify-end">
