@@ -10,20 +10,11 @@ import {
 // Shared by metadata, the sitemap, robots.txt and the share image. One place to
 // change the day the domain moves.
 
-// The production URL cannot be guessed from the repo, so it comes from the
-// environment. The fallback is for dev and tests — if it reaches production the
-// Open Graph tags will point at localhost and share previews will be blank.
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const SITE_NAME = "CS2 Gamedle";
 
-// Indexable routes. Titles and descriptions live in the message catalogues,
-// keyed by these same paths, so a page cannot be listed here and left
-// untranslated.
-// `changeFrequency` is per route: the games rotate daily, the legal pages change
-// when the law or the host does. Telling a crawler the legal notice is daily
-// wastes its budget on four pages that never move.
 export const ROUTES = [
   { path: "/", key: "home", priority: 1, changeFrequency: "daily" },
   { path: "/wordle", key: "wordle", priority: 0.8, changeFrequency: "daily" },
@@ -75,11 +66,6 @@ export function pageUrl(path: string, locale: string): string {
 }
 
 // Full metadata for one page in one locale.
-//
-// Written here rather than page by page because Next REPLACES the `openGraph`
-// and `twitter` objects from the layout instead of merging them field by field.
-// A page that declares only a title loses the share image and drops the Twitter
-// card back to "summary" — the thumbnail disappears with nothing to signal it.
 export async function buildMetadata(
   path: RoutePath,
   locale: string,
@@ -91,8 +77,16 @@ export async function buildMetadata(
   const title = t(`${route.key}.title`);
   const description = t(`${route.key}.description`);
 
+  // One share image per locale (see app/opengraph-image.tsx). The locale is part
+  // of the path rather than left to negotiation: the crawler that fetches this
+  // is not the reader, and its Accept-Language says nothing about theirs.
   const images = [
-    { url: "/opengraph-image", width: 1200, height: 630, alt: title },
+    {
+      url: `/opengraph-image/${locale}`,
+      width: 1200,
+      height: 630,
+      alt: title,
+    },
   ];
 
   // hreflang: tells search engines these URLs are the same page in different
@@ -112,7 +106,6 @@ export async function buildMetadata(
     openGraph: {
       type: "website",
       locale: LOCALE_TAGS[locale as Locale] ?? LOCALE_TAGS[defaultLocale],
-      // Lets a crawler discover the other languages from any one page.
       alternateLocale: locales
         .filter((l) => l !== locale)
         .map((l) => LOCALE_TAGS[l]),

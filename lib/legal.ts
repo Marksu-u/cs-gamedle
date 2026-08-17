@@ -29,9 +29,7 @@ export const HOST: {
   url: "vercel.com",
 };
 
-// Where the player data came from. Named in the legal notice because the EU
-// sui generis database right applies to substantial extraction even when the
-// individual facts are not copyrightable.
+// Where the player data came from.
 // TODO: confirm this is accurate before going live.
 export const DATA_SOURCE = "https://www.hltv.org/";
 
