@@ -1,9 +1,3 @@
-// The identity block behind the legal pages.
-//
-// Deliberately NOT in the message catalogues: none of it is translated, so
-// keeping it here makes filling it in a single edit instead of four, and stops
-// the two catalogues drifting on a value that has to match exactly.
-//
 // The site is published under the NON-PROFESSIONAL regime of article 6-III-2 of
 // the LCEN: an individual publishing a free, non-commercial site may keep their
 // name and address off the page, provided the host holds them. That is why no
@@ -16,27 +10,11 @@
 // Shown as the publication director. A pseudonym is enough under 6-III-2.
 export const PUBLISHER_ALIAS = "marksu_u";
 
-// Date shown on all four pages. One constant rather than four literals: the
-// whole point of the line is to tell a reader which version they are looking at,
-// which fails the moment the pages disagree. Bump it whenever the wording
-// changes in a way that matters.
 export const LAST_UPDATED = new Date("2026-08-17T00:00:00Z");
 
-// TODO: replace before going live. Also the GDPR contact for the player dataset,
-// so it has to be an address that is actually read.
-export const CONTACT_EMAIL = "TODO-contact@example.com";
+export const CONTACT_EMAIL = "marc.gapasinpro@gmail.com";
 
-// The host's identity is the one piece of content the LCEN actually compels on
-// this page, so it is the one worth getting exactly right.
-//
-// TODO: check these against https://vercel.com/legal before going live — the
-// entity details change, and a stale host address is what makes a notice
-// non-compliant.
-//
-// The statute names the host's TELEPHONE number specifically. Fill `phone` in if
-// the host publishes one; leave it `null` if it genuinely does not, and the
-// sentence simply omits it. Never invent a number — a wrong one is worse than an
-// absent one. `email` is shown either way, as a contact route.
+// The host's identity
 export const HOST: {
   name: string;
   address: string;
@@ -57,16 +35,13 @@ export const HOST: {
 // TODO: confirm this is accurate before going live.
 export const DATA_SOURCE = "https://www.hltv.org/";
 
-// Public source repository. Named in the legal notice because the IP clause has
-// to agree with the LICENSE file in it: the two contradicting each other is the
-// failure mode this constant exists to prevent.
+// Public source repository
 export const SOURCE_REPO = "github.com/Marksu-u/cs-gamedle";
 
 export const X_HANDLE = "marksu_u";
 export const X_URL = `https://x.com/${X_HANDLE}`;
 
-// Counts quoted in the privacy policy. Derived from the shipped datasets rather
-// than typed by hand, so the figures cannot go stale when the pools grow.
+// Counts quoted in the privacy policy
 import guessrData from "@/app/data/cs2/guessr_players.json";
 import molData from "@/app/data/cs2/more-or-lessr.json";
 
