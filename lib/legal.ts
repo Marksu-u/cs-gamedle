@@ -14,7 +14,7 @@
 // professional under 6-III-1, and the page then has to carry full identity.
 
 // Shown as the publication director. A pseudonym is enough under 6-III-2.
-export const PUBLISHER_ALIAS = "MarKsu";
+export const PUBLISHER_ALIAS = "marksu_u";
 
 // Date shown on all four pages. One constant rather than four literals: the
 // whole point of the line is to tell a reader which version they are looking at,
@@ -26,20 +26,36 @@ export const LAST_UPDATED = new Date("2026-08-17T00:00:00Z");
 // so it has to be an address that is actually read.
 export const CONTACT_EMAIL = "TODO-contact@example.com";
 
-// TODO: copy verbatim from https://vercel.com/legal — the entity details change,
-// and the legal notice is worthless if they are stale.
-export const HOST = {
+// The host's identity is the one piece of content the LCEN actually compels on
+// this page, so it is the one worth getting exactly right.
+//
+// TODO: check these against https://vercel.com/legal before going live — the
+// entity details change, and a stale host address is what makes a notice
+// non-compliant.
+//
+// The statute names the host's TELEPHONE number specifically. Fill `phone` in if
+// the host publishes one; leave it `null` if it genuinely does not, and the
+// notice falls back to naming the contact address instead. Never invent a
+// number — a wrong one is worse than an absent one.
+export const HOST: {
+  name: string;
+  address: string;
+  phone: string | null;
+  email: string | null;
+  url: string;
+} = {
   name: "Vercel Inc.",
-  address: "TODO — adresse complète de l'hébergeur",
-  phone: "TODO — téléphone de l'hébergeur",
+  address: "440 N Barranca Avenue #4133 Covina, CA 91723 United States",
+  phone: null,
+  email: "privacy@vercel.com",
   url: "vercel.com",
-} as const;
+};
 
 // Where the player data came from. Named in the legal notice because the EU
 // sui generis database right applies to substantial extraction even when the
 // individual facts are not copyrightable.
 // TODO: confirm this is accurate before going live.
-export const DATA_SOURCE = "HLTV.org";
+export const DATA_SOURCE = "https://www.hltv.org/";
 
 // Public source repository. Named in the legal notice because the IP clause has
 // to agree with the LICENSE file in it: the two contradicting each other is the

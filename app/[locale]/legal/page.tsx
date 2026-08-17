@@ -37,14 +37,25 @@ export default async function LegalNoticePage({
       </Section>
 
       <Section heading={t("notice.host.heading")}>
+        {/* The statute names the host's telephone number, so it is used when
+            there is one. Literal keys either side of the branch. */}
         <p>
-          {t("notice.host.body", {
-            host: HOST.name,
-            address: HOST.address,
-            phone: HOST.phone,
-            url: HOST.url,
-          })}
+          {HOST.phone
+            ? t("notice.host.body", {
+                host: HOST.name,
+                address: HOST.address,
+                phone: HOST.phone,
+                url: HOST.url,
+              })
+            : t("notice.host.bodyNoPhone", {
+                host: HOST.name,
+                address: HOST.address,
+                url: HOST.url,
+              })}
         </p>
+        {!HOST.phone && HOST.email && (
+          <p>{t("notice.host.contact", { email: HOST.email })}</p>
+        )}
         <p>{t("notice.host.noServer")}</p>
       </Section>
 
