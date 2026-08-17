@@ -29,8 +29,7 @@ export const HOST: {
   url: "vercel.com",
 };
 
-// Where the player data came from.
-// TODO: confirm this is accurate before going live.
+// Where the player data came from. Waiting on a better/automated way to update data.
 export const DATA_SOURCE = "https://www.hltv.org/";
 
 // Public source repository

@@ -81,7 +81,7 @@ export default function ResultBanner({
         {/* Practice draws a random target nobody else played: nothing to compare. */}
         {!practice && (
           <ShareButton
-            text={buildGuessrShare(
+            card={buildGuessrShare(
               { day, rows, won: !gaveUp, url: pageUrl("/guessr", locale) },
               root,
             )}

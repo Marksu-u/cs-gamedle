@@ -1,4 +1,4 @@
-# cs2-gamedle
+# strikedle
 
 Trois mini-jeux sur la scène **Counter-Strike 2**. Même donnée, trois façons d'y jouer.
 Gratuit, sans compte, sans base de données.

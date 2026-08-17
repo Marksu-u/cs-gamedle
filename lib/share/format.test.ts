@@ -9,6 +9,7 @@ import {
   buildGuessrShare,
   buildMolShare,
   buildWordleShare,
+  cardToText,
   type DayShareData,
   type GuessrShareData,
   type MolShareData,
@@ -25,6 +26,18 @@ function t(locale: Locale): ShareT {
     messages: catalogues[locale],
   }) as unknown as ShareT;
 }
+
+// The builders return a `ShareCard`; this suite is about its text rendering,
+// which is the payload that has to survive a plain text field. The picture is
+// covered in image.test.ts.
+const wordleText = (d: WordleShareData, locale: Locale = "en") =>
+  cardToText(buildWordleShare(d, t(locale)), t(locale));
+const guessrText = (d: GuessrShareData, locale: Locale = "en") =>
+  cardToText(buildGuessrShare(d, t(locale)), t(locale));
+const molText = (d: MolShareData, locale: Locale = "en") =>
+  cardToText(buildMolShare(d, t(locale)), t(locale));
+const dayText = (d: DayShareData, locale: Locale = "en") =>
+  cardToText(buildDayShare(d, t(locale)), t(locale));
 
 const URL = "https://example.test/wordle";
 
@@ -108,36 +121,30 @@ const dayData: DayShareData = {
 
 describe("buildWordleShare", () => {
   it("renders the grid in board order, winning row last", () => {
-    expect(buildWordleShare(wordle, t("en"))).toContain(
-      "⬛🟨⬛⬛⬛\n🟩🟩🟩🟩🟩",
-    );
+    expect(wordleText(wordle)).toContain("⬛🟨⬛⬛⬛\n🟩🟩🟩🟩🟩");
   });
 
   it("marks a miss with X over the attempt cap", () => {
-    expect(buildWordleShare({ ...wordle, won: false }, t("en"))).toContain(
-      "X/6",
-    );
+    expect(wordleText({ ...wordle, won: false })).toContain("X/6");
   });
 
   it("mentions hints only when some were used", () => {
-    expect(buildWordleShare(wordle, t("en"))).not.toContain("💡");
-    expect(buildWordleShare({ ...wordle, hints: 2 }, t("en"))).toContain("💡2");
+    expect(wordleText(wordle)).not.toContain("💡");
+    expect(wordleText({ ...wordle, hints: 2 })).toContain("💡2");
   });
 
   it("ends with the link it was given", () => {
-    expect(buildWordleShare(wordle, t("en")).endsWith(URL)).toBe(true);
+    expect(wordleText(wordle).endsWith(URL)).toBe(true);
   });
 });
 
 describe("buildGuessrShare", () => {
   it("keeps the board order, newest guess on top", () => {
-    expect(buildGuessrShare(guessr, t("en"))).toContain(
-      "🟩🟩🟩🟩🟩🟩🟩\n⬛🟨⬛⬛⬛⬛⬛",
-    );
+    expect(guessrText(guessr)).toContain("🟩🟩🟩🟩🟩🟩🟩\n⬛🟨⬛⬛⬛⬛⬛");
   });
 
   it("leaves hint rows out of the grid and counts them in the header", () => {
-    const out = buildGuessrShare(guessr, t("en"));
+    const out = guessrText(guessr);
     expect(out.split("\n").filter((l) => /^[🟩🟨⬛]+$/u.test(l))).toHaveLength(
       2,
     );
@@ -145,45 +152,41 @@ describe("buildGuessrShare", () => {
   });
 
   it("says so when the player gave up", () => {
-    expect(buildGuessrShare({ ...guessr, won: false }, t("en"))).toContain(
-      "Gave up",
-    );
+    expect(guessrText({ ...guessr, won: false })).toContain("Gave up");
   });
 });
 
 describe("buildMolShare", () => {
   it("pads a run that ended early", () => {
-    expect(buildMolShare(mol, t("en"))).toContain("✅❌✅⬜⬜⬜⬜⬜⬜⬜");
+    expect(molText(mol)).toContain("✅❌✅⬜⬜⬜⬜⬜⬜⬜");
   });
 
   it("scores out of ten", () => {
-    expect(buildMolShare(mol, t("en"))).toContain("2/10");
+    expect(molText(mol)).toContain("2/10");
   });
 
   it("names the category it was played in", () => {
-    expect(buildMolShare(mol, t("en"))).toContain("Rating");
-    expect(buildMolShare({ ...mol, category: "prize" }, t("en"))).toContain(
-      "Prize money",
-    );
+    expect(molText(mol)).toContain("Rating");
+    expect(molText({ ...mol, category: "prize" })).toContain("Prize money");
   });
 });
 
 describe("buildDayShare", () => {
   it("draws one square per puzzle, unplayed included", () => {
-    const out = buildDayShare(dayData, t("en"));
+    const out = dayText(dayData);
     expect(out).toContain("🟩🟥⬜⬜⬜⬜"); // six Wordle
     expect(out).toContain("🟩🟨"); // two More or Lessr: 10/10 then 5/10
   });
 
   it("shows the multiplier only when the streak earns one", () => {
-    expect(buildDayShare(dayData, t("en"))).toContain("×1.75");
-    expect(
-      buildDayShare({ ...dayData, streak: 1, multiplier: 1 }, t("en")),
-    ).not.toContain("×");
+    expect(dayText(dayData)).toContain("×1.75");
+    expect(dayText({ ...dayData, streak: 1, multiplier: 1 })).not.toContain(
+      "×",
+    );
   });
 
   it("survives a day where nothing has been played", () => {
-    const out = buildDayShare({ ...dayData, puzzles: {} }, t("en"));
+    const out = dayText({ ...dayData, puzzles: {} });
     expect(out).toContain("⬜⬜⬜⬜⬜⬜");
   });
 });
@@ -191,14 +194,14 @@ describe("buildDayShare", () => {
 // The two guards nothing else in the suite provides.
 describe("every builder, in every language", () => {
   const outputs = (locale: Locale) => [
-    buildWordleShare(wordle, t(locale)),
-    buildWordleShare({ ...wordle, won: false, hints: 3 }, t(locale)),
-    buildGuessrShare(guessr, t(locale)),
-    buildGuessrShare({ ...guessr, won: false }, t(locale)),
-    buildMolShare(mol, t(locale)),
-    buildMolShare({ ...mol, category: "prize" }, t(locale)),
-    buildDayShare(dayData, t(locale)),
-    buildDayShare({ ...dayData, streak: 1, multiplier: 1 }, t(locale)),
+    wordleText(wordle, locale),
+    wordleText({ ...wordle, won: false, hints: 3 }, locale),
+    guessrText(guessr, locale),
+    guessrText({ ...guessr, won: false }, locale),
+    molText(mol, locale),
+    molText({ ...mol, category: "prize" }, locale),
+    dayText(dayData, locale),
+    dayText({ ...dayData, streak: 1, multiplier: 1 }, locale),
   ];
 
   // A key looked up from a variable renders as its own path when it misses, and

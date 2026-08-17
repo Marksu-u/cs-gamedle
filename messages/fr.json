@@ -1,6 +1,6 @@
 {
   "site": {
-    "name": "CS2 Gamedle"
+    "name": "Strikedle"
   },
   "nav": {
     "backToHub": "← Retour au hub",
@@ -298,7 +298,7 @@
   },
   "seo": {
     "home": {
-      "title": "CS2 Gamedle — 9 grilles quotidiennes Counter-Strike 2",
+      "title": "Strikedle — 9 grilles quotidiennes Counter-Strike 2",
       "description": "Neuf grilles quotidiennes sur la scène Counter-Strike 2 : Wordle, Guessr et More or Lessr. Nouvelles chaque jour à 3h UTC, les mêmes pour tout le monde."
     },
     "wordle": {
@@ -314,20 +314,20 @@
       "description": "Deux pros, une stat cachée : rating HLTV ou prize money. Dix rounds, deux catégories par jour."
     },
     "legal": {
-      "title": "Mentions légales — CS2 Gamedle",
-      "description": "Éditeur, hébergement et propriété intellectuelle de CS2 Gamedle, projet de fan indépendant sans affiliation à Valve Corporation."
+      "title": "Mentions légales — Strikedle",
+      "description": "Éditeur, hébergement et propriété intellectuelle de Strikedle, projet de fan indépendant sans affiliation à Valve Corporation."
     },
     "privacy": {
-      "title": "Politique de confidentialité — CS2 Gamedle",
-      "description": "Aucun compte, aucune base de données, aucun traceur. Ce que CS2 Gamedle stocke dans votre navigateur, et comment sont traitées les données des joueurs."
+      "title": "Politique de confidentialité — Strikedle",
+      "description": "Aucun compte, aucune base de données, aucun traceur. Ce que Strikedle stocke dans votre navigateur, et comment sont traitées les données des joueurs."
     },
     "terms": {
-      "title": "Conditions générales d'utilisation — CS2 Gamedle",
-      "description": "Les conditions d'utilisation de CS2 Gamedle : accès gratuit, sans compte, progression stockée dans votre seul navigateur."
+      "title": "Conditions générales d'utilisation — Strikedle",
+      "description": "Les conditions d'utilisation de Strikedle : accès gratuit, sans compte, progression stockée dans votre seul navigateur."
     },
     "cookies": {
-      "title": "Politique des cookies — CS2 Gamedle",
-      "description": "Les deux éléments strictement nécessaires que CS2 Gamedle inscrit dans votre navigateur. Aucune publicité, aucune mesure d'audience, aucune bannière."
+      "title": "Politique des cookies — Strikedle",
+      "description": "Les deux éléments strictement nécessaires que Strikedle inscrit dans votre navigateur. Aucune publicité, aucune mesure d'audience, aucune bannière."
     },
     "ogTagline": "9 grilles par jour, les mêmes pour tout le monde",
     "ogBadges": {

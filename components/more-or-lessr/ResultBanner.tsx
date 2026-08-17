@@ -65,7 +65,7 @@ export default function ResultBanner({
         {/* Practice draws its own sequence: nobody else played that run. */}
         {!practice && (
           <ShareButton
-            text={buildMolShare(
+            card={buildMolShare(
               {
                 day,
                 category,

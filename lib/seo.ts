@@ -13,7 +13,7 @@ import {
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-export const SITE_NAME = "CS2 Gamedle";
+export const SITE_NAME = "Strikedle";
 
 export const ROUTES = [
   { path: "/", key: "home", priority: 1, changeFrequency: "daily" },

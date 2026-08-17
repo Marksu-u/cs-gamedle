@@ -27,7 +27,7 @@ export default function DayShare() {
     (p) => p !== undefined && p.status !== "playing",
   );
 
-  const text = buildDayShare(
+  const card = buildDayShare(
     {
       day,
       runScore: meta.runScore,
@@ -41,7 +41,7 @@ export default function DayShare() {
 
   return (
     <div className="-mt-2 mb-6 flex justify-center">
-      <ShareButton text={text} disabled={!hydrated || !played} />
+      <ShareButton card={card} disabled={!hydrated || !played} />
     </div>
   );
 }

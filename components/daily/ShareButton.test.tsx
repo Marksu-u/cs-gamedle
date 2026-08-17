@@ -1,14 +1,22 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it } from "vitest";
+import type { ShareCard } from "@/lib/share/card";
 import en from "@/messages/en.json";
 import fr from "@/messages/fr.json";
 import ShareButton from "./ShareButton";
 
+const card: ShareCard = {
+  title: "Strikedle — Wordle 5 #12",
+  detail: "3/6",
+  rows: [{ cells: ["correct", "correct", "correct"] }],
+  url: "https://strikedle.com/wordle",
+};
+
 function renderIn(locale: string, messages: object) {
   return render(
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <ShareButton text="hello" />
+      <ShareButton card={card} />
     </NextIntlClientProvider>,
   );
 }
@@ -34,7 +42,8 @@ describe("ShareButton", () => {
   });
 
   it("says so rather than throwing when nothing can copy", async () => {
-    // jsdom is the insecure-origin case: no clipboard, no execCommand.
+    // jsdom is the insecure-origin case, and it cannot draw either: no canvas,
+    // no clipboard, no execCommand. Every fallback in useShare is exhausted.
     const { unmount } = renderIn("en", en);
     await act(async () => {
       fireEvent.click(screen.getByRole("button"));

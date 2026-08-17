@@ -60,7 +60,7 @@ export default function ResultBanner({ board, points, onPractice }: Props) {
             nothing to compare, so nothing to share. */}
         {board.mode === "daily" && (
           <ShareButton
-            text={buildWordleShare(
+            card={buildWordleShare(
               {
                 length: board.length,
                 day: board.day,

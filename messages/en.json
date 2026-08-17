@@ -1,6 +1,6 @@
 {
   "site": {
-    "name": "CS2 Gamedle"
+    "name": "Strikedle"
   },
   "nav": {
     "backToHub": "← Back to the hub",
@@ -298,7 +298,7 @@
   },
   "seo": {
     "home": {
-      "title": "CS2 Gamedle — 9 daily Counter-Strike 2 puzzles",
+      "title": "Strikedle — 9 daily Counter-Strike 2 puzzles",
       "description": "Nine daily puzzles on the Counter-Strike 2 scene: Wordle, Guessr and More or Lessr. New every day at 3am UTC, the same for everyone."
     },
     "wordle": {
@@ -314,20 +314,20 @@
       "description": "Two pros, one hidden stat: HLTV rating or prize money. Ten rounds, two categories a day."
     },
     "legal": {
-      "title": "Legal notice — CS2 Gamedle",
-      "description": "Publisher, hosting and intellectual property information for CS2 Gamedle, an independent fan project unaffiliated with Valve Corporation."
+      "title": "Legal notice — Strikedle",
+      "description": "Publisher, hosting and intellectual property information for Strikedle, an independent fan project unaffiliated with Valve Corporation."
     },
     "privacy": {
-      "title": "Privacy policy — CS2 Gamedle",
-      "description": "No account, no database, no tracking. What CS2 Gamedle stores in your browser, and how player data is handled."
+      "title": "Privacy policy — Strikedle",
+      "description": "No account, no database, no tracking. What Strikedle stores in your browser, and how player data is handled."
     },
     "terms": {
-      "title": "Terms of use — CS2 Gamedle",
-      "description": "The terms governing use of CS2 Gamedle: free access, no account, and progress stored only in your own browser."
+      "title": "Terms of use — Strikedle",
+      "description": "The terms governing use of Strikedle: free access, no account, and progress stored only in your own browser."
     },
     "cookies": {
-      "title": "Cookie policy — CS2 Gamedle",
-      "description": "The two strictly necessary items CS2 Gamedle writes to your browser. No advertising, no audience measurement, no banner."
+      "title": "Cookie policy — Strikedle",
+      "description": "The two strictly necessary items Strikedle writes to your browser. No advertising, no audience measurement, no banner."
     },
     "ogTagline": "9 puzzles a day, the same for everyone",
     "ogBadges": {
