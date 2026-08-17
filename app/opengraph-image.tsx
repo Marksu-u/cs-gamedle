@@ -1,10 +1,20 @@
 import { ImageResponse } from "next/og";
+import { getTranslations } from "next-intl/server";
+import { locales, type Locale } from "@/i18n/routing";
 import { SITE_NAME } from "@/lib/seo";
 
 // Share preview image for social networks and messaging apps. Generated at
 // build time rather than stored as a PNG: no binary asset to regenerate when
 // the wording changes, and it stays consistent with the theme.
-export const alt = `${SITE_NAME} — 9 grilles quotidiennes Counter-Strike 2`;
+//
+// One image PER LOCALE, addressed as /opengraph-image/en and
+// /opengraph-image/fr. It lives at the app root rather than under [locale] on
+// purpose: inside the locale segment the unprefixed English URL would go
+// through the i18n middleware, which redirects on Accept-Language — so a French
+// crawler fetching the English page's share image would be handed the French
+// one. At the root the path is excluded from the middleware entirely and each
+// URL serves exactly the language it names.
+
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,7 +25,39 @@ const ACCENT_HOT = "#e8562a";
 const TEXT = "#f2f3f5";
 const MUTED = "#8b8f98";
 
-export default function Image() {
+export async function generateImageMetadata() {
+  return Promise.all(
+    locales.map(async (locale) => {
+      const t = await getTranslations({ locale, namespace: "seo" });
+      return {
+        id: locale,
+        size,
+        contentType,
+        alt: `${SITE_NAME} — ${t("home.description")}`,
+      };
+    }),
+  );
+}
+
+export default async function Image({ id }: { id: string }) {
+  const locale = id as Locale;
+  const t = await getTranslations({ locale, namespace: "seo" });
+  const modes = await getTranslations({ locale, namespace: "modes" });
+
+  // Literal keys, never a template: a key built from a variable renders as its
+  // own raw path when it misses, and an image cannot be checked by the render
+  // tests that guard the rest of the catalogue.
+  const badges = [
+    t("ogBadges.rotation"),
+    t("ogBadges.streak"),
+    t("ogBadges.score"),
+  ];
+  const eyebrow = [
+    modes("wordle.label"),
+    modes("guessr.label"),
+    modes("more-or-lessr.label"),
+  ].join(" · ");
+
   return new ImageResponse(
     <div
       style={{
@@ -41,11 +83,12 @@ export default function Image() {
           textTransform: "uppercase",
         }}
       >
-        Wordle · Guessr · More or Lessr
+        {eyebrow}
       </div>
 
       {/* Stacked wordmark like the site hero: "COUNTER" then "STRIKE 2". On a
-          single line "COUNTER-STRIKE" overflows and breaks the layout. */}
+            single line "COUNTER-STRIKE" overflows and breaks the layout. The
+            wordmark is the game's name, identical in every language. */}
       <div
         style={{
           display: "flex",
@@ -91,7 +134,7 @@ export default function Image() {
       <div
         style={{ display: "flex", fontSize: 38, color: TEXT, marginTop: 30 }}
       >
-        9 grilles par jour, les mêmes pour tout le monde
+        {t("ogTagline")}
       </div>
 
       <div
@@ -103,9 +146,9 @@ export default function Image() {
           color: MUTED,
         }}
       >
-        {["Rotation à 3h UTC", "Série", "Score & record"].map((t) => (
+        {badges.map((label) => (
           <div
-            key={t}
+            key={label}
             style={{
               display: "flex",
               border: "2px solid rgba(245,166,35,0.38)",
@@ -114,7 +157,7 @@ export default function Image() {
               color: ACCENT,
             }}
           >
-            {t}
+            {label}
           </div>
         ))}
       </div>
