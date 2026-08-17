@@ -156,6 +156,133 @@
       ]
     }
   },
+  "footer": {
+    "legal": "Legal notice",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "cookies": "Cookies",
+    "x": "X",
+    "xLabel": "Follow on X",
+    "disclaimer": "A free fan project. Not affiliated with, endorsed or sponsored by Valve Corporation. Counter-Strike is a trademark of Valve Corporation."
+  },
+  "legalPages": {
+    "back": "← Back to the hub",
+    "updated": "Last updated: {date}",
+    "notice": {
+      "title": "Legal notice",
+      "publisher": {
+        "heading": "Publisher",
+        "body": "This site is published by an individual, on a personal and non-commercial basis. The publisher's details have been provided to the host, in accordance with article 6-III-2 of the French LCEN.",
+        "director": "Publication director: {alias}.",
+        "contact": "The publisher can be reached at {email}."
+      },
+      "host": {
+        "heading": "Hosting",
+        "body": "The site is hosted by {host}, {address}, telephone {phone} ({url}).",
+        "bodyNoPhone": "The site is hosted by {host}, {address} ({url}).",
+        "contact": "The host can be contacted at {email}.",
+        "noServer": "The site has no database and no user accounts. Nothing you do here is stored on a server: your progress stays in your own browser."
+      },
+      "ip": {
+        "heading": "Intellectual property",
+        "body": "The source code of this site is public and released under the MIT licence: {repo}. You are free to reuse, modify and redistribute it, keeping the copyright notice.",
+        "data": "The licence covers the code only. The player datasets are factual competitive results, not original work of the publisher, who therefore makes no grant over them; anyone reusing them answers for their own position under copyright, the EU database right and data protection law.",
+        "valve": "Counter-Strike, Counter-Strike 2 and the associated marks are the property of Valve Corporation. This site is an independent fan project, with no affiliation to, endorsement by or sponsorship from Valve. No game asset is reproduced here."
+      },
+      "data": {
+        "heading": "Player data",
+        "body": "The competitive statistics used by the games come from publicly reported results, chiefly {source}. Any player wishing to correct or object to the use of data concerning them can write to {email}; see the privacy policy for details."
+      },
+      "links": {
+        "heading": "External links",
+        "body": "This site may link to sites it does not control. The publisher cannot be held responsible for their content."
+      }
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "summary": {
+        "heading": "In short",
+        "body": "No account, no database, no advertising, no audience measurement and no third-party script. The site cannot recognise you, cannot follow you from one site to another, and has nothing to sell about you.",
+        "fonts": "Typefaces are served from this site's own domain, so displaying a page sends no request to any third party."
+      },
+      "device": {
+        "heading": "What is stored on your device",
+        "intro": "Two items, both strictly necessary to the service you asked for. Neither ever leaves your browser.",
+        "progress": "cs-gamedle:v1 (local storage) — your streak, your score, your record and today's puzzle progress. Without it, refreshing the page would lose the puzzle you are in the middle of.",
+        "locale": "NEXT_LOCALE (cookie) — remembers whether you chose English or French, so you are not sent back to the wrong language on your next visit.",
+        "erase": "Clearing your browser's site data erases both. Your streak and record go with them, and cannot be recovered: there is no copy anywhere else."
+      },
+      "host": {
+        "heading": "Data processed by the host",
+        "body": "Like any website, this one is served by a host, {host}, whose servers log technical connection data including IP addresses. That processing rests on the legitimate interest of keeping the service running and secure. The publisher does not exploit those logs."
+      },
+      "players": {
+        "heading": "Data about professional players",
+        "intro": "The games are built on data describing {count} real people — professional Counter-Strike players. This is the only personal data the site processes about identified individuals.",
+        "fields": "For each player, depending on the game: nickname, nationality, current and former teams, role, age, number of Majors and tournaments won, career prize money and notable achievements.",
+        "basis": "Lawful basis: legitimate interest (article 6.1.f GDPR) in running a free, informational game about a public competitive scene. The data concerns professional activity carried out in public, comes from results published by the scene itself, chiefly {source}, and includes nothing about private life.",
+        "rights": "Any player concerned may request access, correction, or object to the use of data concerning them, by writing to {email}. Requests are handled promptly and free of charge; a correction usually means editing one line of a data file."
+      },
+      "rights": {
+        "heading": "Your rights",
+        "body": "Because the site holds no account and no server-side record, there is nothing about you to access, export or delete on request — the data is on your own device, under your control, and you can erase it at any time from your browser settings.",
+        "cnil": "For anything concerning the host's logs or the player data, write to {email}. You also have the right to lodge a complaint with the CNIL (cnil.fr)."
+      },
+      "changes": {
+        "heading": "Changes",
+        "body": "This policy may change if the site does — for instance if audience measurement is ever added, which would require asking for your consent first. The date at the top of the page tells you which version you are reading."
+      }
+    },
+    "terms": {
+      "title": "Terms of use",
+      "purpose": {
+        "heading": "Purpose",
+        "body": "These terms govern the use of this site: three free Counter-Strike puzzle games with nine daily puzzles, identical for everyone, rotating at 03:00 UTC. Using the site implies accepting them."
+      },
+      "access": {
+        "heading": "Access",
+        "body": "The site is free and requires no account. The publisher gives no guarantee of availability and may modify, suspend or discontinue it, in whole or in part, at any time and without notice. Puzzle content and scoring may change."
+      },
+      "progress": {
+        "heading": "Your progress",
+        "body": "Your streak, score and record are stored only in your browser. They are not backed up, not synchronised between your devices or browsers, and cannot be restored by the publisher. Clearing your browsing data, using private browsing, or switching device loses them permanently."
+      },
+      "conduct": {
+        "heading": "Acceptable use",
+        "body": "You agree not to disrupt the site's operation, not to attempt to circumvent its security, and not to extract its data automatically or in bulk. Playing normally, in a browser, is the intended use."
+      },
+      "liability": {
+        "heading": "Liability",
+        "body": "The site is provided as is, without warranty of accuracy, completeness or continuity. Competitive statistics may be incomplete or out of date. The publisher cannot be held liable for any damage arising from use of the site, or from the loss of locally stored progress."
+      },
+      "law": {
+        "heading": "Governing law",
+        "body": "These terms are governed by French law. Any dispute falls to the competent French courts, after seeking an amicable resolution."
+      }
+    },
+    "cookies": {
+      "title": "Cookie policy",
+      "what": {
+        "heading": "What this page covers",
+        "body": "This page lists everything the site writes to your browser, whether it is a cookie or another storage mechanism such as local storage. Both are covered by the same rule, article 82 of the French Data Protection Act."
+      },
+      "necessary": {
+        "heading": "Strictly necessary items",
+        "intro": "The site writes exactly two things, both required for the service you asked for. Under the regulation they do not require your consent, which is why this site shows no cookie banner.",
+        "locale": "NEXT_LOCALE (cookie) — remembers your language choice. Kept for one year.",
+        "progress": "cs-gamedle:v1 (local storage) — your daily progress, streak, score and record. Kept until you clear your browser data."
+      },
+      "none": {
+        "heading": "What the site does not use",
+        "body": "No advertising cookie, no social network cookie, no personalisation cookie, and no audience measurement. No third-party script runs on this site, and no data about your visit is sent anywhere.",
+        "future": "If audience measurement is ever added, nothing would be written before you had explicitly accepted, and refusing would change nothing about how the site works."
+      },
+      "remove": {
+        "heading": "Removing them",
+        "body": "Every browser lets you delete cookies and site data from its settings, usually under privacy. Doing so also erases your streak, score and record, which cannot be recovered."
+      }
+    }
+  },
   "errors": {
     "notFound": {
       "eyebrow": "Error 404",
@@ -185,6 +312,22 @@
     "more-or-lessr": {
       "title": "CS2 More or Lessr — higher or lower?",
       "description": "Two pros, one hidden stat: HLTV rating or prize money. Ten rounds, two categories a day."
+    },
+    "legal": {
+      "title": "Legal notice — CS2 Gamedle",
+      "description": "Publisher, hosting and intellectual property information for CS2 Gamedle, an independent fan project unaffiliated with Valve Corporation."
+    },
+    "privacy": {
+      "title": "Privacy policy — CS2 Gamedle",
+      "description": "No account, no database, no tracking. What CS2 Gamedle stores in your browser, and how player data is handled."
+    },
+    "terms": {
+      "title": "Terms of use — CS2 Gamedle",
+      "description": "The terms governing use of CS2 Gamedle: free access, no account, and progress stored only in your own browser."
+    },
+    "cookies": {
+      "title": "Cookie policy — CS2 Gamedle",
+      "description": "The two strictly necessary items CS2 Gamedle writes to your browser. No advertising, no audience measurement, no banner."
     },
     "ogTagline": "9 puzzles a day, the same for everyone",
     "ogBadges": {

@@ -156,6 +156,133 @@
       ]
     }
   },
+  "footer": {
+    "legal": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "CGU",
+    "cookies": "Cookies",
+    "x": "X",
+    "xLabel": "Suivre sur X",
+    "disclaimer": "Projet de fan gratuit. Sans affiliation, approbation ni parrainage de Valve Corporation. Counter-Strike est une marque de Valve Corporation."
+  },
+  "legalPages": {
+    "back": "← Retour au hub",
+    "updated": "Dernière mise à jour : {date}",
+    "notice": {
+      "title": "Mentions légales",
+      "publisher": {
+        "heading": "Éditeur",
+        "body": "Le site est édité à titre personnel et non commercial par une personne physique. Ses coordonnées ont été communiquées à l'hébergeur, conformément à l'article 6-III-2 de la LCEN.",
+        "director": "Directeur de la publication : {alias}.",
+        "contact": "L'éditeur peut être contacté à l'adresse {email}."
+      },
+      "host": {
+        "heading": "Hébergement",
+        "body": "Le site est hébergé par {host}, {address}, téléphone {phone} ({url}).",
+        "bodyNoPhone": "Le site est hébergé par {host}, {address} ({url}).",
+        "contact": "L'hébergeur peut être contacté à l'adresse {email}.",
+        "noServer": "Le site ne dispose d'aucune base de données ni d'aucun compte utilisateur. Rien de ce que vous faites ici n'est stocké sur un serveur : votre progression reste dans votre propre navigateur."
+      },
+      "ip": {
+        "heading": "Propriété intellectuelle",
+        "body": "Le code source du site est public et publié sous licence MIT : {repo}. Vous êtes libre de le réutiliser, de le modifier et de le redistribuer, en conservant la mention de copyright.",
+        "data": "La licence ne couvre que le code. Les jeux de données de joueurs sont des résultats compétitifs factuels, qui ne constituent pas une œuvre originale de l'éditeur : celui-ci n'accorde donc aucun droit sur eux, et quiconque les réutilise répond de sa propre situation au regard du droit d'auteur, du droit des bases de données et de la protection des données.",
+        "valve": "Counter-Strike, Counter-Strike 2 et les marques associées sont la propriété de Valve Corporation. Ce site est un projet de fan indépendant, sans affiliation, approbation ni parrainage de Valve. Aucune ressource du jeu n'y est reproduite."
+      },
+      "data": {
+        "heading": "Données des joueurs",
+        "body": "Les statistiques compétitives utilisées par les jeux proviennent de résultats publiés publiquement, principalement {source}. Tout joueur souhaitant corriger ou contester l'utilisation des données le concernant peut écrire à {email} ; voir la politique de confidentialité pour le détail."
+      },
+      "links": {
+        "heading": "Liens externes",
+        "body": "Le site peut renvoyer vers des sites qu'il ne contrôle pas. L'éditeur ne saurait être tenu responsable de leur contenu."
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "summary": {
+        "heading": "En résumé",
+        "body": "Aucun compte, aucune base de données, aucune publicité, aucune mesure d'audience et aucun script tiers. Le site ne peut pas vous reconnaître, ne peut pas vous suivre d'un site à l'autre, et n'a rien à vendre à votre sujet.",
+        "fonts": "Les polices de caractères sont servies depuis le domaine du site : afficher une page n'envoie aucune requête à un tiers."
+      },
+      "device": {
+        "heading": "Ce qui est stocké sur votre appareil",
+        "intro": "Deux éléments, tous deux strictement nécessaires au service que vous avez demandé. Aucun ne quitte jamais votre navigateur.",
+        "progress": "cs-gamedle:v1 (stockage local) — votre série, votre score, votre record et la progression des grilles du jour. Sans lui, un simple rafraîchissement perdrait la partie en cours.",
+        "locale": "NEXT_LOCALE (cookie) — retient si vous avez choisi le français ou l'anglais, pour ne pas vous renvoyer dans la mauvaise langue à la visite suivante.",
+        "erase": "Vider les données de site de votre navigateur efface les deux. Votre série et votre record disparaissent avec, sans récupération possible : il n'en existe aucune copie ailleurs."
+      },
+      "host": {
+        "heading": "Données traitées par l'hébergeur",
+        "body": "Comme tout site web, celui-ci est servi par un hébergeur, {host}, dont les serveurs journalisent des données techniques de connexion, dont les adresses IP. Ce traitement repose sur l'intérêt légitime à maintenir le service en fonctionnement et sécurisé. L'éditeur n'exploite pas ces journaux."
+      },
+      "players": {
+        "heading": "Données concernant les joueurs professionnels",
+        "intro": "Les jeux reposent sur des données décrivant {count} personnes réelles — des joueurs professionnels de Counter-Strike. Ce sont les seules données personnelles concernant des personnes identifiées que le site traite.",
+        "fields": "Pour chaque joueur, selon le jeu : pseudonyme, nationalité, équipe actuelle et anciennes équipes, rôle, âge, nombre de Majors et de tournois remportés, gains en carrière et faits d'armes notables.",
+        "basis": "Base légale : l'intérêt légitime (article 6.1.f du RGPD) à proposer un jeu gratuit et informatif sur une scène compétitive publique. Les données portent sur une activité professionnelle exercée publiquement, proviennent de résultats publiés par la scène elle-même, principalement {source}, et ne comportent rien relevant de la vie privée.",
+        "rights": "Tout joueur concerné peut demander l'accès, la rectification, ou s'opposer à l'utilisation des données le concernant, en écrivant à {email}. Les demandes sont traitées rapidement et gratuitement : une correction revient le plus souvent à modifier une ligne d'un fichier de données."
+      },
+      "rights": {
+        "heading": "Vos droits",
+        "body": "Le site ne conservant aucun compte ni aucun enregistrement côté serveur, il n'existe rien vous concernant à consulter, exporter ou supprimer sur demande — les données sont sur votre propre appareil, sous votre contrôle, et vous pouvez les effacer à tout moment depuis les réglages de votre navigateur.",
+        "cnil": "Pour tout ce qui concerne les journaux de l'hébergeur ou les données des joueurs, écrivez à {email}. Vous disposez également du droit d'introduire une réclamation auprès de la CNIL (cnil.fr)."
+      },
+      "changes": {
+        "heading": "Modifications",
+        "body": "Cette politique peut évoluer si le site évolue — par exemple si une mesure d'audience était ajoutée, ce qui supposerait de recueillir votre consentement au préalable. La date en haut de page indique la version que vous lisez."
+      }
+    },
+    "terms": {
+      "title": "Conditions générales d'utilisation",
+      "purpose": {
+        "heading": "Objet",
+        "body": "Les présentes conditions régissent l'utilisation du site : trois jeux gratuits sur Counter-Strike, neuf grilles quotidiennes identiques pour tous, renouvelées à 03:00 UTC. L'utilisation du site vaut acceptation."
+      },
+      "access": {
+        "heading": "Accès",
+        "body": "Le site est gratuit et ne nécessite aucun compte. L'éditeur ne garantit aucune disponibilité et peut le modifier, le suspendre ou l'arrêter, en tout ou partie, à tout moment et sans préavis. Le contenu des grilles et le barème peuvent évoluer."
+      },
+      "progress": {
+        "heading": "Votre progression",
+        "body": "Votre série, votre score et votre record sont stockés uniquement dans votre navigateur. Ils ne font l'objet d'aucune sauvegarde, d'aucune synchronisation entre vos appareils ou navigateurs, et ne peuvent être restaurés par l'éditeur. Vider vos données de navigation, utiliser la navigation privée ou changer d'appareil les perd définitivement."
+      },
+      "conduct": {
+        "heading": "Usage acceptable",
+        "body": "Vous vous engagez à ne pas perturber le fonctionnement du site, à ne pas tenter d'en contourner la sécurité, et à ne pas en extraire les données de façon automatisée ou massive. Jouer normalement, dans un navigateur, est l'usage prévu."
+      },
+      "liability": {
+        "heading": "Responsabilité",
+        "body": "Le site est fourni en l'état, sans garantie d'exactitude, d'exhaustivité ni de continuité. Les statistiques compétitives peuvent être incomplètes ou obsolètes. L'éditeur ne saurait être tenu responsable d'un quelconque dommage résultant de l'utilisation du site ou de la perte d'une progression stockée localement."
+      },
+      "law": {
+        "heading": "Droit applicable",
+        "body": "Les présentes conditions sont régies par le droit français. Tout litige relève des juridictions françaises compétentes, après recherche d'une solution amiable."
+      }
+    },
+    "cookies": {
+      "title": "Politique des cookies",
+      "what": {
+        "heading": "Ce que couvre cette page",
+        "body": "Cette page recense tout ce que le site inscrit dans votre navigateur, qu'il s'agisse d'un cookie ou d'un autre mécanisme de stockage comme le stockage local. Les deux relèvent de la même règle, l'article 82 de la loi Informatique et Libertés."
+      },
+      "necessary": {
+        "heading": "Éléments strictement nécessaires",
+        "intro": "Le site inscrit exactement deux choses, toutes deux nécessaires au service que vous avez demandé. La réglementation ne soumet pas ces éléments à votre consentement : c'est pourquoi ce site n'affiche aucune bannière cookies.",
+        "locale": "NEXT_LOCALE (cookie) — retient votre choix de langue. Conservé un an.",
+        "progress": "cs-gamedle:v1 (stockage local) — votre progression du jour, votre série, votre score et votre record. Conservé jusqu'à ce que vous vidiez les données de votre navigateur."
+      },
+      "none": {
+        "heading": "Ce que le site n'utilise pas",
+        "body": "Aucun cookie publicitaire, aucun cookie de réseau social, aucun cookie de personnalisation et aucune mesure d'audience. Aucun script tiers ne s'exécute sur ce site, et aucune donnée relative à votre visite n'est transmise où que ce soit.",
+        "future": "Si une mesure d'audience était un jour ajoutée, rien ne serait inscrit avant votre acceptation explicite, et un refus ne changerait rien au fonctionnement du site."
+      },
+      "remove": {
+        "heading": "Les supprimer",
+        "body": "Tout navigateur permet de supprimer les cookies et les données de site depuis ses réglages, généralement à la rubrique confidentialité. Cette opération efface aussi votre série, votre score et votre record, sans récupération possible."
+      }
+    }
+  },
   "errors": {
     "notFound": {
       "eyebrow": "Erreur 404",
@@ -185,6 +312,22 @@
     "more-or-lessr": {
       "title": "More or Lessr CS2 — plus ou moins ?",
       "description": "Deux pros, une stat cachée : rating HLTV ou prize money. Dix rounds, deux catégories par jour."
+    },
+    "legal": {
+      "title": "Mentions légales — CS2 Gamedle",
+      "description": "Éditeur, hébergement et propriété intellectuelle de CS2 Gamedle, projet de fan indépendant sans affiliation à Valve Corporation."
+    },
+    "privacy": {
+      "title": "Politique de confidentialité — CS2 Gamedle",
+      "description": "Aucun compte, aucune base de données, aucun traceur. Ce que CS2 Gamedle stocke dans votre navigateur, et comment sont traitées les données des joueurs."
+    },
+    "terms": {
+      "title": "Conditions générales d'utilisation — CS2 Gamedle",
+      "description": "Les conditions d'utilisation de CS2 Gamedle : accès gratuit, sans compte, progression stockée dans votre seul navigateur."
+    },
+    "cookies": {
+      "title": "Politique des cookies — CS2 Gamedle",
+      "description": "Les deux éléments strictement nécessaires que CS2 Gamedle inscrit dans votre navigateur. Aucune publicité, aucune mesure d'audience, aucune bannière."
     },
     "ogTagline": "9 grilles par jour, les mêmes pour tout le monde",
     "ogBadges": {

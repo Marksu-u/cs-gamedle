@@ -7,13 +7,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // alternates. Listing only one language would leave the others undiscovered
   // until a crawler stumbled on them.
   //
-  // Content rotates daily at 3am UTC, hence `daily`. The route list comes from
-  // lib/seo.ts, the same one the metadata uses, so a page cannot be referenced
-  // in one and forgotten in the other.
+  // The route list comes from lib/seo.ts, the same one the metadata uses, so a
+  // page cannot be referenced in one and forgotten in the other — and each route
+  // carries its own frequency, since the legal pages do not rotate at 3am.
   return locales.flatMap((locale) =>
     ROUTES.map((route) => ({
       url: pageUrl(route.path, locale),
-      changeFrequency: "daily" as const,
+      changeFrequency: route.changeFrequency,
       priority: route.priority,
       alternates: {
         languages: Object.fromEntries([

@@ -21,12 +21,44 @@ export const SITE_NAME = "CS2 Gamedle";
 // Indexable routes. Titles and descriptions live in the message catalogues,
 // keyed by these same paths, so a page cannot be listed here and left
 // untranslated.
+// `changeFrequency` is per route: the games rotate daily, the legal pages change
+// when the law or the host does. Telling a crawler the legal notice is daily
+// wastes its budget on four pages that never move.
 export const ROUTES = [
-  { path: "/", key: "home", priority: 1 },
-  { path: "/wordle", key: "wordle", priority: 0.8 },
-  { path: "/guessr", key: "guessr", priority: 0.8 },
-  { path: "/more-or-lessr", key: "more-or-lessr", priority: 0.8 },
+  { path: "/", key: "home", priority: 1, changeFrequency: "daily" },
+  { path: "/wordle", key: "wordle", priority: 0.8, changeFrequency: "daily" },
+  { path: "/guessr", key: "guessr", priority: 0.8, changeFrequency: "daily" },
+  {
+    path: "/more-or-lessr",
+    key: "more-or-lessr",
+    priority: 0.8,
+    changeFrequency: "daily",
+  },
+  { path: "/legal", key: "legal", priority: 0.2, changeFrequency: "yearly" },
+  {
+    path: "/privacy",
+    key: "privacy",
+    priority: 0.2,
+    changeFrequency: "yearly",
+  },
+  { path: "/terms", key: "terms", priority: 0.2, changeFrequency: "yearly" },
+  {
+    path: "/cookies",
+    key: "cookies",
+    priority: 0.2,
+    changeFrequency: "yearly",
+  },
 ] as const;
+
+// The four pages linked from the footer, in display order.
+export const LEGAL_PATHS = [
+  "/legal",
+  "/privacy",
+  "/terms",
+  "/cookies",
+] as const;
+
+export type LegalPath = (typeof LEGAL_PATHS)[number];
 
 export type RoutePath = (typeof ROUTES)[number]["path"];
 
