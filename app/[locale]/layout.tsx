@@ -7,6 +7,7 @@ import "../globals.css";
 import "../cs2-theme.css";
 import { locales, routing } from "@/i18n/routing";
 import { buildMetadata } from "@/lib/seo";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,7 +71,10 @@ export default async function LocaleLayout({
     >
       {/* theme-cs2 forces the game's dark theme regardless of the system setting. */}
       <body className="theme-cs2 bg-background text-foreground flex min-h-full flex-col font-sans">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          {children}
+          <Footer />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
