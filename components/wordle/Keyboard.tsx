@@ -4,13 +4,19 @@ import type { KeyState } from "@/lib/wordle/types";
 
 type Props = {
   keyStates: Map<string, KeyState>;
-  flashKey: string | null; // touche illuminée brièvement (frappe physique ou clic)
+  flashKey: string | null; // key lit briefly (physical typing or click)
   onKey: (char: string) => void;
   onEnter: () => void;
   onDelete: () => void;
 };
 
-export default function Keyboard({ keyStates, flashKey, onKey, onEnter, onDelete }: Props) {
+export default function Keyboard({
+  keyStates,
+  flashKey,
+  onKey,
+  onEnter,
+  onDelete,
+}: Props) {
   function press(label: string) {
     if (label === "ENTER") return onEnter();
     if (label === "DEL") return onDelete();

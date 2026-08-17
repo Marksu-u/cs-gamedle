@@ -1,30 +1,32 @@
-// Types partagés du Wordle. Volontairement génériques (pas spécifiques à CS2)
-// pour rester réutilisables sur un autre univers.
+// Shared Wordle types. Deliberately generic (not CS2-specific) so they stay
+// reusable for another universe.
 
-// État d'une tuile après évaluation. "empty" = case non encore jouée.
+// State of a tile after evaluation. "empty" = not played yet.
 export type TileState = "correct" | "present" | "absent" | "empty";
 
-// État d'une touche du clavier (agrégé sur tous les essais). "unused" = jamais tapée.
+// State of a keyboard key (aggregated over every guess). "unused" = never typed.
 export type KeyState = "correct" | "present" | "absent" | "unused";
 
 export type GameStatus = "playing" | "won" | "lost";
 
-// Forme du JSON de données (app/data/<jeu>/wordle.json).
+// Shape of the data JSON (app/data/<game>/wordle.json).
 export type WordleData = { game: string; words: Record<string, string[]> };
 
-// État d'une grille (un board par longueur de mot).
+// State of one board (one board per word length).
 export type BoardState = {
   target: string;
   length: number;
-  guesses: string[]; // essais soumis
-  evaluations: TileState[][]; // coloriage par essai (même index que guesses)
-  current: string; // saisie en cours (non soumise)
+  guesses: string[]; // submitted guesses
+  evaluations: TileState[][]; // colouring per guess (same index as guesses)
+  current: string; // current input (not submitted)
   status: GameStatus;
-  invalid: boolean; // flag transitoire : déclenche le shake puis est remis à false
-  hintedChars: string[]; // caractères révélés via indice (affichés "present" au clavier)
+  invalid: boolean; // transient flag: triggers the shake then resets to false
+  hintedChars: string[]; // characters revealed by a hint (shown "present" on the keyboard)
+  mode: "daily" | "practice"; // practice scores nothing
+  day: number; // day the target was drawn under
 };
 
-// État global : tous les boards + l'onglet actif.
+// Global state: every board plus the active tab.
 export type WordleState = {
   activeLength: number;
   boards: Record<number, BoardState>;
@@ -32,3 +34,6 @@ export type WordleState = {
 
 // 6 essais comme le Wordle classique (cf. data/modes.ts).
 export const MAX_ATTEMPTS = 6;
+
+// Plafond d'indices par grille. Sans plafond, la grille du jour serait triviale.
+export const MAX_HINTS = 3;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   availableLengths,
+  dailyWord,
   getGroup,
   isValidGuess,
   pickRandom,
@@ -46,5 +47,29 @@ describe("pickRandom", () => {
   });
   it("garde-fou : retourne quand même l'unique mot si tout est exclu", () => {
     expect(pickRandom(["A"], "A")).toBe("A");
+  });
+});
+
+describe("dailyWord", () => {
+  const data = {
+    game: "test",
+    words: {
+      "5": Array.from(
+        { length: 40 },
+        (_, i) => `MOT${String(i).padStart(2, "0")}`,
+      ),
+    },
+  };
+
+  it("rend le même mot pour un jour donné", () => {
+    expect(dailyWord(data, 5, 100)).toBe(dailyWord(data, 5, 100));
+  });
+
+  it("change de jour en jour", () => {
+    expect(dailyWord(data, 5, 100)).not.toBe(dailyWord(data, 5, 101));
+  });
+
+  it("rend un mot du groupe demandé", () => {
+    expect(data.words["5"]).toContain(dailyWord(data, 5, 100));
   });
 });

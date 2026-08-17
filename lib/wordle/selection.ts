@@ -1,6 +1,7 @@
+import { draw } from "@/lib/daily/deck";
 import type { WordleData } from "./types";
 
-// Les clés du JSON sont des chaînes ("3".."8") ; on les convertit et trie en nombres.
+// The JSON keys are strings ("3".."8"); we convert and sort them as numbers.
 export function availableLengths(data: WordleData): number[] {
   return Object.keys(data.words)
     .map(Number)
@@ -11,8 +12,8 @@ export function getGroup(data: WordleData, length: number): string[] {
   return data.words[String(length)] ?? [];
 }
 
-// `exclude` évite de retomber sur le mot courant au "Rejouer". Garde-fou : si le
-// filtre vide la liste (groupe à un seul mot), on retire l'exclusion.
+// `exclude` avoids landing on the current word again on "Play again". Guard: if
+// the filter empties the list (a single-word group), the exclusion is dropped.
 export function pickRandom(group: string[], exclude?: string): string {
   const pool = exclude ? group.filter((w) => w !== exclude) : group;
   const source = pool.length > 0 ? pool : group;
@@ -22,4 +23,14 @@ export function pickRandom(group: string[], exclude?: string): string {
 export function isValidGuess(group: string[], guess: string): boolean {
   const set = new Set(group.map((w) => w.toUpperCase()));
   return set.has(guess.toUpperCase());
+}
+
+// Word of the day for a given length. Each length is an independent stream: six
+// daily puzzles, six separate cycles.
+export function dailyWord(
+  data: WordleData,
+  length: number,
+  day: number,
+): string {
+  return draw(getGroup(data, length), `wordle-${length}`, day, 1)[0];
 }

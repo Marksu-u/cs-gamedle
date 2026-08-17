@@ -1,17 +1,20 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useEffect } from "react";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode; // contenu d'aide propre à chaque jeu
+  children: React.ReactNode; // help content specific to each game
 };
 
-// Pop-up d'aide générique (règles du jeu), partagée par les trois jeux CS.
+// Generic help popup (game rules), shared by all three games.
 export default function HelpModal({ open, onClose, title, children }: Props) {
-  // Escape ne doit fermer que si la modale est réellement affichée.
+  const t = useTranslations("menu");
+  // Escape should only close when the modal is actually shown.
   useEffect(() => {
     if (!open) return;
 
@@ -29,7 +32,7 @@ export default function HelpModal({ open, onClose, title, children }: Props) {
     <div
       className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4"
       onClick={(event) => {
-        // Ferme seulement au clic sur l'overlay lui-même, pas sur la carte.
+        // Close only on a click on the overlay itself, not on the card.
         if (event.target === event.currentTarget) onClose();
       }}
     >
@@ -40,7 +43,7 @@ export default function HelpModal({ open, onClose, title, children }: Props) {
           </h2>
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t("close")}
             onClick={onClose}
             className="hover:text-foreground text-[color:var(--muted)] transition"
           >

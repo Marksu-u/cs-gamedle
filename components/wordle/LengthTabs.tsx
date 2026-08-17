@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 type Props = {
   lengths: number[];
   active: number;
@@ -5,8 +8,13 @@ type Props = {
 };
 
 export default function LengthTabs({ lengths, active, onSelect }: Props) {
+  const t = useTranslations("wordle");
   return (
-    <div className="flex justify-center gap-1.5" role="tablist" aria-label="Longueur du mot">
+    <div
+      className="flex justify-center gap-1.5"
+      role="tablist"
+      aria-label={t("tagLength")}
+    >
       {lengths.map((len) => {
         const isActive = len === active;
         return (

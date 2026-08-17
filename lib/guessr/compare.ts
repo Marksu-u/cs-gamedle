@@ -1,18 +1,24 @@
-import type { Direction, FieldResult, GuessResult, Match, Player } from "./types";
+import type {
+  Direction,
+  FieldResult,
+  GuessResult,
+  Match,
+  Player,
+} from "./types";
 
 // Normalisation commune des comparaisons texte : insensible casse + espaces.
 export function norm(s: string): string {
   return s.trim().toLowerCase();
 }
 
-// Colonne texte (nationalité, équipe actuelle) : exact ou miss.
+// Text column (nationality, current team): exact or miss.
 export function compareText(guess: string, target: string): FieldResult {
   const match: Match = norm(guess) === norm(target) ? "exact" : "miss";
   return { kind: "text", match, value: guess };
 }
 
-// Colonne ensemble (anciennes équipes, rôle) : exact si ensembles égaux,
-// partial si intersection non vide, miss sinon. Ordre/casse ignorés.
+// Set column (former teams, role): exact when the sets are equal, partial when
+// they intersect, miss otherwise. Order and case are ignored.
 export function compareSet(guess: string[], target: string[]): FieldResult {
   const g = new Set(guess.map(norm));
   const t = new Set(target.map(norm));
@@ -24,7 +30,7 @@ export function compareSet(guess: string[], target: string[]): FieldResult {
   return { kind: "set", match, value: guess };
 }
 
-// Colonne numérique (âge, majors, tournois) : exact si égal, sinon miss + flèche
+// Numeric column (age, majors, tournaments): exact when equal, otherwise miss + arrow
 // pointant vers la valeur de la CIBLE relative au guess.
 export function compareNumber(
   guess: number,
@@ -36,7 +42,7 @@ export function compareNumber(
   return { kind: "number", match, value: guess, direction };
 }
 
-// Compare une proposition à la cible → état des 8 colonnes.
+// Compares a guess against the target → state of all 8 columns.
 export function compareGuess(guess: Player, target: Player): GuessResult {
   return {
     player: guess,
@@ -47,6 +53,9 @@ export function compareGuess(guess: Player, target: Player): GuessResult {
     role: compareSet(guess.role, target.role),
     age: compareNumber(guess.age, target.age),
     majors: compareNumber(guess.majors, target.majors),
-    tournaments_won: compareNumber(guess.tournaments_won, target.tournaments_won),
+    tournaments_won: compareNumber(
+      guess.tournaments_won,
+      target.tournaments_won,
+    ),
   };
 }

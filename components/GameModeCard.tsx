@@ -1,10 +1,14 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 type Props = {
   label: string;
   description: string;
   href: string;
   icon: "grid" | "guess" | "versus";
+  progress?: React.ReactNode; // badge d'avancement du jour (client component)
 };
 
 const icons: Record<Props["icon"], React.ReactNode> = {
@@ -36,7 +40,10 @@ export default function GameModeCard({
   description,
   href,
   icon,
+  progress,
 }: Props) {
+  const t = useTranslations("nav");
+
   return (
     <Link
       href={href}
@@ -61,12 +68,13 @@ export default function GameModeCard({
         <span className="cs2-display text-foreground text-2xl font-extrabold uppercase italic">
           {label}
         </span>
+        {progress && <span className="ml-auto">{progress}</span>}
       </div>
       <p className="mb-4 text-sm leading-relaxed text-[color:var(--muted)]">
         {description}
       </p>
       <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-[color:var(--accent-hot)] uppercase">
-        Jouer
+        {t("play")}
         <svg
           width="15"
           height="15"

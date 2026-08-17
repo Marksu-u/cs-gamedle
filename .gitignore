@@ -6,6 +6,9 @@
 # testing
 /coverage
 
+# notes de conception internes : elles restent en local, hors du dépôt
+/docs
+
 # next.js
 /.next/
 /out/

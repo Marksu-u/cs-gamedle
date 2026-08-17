@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import PlayerCard from "@/components/more-or-lessr/PlayerCard";
 import {
   TOTAL_ROUNDS,
@@ -7,12 +10,12 @@ import {
 } from "@/lib/more-or-lessr/types";
 
 type Props = {
-  anchor: Player; // valeur de référence, toujours visible
-  challenger: Player; // valeur cachée à deviner
+  anchor: Player; // reference value, always visible
+  challenger: Player; // hidden value to guess
   category: Category;
   round: number;
   score: number;
-  revealed: boolean; // round joué : on montre la valeur du challenger
+  revealed: boolean; // round played: the challenger's value is shown
   lastGuess: Direction | null;
   lastCorrect: boolean | null;
   onGuess: (direction: Direction) => void;
@@ -29,10 +32,18 @@ export default function ChainBoard({
   lastCorrect,
   onGuess,
 }: Props) {
-  const label = category === "rating" ? "Peak rating" : "Prize money";
+  const t = useTranslations("moreOrLessr");
+  // Literal keys either side of the branch, never a template: a key built from a
+  // variable renders as its own raw path when it misses, and only a render test
+  // sees it. The two sentences are separate messages rather than one with the
+  // stat name interpolated, so each language can agree the adjective with the
+  // noun it actually carries.
+  const label = category === "rating" ? t("peakRating") : t("prizeMoney");
+  const instruction =
+    category === "rating" ? "pickHigherRating" : "pickHigherPrize";
 
-  // Le flash vert/rouge porte sur la carte cliquée. On retrouve laquelle via la
-  // direction : "more" = on a cliqué le challenger, "less" = on a cliqué l'ancre.
+  // The green/red flash applies to the clicked card. Which one is recovered from
+  // the direction: "more" = the challenger was clicked, "less" = the anchor.
   function cardState(
     which: "anchor" | "challenger",
   ): "idle" | "correct" | "wrong" {
@@ -45,16 +56,17 @@ export default function ChainBoard({
   return (
     <div className="flex w-full max-w-xl flex-col items-center gap-5">
       <div className="flex w-full items-center justify-between text-xs tracking-widest text-[color:var(--muted)] uppercase">
-        <span>
-          Round {round}/{TOTAL_ROUNDS}
-        </span>
+        <span>{t("round", { round, total: TOTAL_ROUNDS })}</span>
         <span className="text-[color:var(--accent)]">{label}</span>
-        <span>Score {score}</span>
+        <span>{t("score", { score })}</span>
       </div>
 
       <p className="text-center text-sm text-[color:var(--muted)]">
-        Clique sur le joueur au plus grand{" "}
-        <span className="text-foreground">{label.toLowerCase()}</span>
+        {/* Rich text rather than concatenation: the stat name stays highlighted
+            without the component having to know where it sits in the sentence. */}
+        {t.rich(instruction, {
+          stat: (chunks) => <span className="text-foreground">{chunks}</span>,
+        })}
       </p>
 
       <div className="flex w-full items-stretch gap-3">
@@ -69,7 +81,7 @@ export default function ChainBoard({
         <span className="cs2-display self-center text-xl font-extrabold text-[color:var(--accent-hot)] italic">
           VS
         </span>
-        {/* Challenger : caché. Le cliquer = parier qu'il a PLUS que l'ancre.
+        {/* Challenger: hidden. Clicking it = betting it is MORE than the anchor.
             key sur le pseudo : rejoue l'animation d'entrée à chaque challenger. */}
         <div
           key={challenger.name}

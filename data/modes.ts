@@ -1,35 +1,14 @@
 export type CsMode = {
-  id: string;
-  label: string;
-  description: string;
+  id: "wordle" | "guessr" | "more-or-lessr";
   href: string;
   icon: "grid" | "guess" | "versus";
 };
 
-// Temporaire BDD / Call API
+// Structure only. The label and description of each mode live in the message
+// catalogues under `modes.<id>`, keyed by the ids below — keeping translatable
+// text out of the code and in one place per language.
 export const csModes: CsMode[] = [
-  {
-    id: "wordle",
-    label: "Wordle",
-    description:
-      "Devine le pseudo du jour en 6 essais. Indices couleur à chaque tentative.",
-    href: "/wordle",
-    icon: "grid",
-  },
-  {
-    id: "guessr",
-    label: "Guessr",
-    description:
-      "Retrouve le joueur pro à partir d'indices : équipe, rôle, nationalité, âge.",
-    href: "/guessr",
-    icon: "guess",
-  },
-  {
-    id: "more-or-lessr",
-    label: "More or Lessr",
-    description:
-      "Deux pros, une stat cachée : clique sur le plus grand. Rating ou prize money, 10 rounds.",
-    href: "/more-or-lessr",
-    icon: "versus",
-  },
+  { id: "wordle", href: "/wordle", icon: "grid" },
+  { id: "guessr", href: "/guessr", icon: "guess" },
+  { id: "more-or-lessr", href: "/more-or-lessr", icon: "versus" },
 ];

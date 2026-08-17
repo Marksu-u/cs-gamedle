@@ -1,3 +1,6 @@
+"use client";
+
+import { useFormatter } from "next-intl";
 import { statValue } from "@/lib/more-or-lessr/compare";
 import { nationToFlag } from "@/lib/more-or-lessr/flags";
 import type { Category, Player } from "@/lib/more-or-lessr/types";
@@ -6,17 +9,11 @@ type Props = {
   player: Player;
   category: Category;
   revealed: boolean; // affiche la valeur seulement si vrai
-  state?: "idle" | "correct" | "wrong"; // flash de feedback après révélation
-  onPick?: () => void; // absent → carte non cliquable (désactivée)
+  state?: "idle" | "correct" | "wrong"; // feedback flash after the reveal
+  onPick?: () => void; // absent → card not clickable (disabled)
 };
 
-// Rating : 2 décimales. Prize : $ avec séparateurs de milliers.
-function formatValue(player: Player, category: Category): string {
-  const v = statValue(player, category);
-  return category === "rating" ? v.toFixed(2) : "$" + v.toLocaleString("en-US");
-}
-
-// On répond en CLIQUANT la carte qu'on pense la plus grande (cf. ChainBoard).
+// You answer by CLICKING the card you think is bigger (see ChainBoard).
 export default function PlayerCard({
   player,
   category,
@@ -24,6 +21,29 @@ export default function PlayerCard({
   state = "idle",
   onPick,
 }: Props) {
+  const format = useFormatter();
+
+  // Prize: whole dollars, formatted in the player's locale, so a French player
+  // reads "1 500 000 $" rather than the American form. `narrowSymbol` gives the
+  // bare "$": the standard French rendering of USD is "$US", but the French
+  // catalogue already writes "$" and the scene deals in dollars only.
+  //
+  // The rating deliberately does NOT follow the locale. HLTV writes it "1.12"
+  // everywhere, and the scene reads it as a published figure rather than as a
+  // quantity to be re-punctuated — "1,05" would look wrong to a French player
+  // who knows the site.
+  function formatValue(p: Player): string {
+    const v = statValue(p, category);
+    return category === "rating"
+      ? v.toFixed(2)
+      : format.number(v, {
+          style: "currency",
+          currency: "USD",
+          currencyDisplay: "narrowSymbol",
+          maximumFractionDigits: 0,
+        });
+  }
+
   const ring =
     state === "correct"
       ? "border-[color:var(--wordle-correct)]"
@@ -49,7 +69,7 @@ export default function PlayerCard({
         className="mt-1 min-h-7 text-xl font-bold text-[color:var(--accent)]"
         aria-live="polite"
       >
-        {revealed ? formatValue(player, category) : "?"}
+        {revealed ? formatValue(player) : "?"}
       </span>
     </button>
   );

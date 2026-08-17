@@ -11,7 +11,7 @@ type Props = {
   label: string;
   state: KeyState;
   wide?: boolean; // ENTER / DEL
-  flash?: boolean; // illumination brève au moment où la touche est "pressée"
+  flash?: boolean; // brief highlight when the key is "pressed"
   onPress: (label: string) => void;
 };
 

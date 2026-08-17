@@ -7,11 +7,11 @@ import type {
   Match,
 } from "@/lib/guessr/types";
 
-// Template de colonnes partagé par les lignes guess et indice (aligné aux headers).
+// Column template shared by guess and hint rows (aligned with the headers).
 const GRID_COLS =
   "grid grid-cols-[0.85fr_0.95fr_1fr_1.3fr_0.9fr_0.7fr_0.75fr_0.8fr] gap-1.5";
 
-// Couleurs par état, alignées sur le thème CS2 (cs2-theme.css).
+// Colours per state, aligned with the CS2 theme (cs2-theme.css).
 const MATCH_BG: Record<Match, string> = {
   exact: "bg-emerald-600/25 border-emerald-500/60",
   partial: "bg-amber-500/20 border-amber-500/50",
@@ -39,7 +39,7 @@ function Cell({ field }: { field: FieldResult }) {
   );
 }
 
-// Cellule nationalité (drapeau + nom du pays), réutilisée par guess et indice.
+// Nationality cell (flag + country name), reused by guess and hint rows.
 function FlagCell({ field }: { field: FieldResult }) {
   const nation = field.kind === "text" ? field.value : "";
   return (
@@ -52,7 +52,7 @@ function FlagCell({ field }: { field: FieldResult }) {
   );
 }
 
-// Cellule vide : colonne non révélée d'un indice.
+// Empty cell: a column a hint did not reveal.
 function EmptyCell() {
   return (
     <div className="min-h-[58px] rounded-lg border border-white/10 bg-white/5" />
@@ -77,7 +77,7 @@ export default function GuessRow({ result }: { result: GuessResult }) {
   );
 }
 
-// Ligne « indice » : seule la colonne révélée (verte) est visible, le reste vide.
+// Hint row: only the revealed column (green) is visible, the rest is blank.
 export function HintRow({
   field,
   result,

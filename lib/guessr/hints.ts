@@ -1,7 +1,7 @@
 import { compareNumber, compareSet, compareText } from "./compare";
 import type { FieldResult, HintField, Player } from "./types";
 
-// Colonnes révélables par un indice, dans l'ordre des headers de la grille.
+// Columns a hint can reveal, in the order of the grid headers.
 export const HINT_FIELDS: HintField[] = [
   "nationality",
   "current_team",
@@ -15,8 +15,8 @@ export const HINT_FIELDS: HintField[] = [
 // Nombre maximal d'indices par partie (chaque indice consomme un essai).
 export const MAX_HINTS = 4;
 
-// Construit la cellule révélée d'un indice : la valeur de la CIBLE comparée à
-// elle-même → match « exact » (vert), direction « equal » pour les nombres.
+// Builds the revealed cell of a hint: the TARGET's value compared with itself →
+// an "exact" match (green), direction "equal" for numbers.
 export function buildHintResult(target: Player, field: HintField): FieldResult {
   switch (field) {
     case "nationality":
