@@ -35,8 +35,8 @@ export const CONTACT_EMAIL = "TODO-contact@example.com";
 //
 // The statute names the host's TELEPHONE number specifically. Fill `phone` in if
 // the host publishes one; leave it `null` if it genuinely does not, and the
-// notice falls back to naming the contact address instead. Never invent a
-// number — a wrong one is worse than an absent one.
+// sentence simply omits it. Never invent a number — a wrong one is worse than an
+// absent one. `email` is shown either way, as a contact route.
 export const HOST: {
   name: string;
   address: string;

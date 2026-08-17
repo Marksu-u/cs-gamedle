@@ -180,7 +180,7 @@
         "heading": "Hosting",
         "body": "The site is hosted by {host}, {address}, telephone {phone} ({url}).",
         "bodyNoPhone": "The site is hosted by {host}, {address} ({url}).",
-        "contact": "The host does not publish a telephone number. It can be contacted at {email}.",
+        "contact": "The host can be contacted at {email}.",
         "noServer": "The site has no database and no user accounts. Nothing you do here is stored on a server: your progress stays in your own browser."
       },
       "ip": {

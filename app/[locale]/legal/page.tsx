@@ -53,9 +53,9 @@ export default async function LegalNoticePage({
                 url: HOST.url,
               })}
         </p>
-        {!HOST.phone && HOST.email && (
-          <p>{t("notice.host.contact", { email: HOST.email })}</p>
-        )}
+        {/* Useful whether or not there is a phone number, so it is not tied to
+            the branch above. */}
+        {HOST.email && <p>{t("notice.host.contact", { email: HOST.email })}</p>}
         <p>{t("notice.host.noServer")}</p>
       </Section>
 

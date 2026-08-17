@@ -180,7 +180,7 @@
         "heading": "Hébergement",
         "body": "Le site est hébergé par {host}, {address}, téléphone {phone} ({url}).",
         "bodyNoPhone": "Le site est hébergé par {host}, {address} ({url}).",
-        "contact": "L'hébergeur ne publie pas de numéro de téléphone. Il peut être contacté à l'adresse {email}.",
+        "contact": "L'hébergeur peut être contacté à l'adresse {email}.",
         "noServer": "Le site ne dispose d'aucune base de données ni d'aucun compte utilisateur. Rien de ce que vous faites ici n'est stocké sur un serveur : votre progression reste dans votre propre navigateur."
       },
       "ip": {
