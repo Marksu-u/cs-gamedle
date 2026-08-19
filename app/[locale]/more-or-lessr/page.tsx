@@ -1,11 +1,16 @@
 import { Link } from "@/i18n/navigation";
-import morelessData from "@/app/data/cs2/more-or-lessr.json";
 import MorelessGame from "./MorelessGame";
-import type { MorelessData } from "@/lib/more-or-lessr/types";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { buildMetadata } from "@/lib/seo";
 import LanguageSwitcher from "@/components/daily/LanguageSwitcher";
+import { loadSnapshot } from "@/lib/data/load.server";
+// Prerendered, but not frozen: without this the pool would be whatever the build
+// read and a snapshot written later would never be served. Kept as a literal
+// because Next only accepts a statically analysable value here — it must match
+// SNAPSHOT_REVALIDATE in lib/data/load.server.ts, which explains the number.
+export const revalidate = 900;
+
 export async function generateMetadata({
   params,
 }: {
@@ -26,6 +31,7 @@ export default async function CsMoreOrLessrPage({
   setRequestLocale(locale);
   const t = await getTranslations("moreOrLessr");
   const nav = await getTranslations("nav");
+  const snapshot = await loadSnapshot();
 
   return (
     <main className="flex min-h-dvh flex-col items-center px-4 py-10">
@@ -43,7 +49,7 @@ export default async function CsMoreOrLessrPage({
         </h1>
       </header>
 
-      <MorelessGame data={morelessData as MorelessData} />
+      <MorelessGame data={snapshot.moreless} />
 
       <Link
         href="/"

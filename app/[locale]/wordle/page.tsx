@@ -1,15 +1,18 @@
 import { Link } from "@/i18n/navigation";
 import WordleGame from "./WordleGame";
-import wordleData from "@/app/data/cs2/wordle.json";
-import guessrData from "@/app/data/cs2/guessr_players.json";
-import type { WordleData } from "@/lib/wordle/types";
-import type { GuessrData } from "@/lib/guessr/types";
 import { dailyTarget } from "@/lib/guessr/selection";
 import { dayIndex } from "@/lib/daily/clock";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { buildMetadata } from "@/lib/seo";
 import LanguageSwitcher from "@/components/daily/LanguageSwitcher";
+import { loadSnapshot } from "@/lib/data/load.server";
+// Prerendered, but not frozen: without this the pool would be whatever the build
+// read and a snapshot written later would never be served. Kept as a literal
+// because Next only accepts a statically analysable value here — it must match
+// SNAPSHOT_REVALIDATE in lib/data/load.server.ts, which explains the number.
+export const revalidate = 900;
+
 export async function generateMetadata({
   params,
 }: {
@@ -30,6 +33,7 @@ export default async function CsWordlePage({
   setRequestLocale(locale);
   const t = await getTranslations("wordle");
   const nav = await getTranslations("nav");
+  const snapshot = await loadSnapshot();
 
   return (
     <main className="flex min-h-dvh flex-col items-center px-4 py-10">
@@ -48,8 +52,8 @@ export default async function CsWordlePage({
       </header>
 
       <WordleGame
-        data={wordleData as WordleData}
-        guessrTarget={dailyTarget(guessrData as GuessrData, dayIndex()).name}
+        data={snapshot.wordle}
+        guessrTarget={dailyTarget(snapshot.guessr, dayIndex()).name}
       />
 
       <Link

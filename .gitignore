@@ -36,3 +36,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated data snapshots — the committed JSON in app/data/ is the source of truth
+.snapshots/
