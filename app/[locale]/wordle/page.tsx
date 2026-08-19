@@ -1,7 +1,11 @@
 import { Link } from "@/i18n/navigation";
 import WordleGame from "./WordleGame";
 import wordleData from "@/app/data/cs2/wordle.json";
+import guessrData from "@/app/data/cs2/guessr_players.json";
 import type { WordleData } from "@/lib/wordle/types";
+import type { GuessrData } from "@/lib/guessr/types";
+import { dailyTarget } from "@/lib/guessr/selection";
+import { dayIndex } from "@/lib/daily/clock";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { buildMetadata } from "@/lib/seo";
@@ -43,7 +47,10 @@ export default async function CsWordlePage({
         </h1>
       </header>
 
-      <WordleGame data={wordleData as WordleData} />
+      <WordleGame
+        data={wordleData as WordleData}
+        guessrTarget={dailyTarget(guessrData as GuessrData, dayIndex()).name}
+      />
 
       <Link
         href="/"

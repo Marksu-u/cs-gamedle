@@ -8,9 +8,12 @@ import { MAX_ATTEMPTS } from "@/lib/wordle/types";
 
 // ---------------------------------------------------------------- Wordle
 
-// Base grows with tag length: an 8-letter answer is worth more than a 3-letter one.
+// Base grows with tag length. The daily draw is not bucketed by length, so the
+// range is clamped: a 2-character tag is not worth less than a 3-character one,
+// and a 10-character tag does not run away with the day.
 function wordleBase(length: number): number {
-  return 60 + (length - 3) * 12;
+  const borne = Math.min(Math.max(length, 3), 8);
+  return 60 + (borne - 3) * 12;
 }
 
 export type WordleOutcome = {

@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   availableLengths,
-  dailyWord,
+  dailyTags,
   getGroup,
   isValidGuess,
+  practiceTags,
   pickRandom,
 } from "./selection";
-import type { WordleData } from "./types";
+import { SLOT_COUNT, type WordleData } from "./types";
 
 const data: WordleData = {
   game: "test",
@@ -50,26 +51,72 @@ describe("pickRandom", () => {
   });
 });
 
-describe("dailyWord", () => {
-  const data = {
-    game: "test",
-    words: {
-      "5": Array.from(
-        { length: 40 },
-        (_, i) => `MOT${String(i).padStart(2, "0")}`,
-      ),
-    },
-  };
+// A dictionary wide enough for the daily draw: it consumes SLOT_COUNT tags a day
+// (one more when the leak guard has to drop one).
+const dico: WordleData = {
+  game: "test",
+  words: {
+    "3": Array.from({ length: 20 }, (_, i) => `A${String(i).padStart(2, "0")}`),
+    "4": Array.from({ length: 20 }, (_, i) => `B${String(i).padStart(3, "0")}`),
+    "5": Array.from({ length: 20 }, (_, i) => `C${String(i).padStart(4, "0")}`),
+  },
+};
 
-  it("rend le même mot pour un jour donné", () => {
-    expect(dailyWord(data, 5, 100)).toBe(dailyWord(data, 5, 100));
+describe("dailyTags", () => {
+  it("serves one tag per slot", () => {
+    expect(dailyTags(dico, 30)).toHaveLength(SLOT_COUNT);
   });
 
-  it("change de jour en jour", () => {
-    expect(dailyWord(data, 5, 100)).not.toBe(dailyWord(data, 5, 101));
+  it("never repeats a tag inside a day", () => {
+    for (let day = 0; day < 200; day++) {
+      const tags = dailyTags(dico, day);
+      expect(new Set(tags).size).toBe(tags.length);
+    }
   });
 
-  it("rend un mot du groupe demandé", () => {
-    expect(data.words["5"]).toContain(dailyWord(data, 5, 100));
+  it("is stable for a given day", () => {
+    expect(dailyTags(dico, 30)).toEqual(dailyTags(dico, 30));
+  });
+
+  it("moves from one day to the next", () => {
+    expect(dailyTags(dico, 30)).not.toEqual(dailyTags(dico, 31));
+  });
+
+  it("draws from the dictionary and nowhere else", () => {
+    const tous = new Set(Object.values(dico.words).flat());
+    for (const tag of dailyTags(dico, 30)) expect(tous.has(tag)).toBe(true);
+  });
+
+  it("leaves out the excluded tag", () => {
+    // The day's Guessr answer must not also be a Wordle answer: solving one
+    // would hand over the other. The two games draw on independent streams, so
+    // nothing rules the collision out on its own.
+    const victime = dailyTags(dico, 30)[2];
+    const sans = dailyTags(dico, 30, victime);
+    expect(sans).not.toContain(victime);
+    expect(sans).toHaveLength(SLOT_COUNT);
+  });
+
+  it("still serves a full day when the excluded tag was never drawn", () => {
+    const tags = dailyTags(dico, 30, "PAS-UN-PSEUDO");
+    expect(tags).toEqual(dailyTags(dico, 30));
+  });
+});
+
+describe("practiceTags", () => {
+  it("serves SLOT_COUNT distinct tags", () => {
+    const tags = practiceTags(dico);
+    expect(tags).toHaveLength(SLOT_COUNT);
+    expect(new Set(tags).size).toBe(SLOT_COUNT);
+  });
+
+  it("varies from call to call", () => {
+    expect(practiceTags(dico).join()).not.toBe(practiceTags(dico).join());
+  });
+
+  it("avoids the tags it was told to skip", () => {
+    const dejaVus = practiceTags(dico);
+    const suivants = practiceTags(dico, dejaVus);
+    for (const tag of suivants) expect(dejaVus).not.toContain(tag);
   });
 });

@@ -6,7 +6,7 @@ const persisted = (
   meta: Partial<Meta>,
   progress: Persisted["progress"] = null,
 ): Persisted => ({
-  version: 1,
+  version: 3,
   meta: { ...EMPTY_META, ...meta },
   progress,
 });

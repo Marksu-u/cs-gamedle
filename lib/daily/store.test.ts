@@ -95,7 +95,7 @@ describe("dailyStore — multiple tabs", () => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
-        version: 1,
+        version: 3,
         meta: {
           streak: 1,
           lastPlayedDay: day,

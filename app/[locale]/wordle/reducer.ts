@@ -1,10 +1,5 @@
 import { deriveKeyStates, evaluateGuess, isWin } from "@/lib/wordle/engine";
-import {
-  dailyWord,
-  getGroup,
-  isValidGuess,
-  pickRandom,
-} from "@/lib/wordle/selection";
+import { getGroup, isValidGuess, practiceTags } from "@/lib/wordle/selection";
 import {
   MAX_ATTEMPTS,
   MAX_HINTS,
@@ -15,7 +10,7 @@ import {
 } from "@/lib/wordle/types";
 
 export type WordleAction =
-  | { type: "SELECT_LENGTH"; length: number }
+  | { type: "SELECT_SLOT"; slot: number }
   | { type: "KEY_INPUT"; char: string }
   | { type: "DELETE" }
   | { type: "SUBMIT" }
@@ -38,21 +33,16 @@ export function hintCandidates(board: BoardState): string[] {
   });
 }
 
-// Creates a fresh board. In "daily" mode the target comes from the rotation; in
-// "practice" it is drawn at random, avoiding the word of the day.
 export function createBoard(
-  data: WordleData,
-  length: number,
+  target: string,
+  slot: number,
   day: number,
   mode: "daily" | "practice" = "daily",
 ): BoardState {
-  const target =
-    mode === "daily"
-      ? dailyWord(data, length, day)
-      : pickRandom(getGroup(data, length), dailyWord(data, length, day));
   return {
     target,
-    length,
+    slot,
+    length: target.length,
     guesses: [],
     evaluations: [],
     current: "",
@@ -64,20 +54,23 @@ export function createBoard(
   };
 }
 
-export function createInitialState(
-  data: WordleData,
-  defaultLength: number,
-  day: number,
-): WordleState {
+// All five boards exist from the start. Under the old model boards were built
+// lazily on a tab's first visit, because six independent puzzles meant six
+// independent draws; the day's five tags come out of one draw and there is
+// nothing to defer.
+export function createInitialState(tags: string[], day: number): WordleState {
   return {
-    activeLength: defaultLength,
-    boards: { [defaultLength]: createBoard(data, defaultLength, day) },
+    activeSlot: 0,
+    boards: tags.map((target, slot) => createBoard(target, slot, day)),
   };
 }
 
-// Immutability helper: replaces the board for one length without touching the others.
+// Replaces one board without touching the others. Indexed by slot, so two
+// same-length nicknames no longer overwrite each other.
 function withBoard(state: WordleState, b: BoardState): WordleState {
-  return { ...state, boards: { ...state.boards, [b.length]: b } };
+  const boards = [...state.boards];
+  boards[b.slot] = b;
+  return { ...state, boards };
 }
 
 // Factory: the reducer closes over `data` + the day. It stays pure (deterministic
@@ -88,18 +81,12 @@ export function createWordleReducer(data: WordleData, day: number) {
     state: WordleState,
     action: WordleAction,
   ): WordleState {
-    const board = state.boards[state.activeLength];
+    const board = state.boards[state.activeSlot];
 
     switch (action.type) {
-      case "SELECT_LENGTH": {
-        // Creates the board on the tab's first visit; otherwise keeps its state.
-        const boards = state.boards[action.length]
-          ? state.boards
-          : {
-              ...state.boards,
-              [action.length]: createBoard(data, action.length, day),
-            };
-        return { ...state, activeLength: action.length, boards };
+      case "SELECT_SLOT": {
+        if (action.slot < 0 || action.slot >= state.boards.length) return state;
+        return { ...state, activeSlot: action.slot };
       }
 
       case "KEY_INPUT": {
@@ -152,10 +139,18 @@ export function createWordleReducer(data: WordleData, day: number) {
         return withBoard(state, action.board);
 
       case "PRACTICE": {
-        return withBoard(
-          state,
-          createBoard(data, board.length, day, "practice"),
+        // Re-rolls every slot, skipping the tags already on screen so "Play
+        // again" never hands back the board just finished.
+        const tags = practiceTags(
+          data,
+          state.boards.map((b) => b.target),
         );
+        return {
+          activeSlot: 0,
+          boards: tags.map((target, slot) =>
+            createBoard(target, slot, day, "practice"),
+          ),
+        };
       }
 
       case "HINT": {

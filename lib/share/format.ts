@@ -17,7 +17,7 @@ import { puzzleNumber } from "@/lib/daily/clock";
 import type { PuzzleId, PuzzleProgress } from "@/lib/daily/types";
 import type { GridRow } from "@/lib/guessr/types";
 import { TOTAL_ROUNDS, type Category } from "@/lib/more-or-lessr/types";
-import { MAX_ATTEMPTS, type TileState } from "@/lib/wordle/types";
+import { MAX_ATTEMPTS, SLOT_COUNT, type TileState } from "@/lib/wordle/types";
 import {
   DAY_MISSED,
   DAY_PARTIAL,
@@ -48,7 +48,7 @@ function detailLine(t: ShareT, head: string, hints: number): string {
 // ------------------------------------------------------------------- Wordle
 
 export type WordleShareData = {
-  length: number;
+  slot: number; // 1-based slot — the board's identity in the share card
   day: number;
   evaluations: TileState[][];
   won: boolean;
@@ -75,7 +75,8 @@ export function buildWordleShare(d: WordleShareData, t: ShareT): ShareCard {
   return {
     title: t("share.wordle.header", {
       site: t("site.name"),
-      length: d.length,
+      slot: d.slot,
+      total: SLOT_COUNT,
       number: puzzleNumber(d.day),
     }),
     detail: detailLine(t, score, d.hints),
@@ -171,12 +172,11 @@ export function buildMolShare(d: MolShareData, t: ShareT): ShareCard {
 // ---------------------------------------------------------------- Whole day
 
 const WORDLE_IDS: PuzzleId[] = [
+  "wordle-1",
+  "wordle-2",
   "wordle-3",
   "wordle-4",
   "wordle-5",
-  "wordle-6",
-  "wordle-7",
-  "wordle-8",
 ];
 
 type Puzzles = Partial<Record<PuzzleId, PuzzleProgress>>;

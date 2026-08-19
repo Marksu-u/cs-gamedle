@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { dayIndex } from "@/lib/daily/clock";
 import { dailyStore } from "@/lib/daily/store";
 import { STORAGE_KEY } from "@/lib/daily/types";
-import { dailyWord } from "@/lib/wordle/selection";
+import { dailyTags, getGroup } from "@/lib/wordle/selection";
 import type { WordleData } from "@/lib/wordle/types";
 import wordleData from "@/app/data/cs2/wordle.json";
 import messages from "@/messages/en.json";
@@ -19,13 +19,23 @@ import WordleGame from "./WordleGame";
 // render still sees the server snapshot — an empty store.
 const data = wordleData as WordleData;
 
-function seedGameInProgress(guesses: string[]) {
+// Slot 0 of today's draw: the board `wordle-1` persists. Its length moves with
+// the tag drawn, so the seeded guesses are taken from the dictionary group of
+// that same length rather than hardcoded.
+function slotZero() {
   const day = dayIndex();
-  const target = dailyWord(data, 5, day);
+  const target = dailyTags(data, day)[0];
+  const autres = getGroup(data, target.length).filter((w) => w !== target);
+  return { day, target, autres };
+}
+
+function seedGameInProgress(count: number): string[] {
+  const { day, target, autres } = slotZero();
+  const guesses = autres.slice(0, count);
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify({
-      version: 1,
+      version: 3,
       meta: {
         streak: 3,
         lastPlayedDay: day - 1,
@@ -35,20 +45,17 @@ function seedGameInProgress(guesses: string[]) {
       progress: {
         day,
         puzzles: {
-          "wordle-5": {
+          "wordle-1": {
             status: "playing",
             points: 0,
             state: {
               target,
-              length: 5,
+              slot: 0,
+              length: target.length,
               guesses,
-              evaluations: guesses.map(() => [
-                "absent",
-                "absent",
-                "absent",
-                "absent",
-                "absent",
-              ]),
+              evaluations: guesses.map(() =>
+                Array.from({ length: target.length }, () => "absent"),
+              ),
               current: "",
               status: "playing",
               invalid: false,
@@ -61,6 +68,7 @@ function seedGameInProgress(guesses: string[]) {
       },
     }),
   );
+  return guesses;
 }
 
 async function hydrate() {
@@ -94,28 +102,25 @@ describe("resuming a daily puzzle after a refresh", () => {
   });
 
   it("does not lose the guesses already played", async () => {
-    seedGameInProgress(["ADREN", "BLAST"]);
+    const joues = seedGameInProgress(2);
     await hydrate();
-    expect(storedPuzzles()?.["wordle-5"]?.state.guesses).toEqual([
-      "ADREN",
-      "BLAST",
-    ]);
+    expect(storedPuzzles()?.["wordle-1"]?.state.guesses).toEqual(joues);
   });
 
   it("renders the guesses back into the grid", async () => {
-    seedGameInProgress(["ADREN"]);
+    const joues = seedGameInProgress(1);
     const container = await hydrate();
-    // The first guess's letters must be rendered into the tiles.
-    expect(container.textContent).toContain("A");
-    expect(storedPuzzles()?.["wordle-5"]?.state.guesses).toEqual(["ADREN"]);
+    // The first guess's characters must be rendered into the tiles.
+    expect(container.textContent).toContain(joues[0][0]);
+    expect(storedPuzzles()?.["wordle-1"]?.state.guesses).toEqual(joues);
   });
 
   it("does not reset the attempt counter (which would hand the points back)", async () => {
     // The real cost of the bug: three tries spent, then a refresh, and the
     // board restarted at zero tries — hence at full score.
-    seedGameInProgress(["ADREN", "BLAST", "CADIA"]);
+    seedGameInProgress(3);
     await hydrate();
-    const essais = storedPuzzles()?.["wordle-5"]?.state.guesses;
+    const essais = storedPuzzles()?.["wordle-1"]?.state.guesses;
     expect(essais).toHaveLength(3);
   });
 
@@ -123,6 +128,6 @@ describe("resuming a daily puzzle after a refresh", () => {
     await hydrate();
     // No game in progress: nothing should be invented before the player plays.
     const grilles = storedPuzzles();
-    expect(grilles?.["wordle-5"]?.state?.guesses ?? []).toEqual([]);
+    expect(grilles?.["wordle-1"]?.state?.guesses ?? []).toEqual([]);
   });
 });

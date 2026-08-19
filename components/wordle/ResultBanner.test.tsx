@@ -7,6 +7,7 @@ import ResultBanner from "./ResultBanner";
 
 const board: BoardState = {
   target: "BLAST",
+  slot: 0,
   length: 5,
   guesses: ["ADREN", "BLAST"],
   evaluations: [

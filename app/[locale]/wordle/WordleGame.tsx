@@ -10,12 +10,12 @@ import {
 } from "react";
 import Board from "@/components/wordle/Board";
 import Keyboard from "@/components/wordle/Keyboard";
-import LengthTabs from "@/components/wordle/LengthTabs";
+import SlotTabs from "@/components/wordle/SlotTabs";
 import ResultBanner from "@/components/wordle/ResultBanner";
 import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
 import HelpModal from "@/components/HelpModal";
 import { deriveKeyStates } from "@/lib/wordle/engine";
-import { availableLengths } from "@/lib/wordle/selection";
+import { dailyTags } from "@/lib/wordle/selection";
 import { wordlePoints } from "@/lib/daily/scoring";
 import { useTranslations } from "next-intl";
 import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
@@ -31,31 +31,39 @@ import {
   hintCandidates,
 } from "./reducer";
 
-export default function WordleGame({ data }: { data: WordleData }) {
+export default function WordleGame({
+  data,
+  guessrTarget,
+}: {
+  data: WordleData;
+  guessrTarget?: string;
+}) {
   const t = useTranslations("wordle");
   const menu = useTranslations("menu");
   const game = useTranslations("game");
-  const lengths = availableLengths(data);
-  const defaultLength = lengths.includes(5) ? 5 : lengths[0];
-  // Max length (8 here): sizes the tiles of EVERY board uniformly (see Board), so
-  // the widest grid still fits on screen.
-  const maxLength = Math.max(...lengths);
-
   const day = useDay();
-  // Memoised reducer (closes over `data` + the day, stable). The lazy init draws
-  // the word client-side; since the target is never rendered, there is no
-  // hydration mismatch.
+  const tags = useMemo(
+    () => dailyTags(data, day, guessrTarget),
+    [data, day, guessrTarget],
+  );
+  // Widest tag of the day: sizes the tiles of EVERY board uniformly (see Board),
+  // so the longest grid still fits on screen.
+  const maxLength = Math.max(...tags.map((t) => t.length));
+
+  // Memoised reducer (closes over the dictionary + the day, stable). The lazy
+  // init draws the tags client-side; since the targets are never rendered, there
+  // is no hydration mismatch.
   const reducer = useMemo(() => createWordleReducer(data, day), [data, day]);
   const [state, dispatch] = useReducer(reducer, undefined, () =>
-    createInitialState(data, defaultLength, day),
+    createInitialState(tags, day),
   );
-  const board = state.boards[state.activeLength];
+  const board = state.boards[state.activeSlot];
 
-  // Each length is an independent daily puzzle with its own storage entry, so we
+  // Each slot is an independent daily puzzle with its own storage entry, so we
   // persist the BOARD, not the whole WordleState.
-  const puzzleId = `wordle-${board.length}` as PuzzleId;
+  const puzzleId = `wordle-${board.slot + 1}` as PuzzleId;
   // The hook owns the resume and settles it PER puzzle: the player can open the
-  // 7-letter tab long after the page loaded.
+  // fifth slot long after the page loaded.
   const restaurer = useCallback(
     (b: BoardState) => dispatch({ type: "RESTORE_BOARD", board: b }),
     [],
@@ -189,15 +197,15 @@ export default function WordleGame({ data }: { data: WordleData }) {
 
   return (
     <div className="flex w-full max-w-lg flex-col items-center gap-5">
-      <LengthTabs
-        lengths={lengths}
-        active={state.activeLength}
-        onSelect={(length) => dispatch({ type: "SELECT_LENGTH", length })}
+      <SlotTabs
+        boards={state.boards}
+        active={state.activeSlot}
+        onSelect={(slot) => dispatch({ type: "SELECT_SLOT", slot })}
       />
-      {/* key={activeLength}: remounts the subtree on a tab switch, which replays
+      {/* key={activeSlot}: remounts the subtree on a tab switch, which replays
           the entry animation. */}
       <div
-        key={state.activeLength}
+        key={state.activeSlot}
         className="flex w-full animate-[wordle-tab_0.25s_ease] flex-col items-center gap-5"
       >
         {/* Side-action menu, right-aligned just above the board. */}

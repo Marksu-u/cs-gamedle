@@ -11,7 +11,7 @@ describe("load", () => {
 
   it("reads back what was written", () => {
     const etat: Persisted = {
-      version: 1,
+      version: 3,
       meta: { streak: 3, lastPlayedDay: 100, runScore: 500, recordScore: 900 },
       progress: null,
     };
@@ -54,7 +54,7 @@ describe("load", () => {
       }),
     );
     expect(load()).toEqual({
-      version: 1,
+      version: 3,
       meta: {
         streak: 12,
         lastPlayedDay: 500,
@@ -80,7 +80,7 @@ describe("load", () => {
   it("starts over when `meta` is missing", () => {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ version: 1, progress: null }),
+      JSON.stringify({ version: 3, progress: null }),
     );
     expect(load()).toEqual(EMPTY_PERSISTED);
   });
@@ -89,7 +89,7 @@ describe("load", () => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
-        version: 1,
+        version: 3,
         meta: { streak: "sept", lastPlayedDay: 1, runScore: 0, recordScore: 0 },
         progress: null,
       }),
@@ -103,7 +103,7 @@ describe("load", () => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
-        version: 1,
+        version: 3,
         meta: { streak: 1, lastPlayedDay: 1, runScore: 0, recordScore: 0 },
         progress: { day: 1 },
       }),

@@ -3,12 +3,11 @@
 // Stable id for a daily puzzle. Doubles as the stream key for the draw AND the
 // progress key in storage — the two must line up.
 export type PuzzleId =
+  | "wordle-1"
+  | "wordle-2"
   | "wordle-3"
   | "wordle-4"
   | "wordle-5"
-  | "wordle-6"
-  | "wordle-7"
-  | "wordle-8"
   | "guessr"
   | "mol-tournaments"
   | "mol-prize";
@@ -41,13 +40,13 @@ export type Progress = {
 
 // The complete shape written to localStorage.
 export type Persisted = {
-  version: 1;
+  version: 3;
   meta: Meta;
   progress: Progress | null;
 };
 
 export const STORAGE_KEY = "cs-gamedle:v1";
-export const STORAGE_VERSION = 1;
+export const STORAGE_VERSION = 3;
 
 export const EMPTY_META: Meta = {
   streak: 0,

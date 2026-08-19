@@ -62,7 +62,7 @@ export default function ResultBanner({ board, points, onPractice }: Props) {
           <ShareButton
             card={buildWordleShare(
               {
-                length: board.length,
+                slot: board.slot + 1,
                 day: board.day,
                 evaluations: board.evaluations,
                 won,

@@ -6,16 +6,9 @@ import { useDailyState, useHydrated } from "@/lib/daily/store";
 import type { PuzzleId } from "@/lib/daily/types";
 
 // Daily puzzles attached to each mode on the home page. The order and count come
-// from the scope: 6 Wordle, 1 Guessr, 2 More or Lessr.
+// from the scope: 5 Wordle, 1 Guessr, 2 More or Lessr.
 const PUZZLES_PAR_MODE: Record<string, PuzzleId[]> = {
-  wordle: [
-    "wordle-3",
-    "wordle-4",
-    "wordle-5",
-    "wordle-6",
-    "wordle-7",
-    "wordle-8",
-  ],
+  wordle: ["wordle-1", "wordle-2", "wordle-3", "wordle-4", "wordle-5"],
   guessr: ["guessr"],
   "more-or-lessr": ["mol-tournaments", "mol-prize"],
 };

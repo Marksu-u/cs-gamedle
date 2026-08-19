@@ -42,7 +42,7 @@ const dayText = (d: DayShareData, locale: Locale = "en") =>
 const URL = "https://example.test/wordle";
 
 const wordle: WordleShareData = {
-  length: 5,
+  slot: 1,
   day: LAUNCH_DAY,
   won: true,
   attempts: 2,
@@ -110,8 +110,8 @@ const dayData: DayShareData = {
   streak: 12,
   multiplier: 1.75,
   puzzles: {
-    "wordle-3": { status: "won", points: 60, state: null },
-    "wordle-4": { status: "lost", points: 0, state: null },
+    "wordle-1": { status: "won", points: 60, state: null },
+    "wordle-2": { status: "lost", points: 0, state: null },
     guessr: { status: "won", points: 200, state: null },
     "mol-tournaments": { status: "won", points: 140, state: { score: 10 } },
     "mol-prize": { status: "won", points: 70, state: { score: 5 } },
@@ -131,6 +131,12 @@ describe("buildWordleShare", () => {
   it("mentions hints only when some were used", () => {
     expect(wordleText(wordle)).not.toContain("💡");
     expect(wordleText({ ...wordle, hints: 2 })).toContain("💡2");
+  });
+
+  it("names the roster slot, never the team", () => {
+    // The team is the deduction the game is built on: a share card that named it
+    // would hand the answer to anyone reading the post.
+    expect(wordleText(wordle)).toContain("Wordle 1/5");
   });
 
   it("ends with the link it was given", () => {
@@ -174,7 +180,7 @@ describe("buildMolShare", () => {
 describe("buildDayShare", () => {
   it("draws one square per puzzle, unplayed included", () => {
     const out = dayText(dayData);
-    expect(out).toContain("🟩🟥⬜⬜⬜⬜"); // six Wordle
+    expect(out).toContain("🟩🟥⬜⬜⬜"); // five Wordle grids
     expect(out).toContain("🟩🟨"); // two More or Lessr: 10/10 then 5/10
   });
 
@@ -187,7 +193,7 @@ describe("buildDayShare", () => {
 
   it("survives a day where nothing has been played", () => {
     const out = dayText({ ...dayData, puzzles: {} });
-    expect(out).toContain("⬜⬜⬜⬜⬜⬜");
+    expect(out).toContain("⬜⬜⬜⬜⬜");
   });
 });
 

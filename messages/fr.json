@@ -21,7 +21,7 @@
   "modes": {
     "wordle": {
       "label": "Wordle",
-      "description": "Devine le pseudo du jour en 6 essais. Indices couleur à chaque tentative."
+      "description": "Cinq pseudos de pros CS par jour, tirés au hasard. Devine chacun en 6 essais, indices couleur à chaque tentative."
     },
     "guessr": {
       "label": "Guessr",
@@ -54,7 +54,7 @@
     "hints": "💡{hints}",
     "gaveUp": "Abandon",
     "wordle": {
-      "header": "{site} — Wordle {length} n°{number}",
+      "header": "{site} — Wordle {slot}/{total} n°{number}",
       "score": "{attempts}/{max}",
       "missed": "X"
     },
@@ -75,7 +75,8 @@
   "wordle": {
     "eyebrow": "Counter-Strike 2 · Wordle",
     "title": "Devine le pseudo",
-    "tagLength": "Longueur du pseudo",
+    "slots": "Grille",
+    "slotLabel": "Grille {slot}, {length} caractères",
     "solved": "Gagné !",
     "missed": "Perdu",
     "answerWas": "Le pseudo était",
@@ -83,10 +84,11 @@
     "detailLost": "grille perdue",
     "help": {
       "items": [
-        "Devine le pseudo d'un joueur pro CS en 6 essais. Chaque essai doit être un pseudo du pool.",
-        "🟩 vert = bon caractère bien placé · 🟨 jaune = présent mais mal placé · ⬛ gris = absent.",
-        "Les onglets changent la longueur du pseudo : un board indépendant par longueur.",
-        "💡 L'indice révèle un caractère de la réponse (marqué en jaune sur le clavier) et ne consomme pas d'essai.",
+        "Cinq pseudos de pros CS par jour, tirés au hasard. Devine chacun en 6 essais.",
+        "🟩 vert = bon caractère, bonne place · 🟨 ambre = présent mais mal placé · ⬛ gris = absent.",
+        "Les onglets changent de grille : chacune a son board, numérotée par la longueur du pseudo.",
+        "Les cinq sont indépendants : en trouver un ne dit rien des autres.",
+        "💡 Un indice révèle un caractère de la réponse (marqué ambre sur le clavier) et ne consomme pas d'essai.",
         "Certains pseudos contiennent des chiffres."
       ]
     }
@@ -237,7 +239,7 @@
       "title": "Conditions générales d'utilisation",
       "purpose": {
         "heading": "Objet",
-        "body": "Les présentes conditions régissent l'utilisation du site : trois jeux gratuits sur Counter-Strike, neuf grilles quotidiennes identiques pour tous, renouvelées à 03:00 UTC. L'utilisation du site vaut acceptation."
+        "body": "Les présentes conditions régissent l'utilisation du site : trois jeux gratuits sur Counter-Strike, huit grilles quotidiennes identiques pour tous, renouvelées à 03:00 UTC. L'utilisation du site vaut acceptation."
       },
       "access": {
         "heading": "Accès",
@@ -299,11 +301,11 @@
   "seo": {
     "home": {
       "title": "Strikedle — 9 grilles quotidiennes Counter-Strike 2",
-      "description": "Neuf grilles quotidiennes sur la scène Counter-Strike 2 : Wordle, Guessr et More or Lessr. Nouvelles chaque jour à 3h UTC, les mêmes pour tout le monde."
+      "description": "Huit grilles quotidiennes sur la scène Counter-Strike 2 : Wordle, Guessr et More or Lessr. Nouvelles chaque jour à 3h UTC, les mêmes pour tout le monde."
     },
     "wordle": {
       "title": "Wordle CS2 — devine le pseudo du jour",
-      "description": "Six grilles par jour, une par longueur de pseudo (3 à 8 lettres). Six essais, indices couleur, une série à tenir."
+      "description": "Cinq grilles par jour, un pseudo de pro CS tiré au hasard par grille. Six essais, indices couleur, une série à tenir."
     },
     "guessr": {
       "title": "Guessr CS2 — devine le joueur pro du jour",

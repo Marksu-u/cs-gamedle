@@ -21,7 +21,7 @@
   "modes": {
     "wordle": {
       "label": "Wordle",
-      "description": "Guess today's player tag in 6 tries. Colour clues on every attempt."
+      "description": "Five CS pro tags a day, drawn at random. Guess each in 6 tries, colour clues on every attempt."
     },
     "guessr": {
       "label": "Guessr",
@@ -54,7 +54,7 @@
     "hints": "💡{hints}",
     "gaveUp": "Gave up",
     "wordle": {
-      "header": "{site} — Wordle {length} #{number}",
+      "header": "{site} — Wordle {slot}/{total} #{number}",
       "score": "{attempts}/{max}",
       "missed": "X"
     },
@@ -75,7 +75,8 @@
   "wordle": {
     "eyebrow": "Counter-Strike 2 · Wordle",
     "title": "Guess the tag",
-    "tagLength": "Tag length",
+    "slots": "Grid",
+    "slotLabel": "Grid {slot}, {length} characters",
     "solved": "Solved!",
     "missed": "Missed",
     "answerWas": "The tag was",
@@ -83,9 +84,10 @@
     "detailLost": "puzzle missed",
     "help": {
       "items": [
-        "Guess a CS pro's tag in 6 tries. Every guess must be a tag from the pool.",
+        "Five CS pro tags a day, drawn at random. Guess each in 6 tries.",
         "🟩 green = right character, right spot · 🟨 amber = present but misplaced · ⬛ grey = absent.",
-        "The tabs switch tag length: each length is its own independent board.",
+        "The tabs switch grid: each one is its own board, numbered by tag length.",
+        "The five are unrelated — solving one tells you nothing about the others.",
         "💡 A hint reveals one character of the answer (marked amber on the keyboard) and does not use up a try.",
         "Some tags contain digits."
       ]
@@ -237,7 +239,7 @@
       "title": "Terms of use",
       "purpose": {
         "heading": "Purpose",
-        "body": "These terms govern the use of this site: three free Counter-Strike puzzle games with nine daily puzzles, identical for everyone, rotating at 03:00 UTC. Using the site implies accepting them."
+        "body": "These terms govern the use of this site: three free Counter-Strike puzzle games with eight daily puzzles, identical for everyone, rotating at 03:00 UTC. Using the site implies accepting them."
       },
       "access": {
         "heading": "Access",
@@ -298,12 +300,12 @@
   },
   "seo": {
     "home": {
-      "title": "Strikedle — 9 daily Counter-Strike 2 puzzles",
+      "title": "Strikedle — 8 daily Counter-Strike 2 puzzles",
       "description": "Nine daily puzzles on the Counter-Strike 2 scene: Wordle, Guessr and More or Lessr. New every day at 3am UTC, the same for everyone."
     },
     "wordle": {
       "title": "CS2 Wordle — guess today's player tag",
-      "description": "Six puzzles a day, one per tag length (3 to 8 letters). Six tries, colour clues, and a streak to keep alive."
+      "description": "Five grids a day, one per randomly drawn CS pro tag. Six tries, colour clues, and a streak to keep alive."
     },
     "guessr": {
       "title": "CS2 Guessr — name today's pro player",

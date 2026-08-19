@@ -1,6 +1,7 @@
 import { hashSeed, mulberry32 } from "./rng";
 
-// Anti-repeat daily draw, shared by the project's nine streams.
+// Anti-repeat daily draw, shared by the project's four streams: `wordle`,
+// `guessr`, `mol-tournaments` and `mol-prize`.
 //
 // Model: a run of shuffled decks (one full permutation per "epoch"), cut into
 // slots of exactly `count` cards. A draw is ALWAYS a slice of a single deck —

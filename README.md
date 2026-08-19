@@ -3,17 +3,17 @@
 Trois mini-jeux sur la scène **Counter-Strike 2**. Même donnée, trois façons d'y jouer.
 Gratuit, sans compte, sans base de données.
 
-| Mode              | Route            | Principe                                                                       |
-| ----------------- | ---------------- | ------------------------------------------------------------------------------ |
-| **Wordle**        | `/wordle`        | Devine un pseudo en 6 essais, indices couleur. Longueurs 3 à 8 lettres.        |
-| **Guessr**        | `/guessr`        | Retrouve un pro via ses attributs : équipe, rôle, nationalité, âge…            |
-| **More or Lessr** | `/more-or-lessr` | Deux pros, une stat cachée : plus ou moins ? 10 rounds, rating ou prize money. |
+| Mode              | Route            | Principe                                                                         |
+| ----------------- | ---------------- | -------------------------------------------------------------------------------- |
+| **Wordle**        | `/wordle`        | Cinq pseudos de pros tirés au hasard, 6 essais chacun, indices couleur.          |
+| **Guessr**        | `/guessr`        | Retrouve un pro via ses attributs : équipe, rôle, nationalité, âge…              |
+| **More or Lessr** | `/more-or-lessr` | Deux pros, une stat cachée : plus ou moins ? 10 rounds, tournois ou prize money. |
 
 La page d'accueil (`/`) est le sélecteur de mode. Elle affiche aussi la série en cours, le
 score courant, le record et le compte à rebours vers la prochaine rotation.
 
-**Neuf grilles par jour**, les mêmes pour tout le monde, renouvelées à **03:00 UTC** : une
-par longueur de Wordle (6), une pour Guessr, une par catégorie de More or Lessr (2). Chaque
+**Huit grilles par jour**, les mêmes pour tout le monde, renouvelées à **03:00 UTC** :
+cinq Wordle, une pour Guessr, une par catégorie de More or Lessr (2). Chaque
 grille terminée rapporte des points selon la performance ; jouer au moins une grille dans la
 journée entretient la série, qui multiplie le score. Manquer un jour remet la série et le
 score courant à zéro — le record, lui, est conservé.
@@ -122,16 +122,18 @@ Chaque mode suit le même découpage en trois couches :
 3. **`app/<mode>/*Game.tsx` + `components/<mode>/`** — l'affichage. Le composant de jeu tient
    le `useReducer` et distribue l'état aux composants de présentation.
 
-**Le tirage de la cible** passe par `lib/daily/deck.ts`, commun aux trois jeux : **neuf
-grilles quotidiennes** (six Wordle — une par longueur —, un Guessr, deux More or Lessr),
+**Le tirage de la cible** passe par `lib/daily/deck.ts`, commun aux trois jeux : **huit
+grilles quotidiennes** (cinq Wordle, un Guessr, deux More or Lessr),
 identiques pour tout le monde, qui basculent à **03:00 UTC** quel que soit le fuseau du
 joueur (`lib/daily/clock.ts`).
 
 Le tirage est une suite de permutations seedées, découpées en créneaux : un tirage ne peut
-donc pas contenir deux fois la même cible. Pour les sept flux à une cible par jour (Wordle,
-Guessr), une cible ne revient pas avant `⌊pool/4⌋` **jours** — 29 jours pour Guessr
-(116 joueurs), 9 à 22 pour les Wordle selon la longueur. More or Lessr consomme 11 joueurs
-par jour sur un pool de 28 : l'écart y vaut 12 **tirages**, soit environ une journée. Chaque
+donc pas contenir deux fois la même cible. Pour Guessr, seul flux à une cible par jour, une
+cible ne revient pas avant `⌊pool/4⌋` **jours** — 29 jours pour 116 joueurs. Wordle tire six
+pseudos par jour sur le flux `wordle`, le sixième ne servant que de rechange au garde
+anti-fuite : sur un dico de 341 pseudos, l'écart y vaut 85 **tirages**, soit une quinzaine de
+jours. More or Lessr consomme 11 joueurs par jour sur un pool de
+28 : l'écart y vaut 12 **tirages**, soit environ une journée. Chaque
 jeu garde son `lib/<mode>/selection.ts`, qui n'est plus qu'une enveloppe autour de `draw`.
 
 **La progression** — série, points, score courant, record — vit elle aussi dans
