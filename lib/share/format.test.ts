@@ -99,7 +99,7 @@ const guessr: GuessrShareData = {
 
 const mol: MolShareData = {
   day: LAUNCH_DAY,
-  category: "rating",
+  category: "tournaments",
   results: [true, false, true],
   url: URL,
 };
@@ -113,7 +113,7 @@ const dayData: DayShareData = {
     "wordle-3": { status: "won", points: 60, state: null },
     "wordle-4": { status: "lost", points: 0, state: null },
     guessr: { status: "won", points: 200, state: null },
-    "mol-rating": { status: "won", points: 140, state: { score: 10 } },
+    "mol-tournaments": { status: "won", points: 140, state: { score: 10 } },
     "mol-prize": { status: "won", points: 70, state: { score: 5 } },
   },
   url: "https://example.test",
@@ -166,7 +166,7 @@ describe("buildMolShare", () => {
   });
 
   it("names the category it was played in", () => {
-    expect(molText(mol)).toContain("Rating");
+    expect(molText(mol)).toContain("Tournament wins");
     expect(molText({ ...mol, category: "prize" })).toContain("Prize money");
   });
 });

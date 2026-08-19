@@ -45,7 +45,7 @@ function startCategory(
   const sequence =
     mode === "daily"
       ? dailySequence(data, day, category)
-      : practiceSequence(data);
+      : practiceSequence(data, category);
   return {
     category,
     sequence,

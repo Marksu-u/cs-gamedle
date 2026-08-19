@@ -14,7 +14,7 @@ const player = (name: string): Player => ({
   name,
   team: "Vitality",
   nationality: "France",
-  peak_rating: 1.28,
+  tournaments_won: 14,
   prize_money: 1_500_000,
 });
 
@@ -38,15 +38,20 @@ function renderIn(locale: string, messages: object, category: Category) {
 
 describe("ChainBoard", () => {
   it.each([
-    ["en", en, "Round 3/10", "Click the player with the higher peak rating"],
-    ["fr", fr, "Manche 3/10", "Clique sur le joueur au plus grand peak rating"],
+    ["en", en, "Round 3/10", "Click the player with more tournament wins"],
+    [
+      "fr",
+      fr,
+      "Manche 3/10",
+      "Clique sur le joueur avec le plus de tournois gagnés",
+    ],
   ])(
     "renders the round and the instruction in %s",
     (locale, m, round, hint) => {
       const { container, unmount } = renderIn(
         locale as string,
         m as object,
-        "rating",
+        "tournaments",
       );
       expect(screen.getByText(round as string)).toBeInTheDocument();
       // The stat name sits in its own <span>, so match across element boundaries.
@@ -72,7 +77,7 @@ describe("ChainBoard", () => {
     ["en", en],
     ["fr", fr],
   ])("never renders a raw translation key (%s)", (locale, m) => {
-    for (const category of ["rating", "prize"] as const) {
+    for (const category of ["tournaments", "prize"] as const) {
       const { container, unmount } = renderIn(
         locale as string,
         m as object,

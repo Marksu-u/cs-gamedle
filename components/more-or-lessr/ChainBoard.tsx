@@ -38,9 +38,10 @@ export default function ChainBoard({
   // sees it. The two sentences are separate messages rather than one with the
   // stat name interpolated, so each language can agree the adjective with the
   // noun it actually carries.
-  const label = category === "rating" ? t("peakRating") : t("prizeMoney");
+  const label =
+    category === "tournaments" ? t("tournamentsWon") : t("prizeMoney");
   const instruction =
-    category === "rating" ? "pickHigherRating" : "pickHigherPrize";
+    category === "tournaments" ? "pickHigherTournaments" : "pickHigherPrize";
 
   // The green/red flash applies to the clicked card. Which one is recovered from
   // the direction: "more" = the challenger was clicked, "less" = the anchor.

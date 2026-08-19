@@ -6,7 +6,7 @@ import type { Category } from "@/lib/more-or-lessr/types";
 type Props = { onSelect: (category: Category) => void };
 
 // Ids only — the title and hint of each category come from the catalogue.
-const CHOICES: Category[] = ["rating", "prize"];
+const CHOICES: Category[] = ["tournaments", "prize"];
 
 export default function CategorySelect({ onSelect }: Props) {
   const t = useTranslations("moreOrLessr");

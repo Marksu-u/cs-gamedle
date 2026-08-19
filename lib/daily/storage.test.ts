@@ -32,6 +32,51 @@ describe("load", () => {
     expect(load()).toEqual(EMPTY_PERSISTED);
   });
 
+  it("keeps meta but drops progress when the version moved on", () => {
+    // A version bump means a reducer state MAY have changed shape. `progress` is
+    // the only thing that carries one, and it is dropped at the next rollover
+    // regardless. `meta` holds no game shape at all, so wiping it would cost a
+    // player their record for a change that cannot corrupt it.
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 99,
+        meta: {
+          streak: 12,
+          lastPlayedDay: 500,
+          runScore: 800,
+          recordScore: 2400,
+        },
+        progress: {
+          day: 500,
+          puzzles: { guessr: { status: "won", points: 90, state: {} } },
+        },
+      }),
+    );
+    expect(load()).toEqual({
+      version: 1,
+      meta: {
+        streak: 12,
+        lastPlayedDay: 500,
+        runScore: 800,
+        recordScore: 2400,
+      },
+      progress: null,
+    });
+  });
+
+  it("still starts over when the version moved on AND meta is unusable", () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 99,
+        meta: { streak: "douze" },
+        progress: null,
+      }),
+    );
+    expect(load()).toEqual(EMPTY_PERSISTED);
+  });
+
   it("starts over when `meta` is missing", () => {
     localStorage.setItem(
       STORAGE_KEY,

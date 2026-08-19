@@ -10,7 +10,7 @@ export type PuzzleId =
   | "wordle-7"
   | "wordle-8"
   | "guessr"
-  | "mol-rating"
+  | "mol-tournaments"
   | "mol-prize";
 
 // A puzzle is either in progress or finished (won or lost). Giving up counts as

@@ -7,13 +7,13 @@ import type { Category, Player } from "@/lib/more-or-lessr/types";
 import PlayerCard from "./PlayerCard";
 
 // The stat values used to be formatted with a hardcoded "en-US", so a French
-// player read "$1,500,000" and "1.12". Only a render in both locales sees it.
+// player read "$1,500,000". Only a render in both locales sees it.
 
 const player: Player = {
   name: "flameZ",
   team: "Vitality",
   nationality: "France",
-  peak_rating: 1.12,
+  tournaments_won: 14,
   prize_money: 1_500_000,
 };
 
@@ -31,18 +31,18 @@ describe("PlayerCard value formatting", () => {
     expect(prize.container.textContent).toContain("$1,500,000");
     prize.unmount();
 
-    const rating = renderIn("en", en, "rating");
-    expect(rating.container.textContent).toContain("1.12");
-    rating.unmount();
+    const tournaments = renderIn("en", en, "tournaments");
+    expect(tournaments.container.textContent).toContain("14");
+    tournaments.unmount();
   });
 
-  it("keeps the HLTV dot in the rating, whatever the locale", () => {
-    // Deliberate: the rating is a published HLTV figure, not a quantity to be
-    // re-punctuated. "1,05" would look wrong to a French player who knows the
-    // site, so this one value stays out of the locale.
-    const { container, unmount } = renderIn("fr", fr, "rating");
-    expect(container.textContent).toContain("1.12");
-    expect(container.textContent).not.toContain("1,12");
+  it("renders the tournament count as a bare integer, in any locale", () => {
+    // A count, not money and not a rating: no currency symbol, no decimals, and
+    // nothing for a locale to punctuate at this magnitude.
+    const { container, unmount } = renderIn("fr", fr, "tournaments");
+    expect(container.textContent).toContain("14");
+    expect(container.textContent).not.toContain("$");
+    expect(container.textContent).not.toContain("14,00");
     unmount();
   });
 

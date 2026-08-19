@@ -149,8 +149,8 @@ export function buildMolShare(d: MolShareData, t: ShareT): ShareCard {
   // Literal keys either side of the branch: a template key here would be the one
   // lookup no static check can see through.
   const category =
-    d.category === "rating"
-      ? t("moreOrLessr.categories.rating")
+    d.category === "tournaments"
+      ? t("moreOrLessr.categories.tournaments")
       : t("moreOrLessr.categories.prize");
 
   return {
@@ -230,7 +230,7 @@ export function buildDayShare(d: DayShareData, t: ShareT): ShareCard {
       {
         label: t("modes.more-or-lessr.label"),
         cells: [
-          molSquare(d.puzzles["mol-rating"]),
+          molSquare(d.puzzles["mol-tournaments"]),
           molSquare(d.puzzles["mol-prize"]),
         ],
       },

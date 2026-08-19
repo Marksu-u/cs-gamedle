@@ -29,7 +29,7 @@
     },
     "more-or-lessr": {
       "label": "More or Lessr",
-      "description": "Two pros, one hidden stat: pick the bigger. Rating or prize money, 10 rounds."
+      "description": "Two pros, one hidden stat: pick the bigger. Tournament wins or prize money, 10 rounds."
     }
   },
   "menu": {
@@ -127,18 +127,18 @@
     "eyebrow": "Counter-Strike 2 · More or Lessr",
     "title": "More or less?",
     "categories": {
-      "rating": "Rating",
+      "tournaments": "Tournament wins",
       "prize": "Prize money",
-      "ratingHint": "Who has the better peak rating?",
+      "tournamentsHint": "Who has won more tournaments?",
       "prizeHint": "Who has earned more $?"
     },
     "higher": "HIGHER",
     "lower": "LOWER",
-    "peakRating": "Peak rating",
+    "tournamentsWon": "Tournament wins",
     "prizeMoney": "Prize money",
     "round": "Round {round}/{total}",
     "score": "Score {score}",
-    "pickHigherRating": "Click the player with the higher <stat>peak rating</stat>",
+    "pickHigherTournaments": "Click the player with more <stat>tournament wins</stat>",
     "pickHigherPrize": "Click the player with the higher <stat>prize money</stat>",
     "finished": "Done",
     "perfect": "Perfect run!",
@@ -146,7 +146,7 @@
     "detail": "{score, plural, one {# correct answer} other {# correct answers}} out of {total}",
     "help": {
       "items": [
-        "Pick a category: HLTV rating or career earnings.",
+        "Pick a category: tournament wins or career earnings.",
         "Two players appear: the left value (the anchor) is visible, the challenger's is hidden.",
         "Guess whether the challenger is HIGHER or LOWER than the anchor.",
         "Right or wrong, the challenger becomes the next anchor and the chain continues.",
@@ -311,7 +311,7 @@
     },
     "more-or-lessr": {
       "title": "CS2 More or Lessr — higher or lower?",
-      "description": "Two pros, one hidden stat: HLTV rating or prize money. Ten rounds, two categories a day."
+      "description": "Two pros, one hidden stat: tournament wins or prize money. Ten rounds, two categories a day."
     },
     "legal": {
       "title": "Legal notice — Strikedle",

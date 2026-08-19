@@ -17,7 +17,7 @@ const PUZZLES_PAR_MODE: Record<string, PuzzleId[]> = {
     "wordle-8",
   ],
   guessr: ["guessr"],
-  "more-or-lessr": ["mol-rating", "mol-prize"],
+  "more-or-lessr": ["mol-tournaments", "mol-prize"],
 };
 
 export default function ModeProgress({ modeId }: { modeId: string }) {

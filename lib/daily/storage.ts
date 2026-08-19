@@ -37,8 +37,18 @@ function parseProgress(value: unknown): Persisted["progress"] {
 
 function parse(raw: string): Persisted {
   const data = JSON.parse(raw) as Record<string, unknown>;
-  if (data.version !== STORAGE_VERSION) return EMPTY_PERSISTED;
   if (!isMeta(data.meta)) return EMPTY_PERSISTED;
+
+  // A version bump means the SHAPE of a reducer state may have changed, and
+  // `progress` is the only thing that carries one. `meta` is four numbers that
+  // survive any reshape, and `progress` is discarded at the next rollover
+  // anyway — so the whole cost of a migration is one day of in-flight puzzles.
+  // Returning EMPTY_PERSISTED here instead would take every player's streak and
+  // record with it, for a change that cannot corrupt either.
+  if (data.version !== STORAGE_VERSION) {
+    return { version: STORAGE_VERSION, meta: data.meta, progress: null };
+  }
+
   return {
     version: STORAGE_VERSION,
     meta: data.meta,

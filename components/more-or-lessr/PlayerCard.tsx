@@ -28,14 +28,12 @@ export default function PlayerCard({
   // bare "$": the standard French rendering of USD is "$US", but the French
   // catalogue already writes "$" and the scene deals in dollars only.
   //
-  // The rating deliberately does NOT follow the locale. HLTV writes it "1.12"
-  // everywhere, and the scene reads it as a published figure rather than as a
-  // quantity to be re-punctuated — "1,05" would look wrong to a French player
-  // who knows the site.
+  // Tournament wins is a plain count, so it goes through the locale formatter
+  // too — no currency, no decimals.
   function formatValue(p: Player): string {
     const v = statValue(p, category);
-    return category === "rating"
-      ? v.toFixed(2)
+    return category === "tournaments"
+      ? format.number(v)
       : format.number(v, {
           style: "currency",
           currency: "USD",

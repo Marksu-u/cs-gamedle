@@ -1,13 +1,14 @@
 // Shared types for the More or Lessr game. Generic (not CS2-specific) so they
 // stay reusable for another universe.
 
-// A comparable pro. `peak_year` is indicative (displayed), never compared.
+// A comparable pro. Values are display-and-compare both: everything here is shown.
 export type Player = {
   name: string;
   team: string;
   nationality: string; // country name → flag in the UI
-  peak_rating: number; // meilleur rating annuel HLTV, ex. 1.35
-  peak_year?: number;
+  // Career first-place finishes. Seeded from the S-tier counts already held in
+  // guessr_players.json; the Liquipedia sync will widen this to all tiers.
+  tournaments_won: number;
   prize_money: number; // career $ (integer)
 };
 
@@ -15,7 +16,7 @@ export type Player = {
 export type MorelessData = { game: string; players: Player[] };
 
 // Les deux stats comparables.
-export type Category = "rating" | "prize";
+export type Category = "tournaments" | "prize";
 
 // Direction of the answer: does the challenger have "more" or "less" than the anchor?
 export type Direction = "more" | "less";

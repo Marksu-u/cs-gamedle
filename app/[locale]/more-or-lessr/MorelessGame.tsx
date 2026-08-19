@@ -28,9 +28,9 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
 
   // The chosen category determines which daily puzzle this is.
   const puzzleId = (
-    state.category ? `mol-${state.category}` : "mol-rating"
+    state.category ? `mol-${state.category}` : "mol-tournaments"
   ) as PuzzleId;
-  // The hook settles the resume PER category: switching from "rating" to "prize"
+  // The hook settles the resume PER category: switching from "tournaments" to "prize"
   // must restore the prize run, not start it over.
   const restaurer = useCallback(
     (s: GameState) => dispatch({ type: "RESTORE", state: s }),
@@ -102,7 +102,8 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
           onChangeCategory={() =>
             dispatch({
               type: "START",
-              category: state.category === "rating" ? "prize" : "rating",
+              category:
+                state.category === "tournaments" ? "prize" : "tournaments",
             })
           }
         />

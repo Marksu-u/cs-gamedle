@@ -16,24 +16,25 @@ const data: MorelessData = {
     name: `P${i}`,
     team: "T",
     nationality: "France",
-    peak_rating: 1 + i / 100,
+    tournaments_won: i,
     prize_money: (i + 1) * 100000,
   })),
 };
 const DAY = 100;
 const reducer = createMorelessReducer(data, DAY);
-const seq = dailySequence(data, DAY, "rating");
+const seq = dailySequence(data, DAY, "tournaments");
 
-// Returns the state right after START rating.
+// Returns the state right after START tournaments.
 function started() {
   return reducer(createInitialState(DAY), {
     type: "START",
-    category: "rating",
+    category: "tournaments",
   });
 }
-// The correct direction for the current anchor/challenger duel (rating category).
+// The correct direction for the current anchor/challenger duel (tournaments category).
 function correctDir(anchor: Player, challenger: Player): Direction {
-  return statValue(challenger, "rating") >= statValue(anchor, "rating")
+  return statValue(challenger, "tournaments") >=
+    statValue(anchor, "tournaments")
     ? "more"
     : "less";
 }
@@ -125,7 +126,7 @@ describe("PRACTICE", () => {
     expect(s.round).toBe(1);
     expect(s.score).toBe(0);
     expect(s.status).toBe("playing");
-    expect(s.category).toBe("rating");
+    expect(s.category).toBe("tournaments");
     expect(s.mode).toBe("practice");
   });
 });

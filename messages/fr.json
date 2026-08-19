@@ -29,7 +29,7 @@
     },
     "more-or-lessr": {
       "label": "More or Lessr",
-      "description": "Deux pros, une stat cachée : clique sur le plus grand. Rating ou prize money, 10 rounds."
+      "description": "Deux pros, une stat cachée : clique sur le plus grand. Tournois gagnés ou prize money, 10 rounds."
     }
   },
   "menu": {
@@ -127,18 +127,18 @@
     "eyebrow": "Counter-Strike 2 · More or Lessr",
     "title": "Plus ou moins ?",
     "categories": {
-      "rating": "Rating",
+      "tournaments": "Tournois gagnés",
       "prize": "Prize money",
-      "ratingHint": "Qui a le meilleur peak rating ?",
+      "tournamentsHint": "Qui a gagné le plus de tournois ?",
       "prizeHint": "Qui a gagné le plus de $ ?"
     },
     "higher": "HAUTE",
     "lower": "BASSE",
-    "peakRating": "Peak rating",
+    "tournamentsWon": "Tournois gagnés",
     "prizeMoney": "Prize money",
     "round": "Manche {round}/{total}",
     "score": "Score {score}",
-    "pickHigherRating": "Clique sur le joueur au plus grand <stat>peak rating</stat>",
+    "pickHigherTournaments": "Clique sur le joueur avec le plus de <stat>tournois gagnés</stat>",
     "pickHigherPrize": "Clique sur le joueur au plus gros <stat>prize money</stat>",
     "finished": "Terminé",
     "perfect": "Sans faute !",
@@ -146,7 +146,7 @@
     "detail": "{score, plural, one {# bonne réponse} other {# bonnes réponses}} sur {total}",
     "help": {
       "items": [
-        "Choisis une catégorie : rating HLTV ou gains en carrière.",
+        "Choisis une catégorie : tournois gagnés ou gains en carrière.",
         "Deux joueurs s'affichent : la valeur de gauche (l'ancre) est visible, celle du challenger est cachée.",
         "Devine si le challenger a une valeur plus HAUTE ou plus BASSE que l'ancre.",
         "Juste ou faux, le challenger devient la nouvelle ancre et la chaîne continue.",
@@ -311,7 +311,7 @@
     },
     "more-or-lessr": {
       "title": "More or Lessr CS2 — plus ou moins ?",
-      "description": "Deux pros, une stat cachée : rating HLTV ou prize money. Dix rounds, deux catégories par jour."
+      "description": "Deux pros, une stat cachée : tournois gagnés ou prize money. Dix rounds, deux catégories par jour."
     },
     "legal": {
       "title": "Mentions légales — Strikedle",

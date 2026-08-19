@@ -6,20 +6,20 @@ const strong: Player = {
   name: "A",
   team: "T",
   nationality: "France",
-  peak_rating: 1.3,
+  tournaments_won: 13,
   prize_money: 500000,
 };
 const weak: Player = {
   name: "B",
   team: "T",
   nationality: "France",
-  peak_rating: 1.1,
+  tournaments_won: 11,
   prize_money: 900000,
 };
 
 describe("statValue", () => {
-  it("rating → peak_rating", () => {
-    expect(statValue(strong, "rating")).toBe(1.3);
+  it("tournaments → tournaments_won", () => {
+    expect(statValue(strong, "tournaments")).toBe(13);
   });
   it("prize → prize_money", () => {
     expect(statValue(strong, "prize")).toBe(500000);
@@ -28,21 +28,21 @@ describe("statValue", () => {
 
 describe("isCorrectGuess", () => {
   it("'more' juste si le challenger a une valeur supérieure à l'ancre", () => {
-    // ancre = weak (1.1), challenger = strong (1.3)
-    expect(isCorrectGuess(weak, strong, "rating", "more")).toBe(true);
-    expect(isCorrectGuess(weak, strong, "rating", "less")).toBe(false);
+    // ancre = weak (11), challenger = strong (13)
+    expect(isCorrectGuess(weak, strong, "tournaments", "more")).toBe(true);
+    expect(isCorrectGuess(weak, strong, "tournaments", "less")).toBe(false);
   });
   it("'less' juste si le challenger a une valeur inférieure à l'ancre", () => {
-    // ancre = strong (1.3), challenger = weak (1.1)
-    expect(isCorrectGuess(strong, weak, "rating", "less")).toBe(true);
-    expect(isCorrectGuess(strong, weak, "rating", "more")).toBe(false);
+    // ancre = strong (13), challenger = weak (11)
+    expect(isCorrectGuess(strong, weak, "tournaments", "less")).toBe(true);
+    expect(isCorrectGuess(strong, weak, "tournaments", "more")).toBe(false);
   });
   it("respecte la catégorie (prize : weak 900k > strong 500k)", () => {
     expect(isCorrectGuess(strong, weak, "prize", "more")).toBe(true);
   });
   it("égalité comptée juste dans les deux sens", () => {
     const tie: Player = { ...strong, name: "C" };
-    expect(isCorrectGuess(strong, tie, "rating", "more")).toBe(true);
-    expect(isCorrectGuess(strong, tie, "rating", "less")).toBe(true);
+    expect(isCorrectGuess(strong, tie, "tournaments", "more")).toBe(true);
+    expect(isCorrectGuess(strong, tie, "tournaments", "less")).toBe(true);
   });
 });
