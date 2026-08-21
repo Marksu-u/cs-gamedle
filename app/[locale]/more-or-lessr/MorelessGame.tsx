@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
+import DevReveal from "@/components/dev/DevReveal";
 import HelpModal from "@/components/HelpModal";
 import CategorySelect from "@/components/more-or-lessr/CategorySelect";
 import ChainBoard from "@/components/more-or-lessr/ChainBoard";
 import ResultBanner from "@/components/more-or-lessr/ResultBanner";
 import { molPoints } from "@/lib/daily/scoring";
+import { statValue } from "@/lib/more-or-lessr/compare";
 import { useTranslations } from "next-intl";
 import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { PuzzleId } from "@/lib/daily/types";
@@ -123,6 +125,26 @@ export default function MorelessGame({ data }: { data: MorelessData }) {
           onGuess={(direction) => dispatch({ type: "GUESS", direction })}
         />
       )}
+
+      {/* Dev only: the challenger's hidden value — the single thing the round
+          asks the player to infer — beside the anchor it is compared against. */}
+      <DevReveal
+        answers={
+          state.anchor && state.challenger && state.category
+            ? [
+                {
+                  label: `Anchor ${state.anchor.name}`,
+                  value: String(statValue(state.anchor, state.category)),
+                  muted: true,
+                },
+                {
+                  label: `Next ${state.challenger.name}`,
+                  value: String(statValue(state.challenger, state.category)),
+                },
+              ]
+            : []
+        }
+      />
 
       <HelpModal
         open={helpOpen}

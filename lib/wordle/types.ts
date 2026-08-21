@@ -10,7 +10,11 @@ export type KeyState = "correct" | "present" | "absent" | "unused";
 export type GameStatus = "playing" | "won" | "lost";
 
 // Shape of the data JSON (app/data/<game>/wordle.json).
-export type WordleData = { game: string; words: Record<string, string[]> };
+export type WordleData = {
+  game: string;
+  updated: string;
+  words: Record<string, string[]>;
+};
 
 // State of one board (one board per slot).
 export type BoardState = {

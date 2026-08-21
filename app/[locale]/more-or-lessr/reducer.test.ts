@@ -12,6 +12,7 @@ import { createInitialState, createMorelessReducer } from "./reducer";
 
 const data: MorelessData = {
   game: "test",
+  updated: "2026-07-31",
   players: Array.from({ length: 28 }, (_, i) => ({
     name: `P${i}`,
     team: "T",

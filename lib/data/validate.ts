@@ -27,6 +27,13 @@ export function validateSnapshot(s: Snapshot): ValidationResult {
 
   if (!Number.isInteger(s.day) || s.day < 0) push(`day invalide : ${s.day}`);
 
+  // The freshness notice is a promise to players about how current the figures
+  // are. A malformed date renders as "Invalid Date" under them, so it is a
+  // publish blocker like any bad pool — not a cosmetic issue.
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s.dataDate ?? "")) {
+    push(`dataDate invalide : ${s.dataDate}`);
+  }
+
   // ---- guessr
   const g = s.guessr.players;
   if (g.length < MIN_GUESSR) {

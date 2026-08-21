@@ -7,16 +7,15 @@
     "play": "Jouer",
     "language": "Langue"
   },
-  "home": {
-    "eyebrow": "Wordle • Guessr",
-    "tagline": "Le hub des mini-jeux CS2."
-  },
   "score": {
     "streak": "Série",
     "score": "Score",
     "record": "Record",
     "nextPuzzle": "Prochaine grille",
     "pending": "—"
+  },
+  "data": {
+    "freshness": "Données joueurs tenues à la main, à jour au {date}. Les transferts et gains postérieurs n'y sont pas encore."
   },
   "modes": {
     "wordle": {
@@ -73,7 +72,7 @@
     }
   },
   "wordle": {
-    "eyebrow": "Counter-Strike 2 · Wordle",
+    "eyebrow": "{site} · Wordle",
     "title": "Devine le pseudo",
     "slots": "Grille",
     "slotLabel": "Grille {slot}, {length} caractères",
@@ -94,7 +93,7 @@
     }
   },
   "guessr": {
-    "eyebrow": "Counter-Strike 2 · Guessr",
+    "eyebrow": "{site} · Guessr",
     "title": "Devine le joueur",
     "subtitle": "Un joueur pro par jour. Essais illimités, indices à chaque proposition.",
     "placeholder": "Tape le pseudo d'un joueur…",
@@ -126,7 +125,7 @@
     }
   },
   "moreOrLessr": {
-    "eyebrow": "Counter-Strike 2 · More or Lessr",
+    "eyebrow": "{site} · More or Lessr",
     "title": "Plus ou moins ?",
     "categories": {
       "tournaments": "Tournois gagnés",

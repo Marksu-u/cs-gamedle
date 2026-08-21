@@ -9,9 +9,11 @@ function bon(): Snapshot {
   return {
     day: 100,
     generatedAt: "2026-08-18T00:00:00.000Z",
+    dataDate: "2026-07-31",
     source: "manual",
     guessr: {
       game: "cs2",
+      updated: "2026-07-31",
       players: Array.from({ length: 95 }, (_, i) => ({
         name: `P${String(i).padStart(3, "0")}`,
         nationality: "France",
@@ -26,6 +28,7 @@ function bon(): Snapshot {
     },
     moreless: {
       game: "cs2",
+      updated: "2026-07-31",
       players: Array.from({ length: 30 }, (_, i) => ({
         name: `M${String(i).padStart(3, "0")}`,
         team: "T",
@@ -36,6 +39,7 @@ function bon(): Snapshot {
     },
     wordle: {
       game: "cs2",
+      updated: "2026-07-31",
       words: { "5": ["ZYWOO", "APEXX", "B1TXX", "ROPZZ"] },
     },
   };
@@ -44,6 +48,17 @@ function bon(): Snapshot {
 describe("validateSnapshot", () => {
   it("accepts a well-formed snapshot", () => {
     expect(validateSnapshot(bon())).toEqual({ ok: true });
+  });
+
+  it("rejects a malformed dataDate, which players would see", () => {
+    // The freshness notice renders this date straight to the player, so a bad
+    // one is not a silent internal problem — it is "Invalid Date" under the
+    // board — and the gate is the last place to catch it.
+    const s = bon();
+    s.dataDate = "31/07/2026";
+    const verdict = validateSnapshot(s);
+    expect(verdict.ok).toBe(false);
+    expect(verdict.ok === false && verdict.errors.join()).toMatch(/dataDate/);
   });
 
   it("rejects a guessr pool that collapsed", () => {

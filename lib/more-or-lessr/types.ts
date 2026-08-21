@@ -13,7 +13,7 @@ export type Player = {
 };
 
 // Forme du JSON (app/data/cs2/more-or-lessr.json).
-export type MorelessData = { game: string; players: Player[] };
+export type MorelessData = { game: string; updated: string; players: Player[] };
 
 // Les deux stats comparables.
 export type Category = "tournaments" | "prize";

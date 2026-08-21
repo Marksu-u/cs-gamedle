@@ -23,6 +23,12 @@ export const manualAdapter: SourceAdapter = {
     return {
       day,
       generatedAt: new Date().toISOString(),
+      // The OLDEST of the three files, not the newest. The notice speaks for the
+      // whole app, so refreshing one dataset must not let it claim a freshness
+      // the other two have not earned.
+      dataDate: [guessr.updated, moreless.updated, wordle.updated]
+        .slice()
+        .sort()[0],
       source: "manual",
       guessr: { ...guessr, players: canonicalise(guessr.players) },
       moreless: { ...moreless, players: canonicalise(moreless.players) },

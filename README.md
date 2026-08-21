@@ -5,7 +5,7 @@ Gratuit, sans compte, sans base de données.
 
 | Mode              | Route            | Principe                                                                         |
 | ----------------- | ---------------- | -------------------------------------------------------------------------------- |
-| **Wordle**        | `/wordle`        | Cinq pseudos de pros tirés au hasard, 6 essais chacun, indices couleur.          |
+| **Wordle**        | `/wordle`        | Cinq pseudos de pros, un par longueur, 6 essais chacun, indices couleur.         |
 | **Guessr**        | `/guessr`        | Retrouve un pro via ses attributs : équipe, rôle, nationalité, âge…              |
 | **More or Lessr** | `/more-or-lessr` | Deux pros, une stat cachée : plus ou moins ? 10 rounds, tournois ou prize money. |
 
@@ -34,9 +34,10 @@ La page se recharge automatiquement à chaque modification.
 
 ## Configuration
 
-| Variable               | Rôle                                                                                         |
-| ---------------------- | -------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL` | URL publique, sans slash final. Alimente les balises Open Graph, le sitemap et `robots.txt`. |
+| Variable               | Rôle                                                                                                                                                |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL` | URL publique, sans slash final. Alimente les balises Open Graph, le sitemap et `robots.txt`.                                                        |
+| `CRON_SECRET`          | Secret de `/api/revalidate`, qui purge le cache des snapshots. Absent, la route refuse tout appel. Vercel Cron l'envoie en `Authorization: Bearer`. |
 
 Copier [`.env.example`](.env.example) en `.env.local` et renseigner la valeur.
 **Sans elle, les aperçus de partage pointent vers `localhost` et restent vides.**
@@ -129,10 +130,12 @@ joueur (`lib/daily/clock.ts`).
 
 Le tirage est une suite de permutations seedées, découpées en créneaux : un tirage ne peut
 donc pas contenir deux fois la même cible. Pour Guessr, seul flux à une cible par jour, une
-cible ne revient pas avant `⌊pool/4⌋` **jours** — 29 jours pour 116 joueurs. Wordle tire six
-pseudos par jour sur le flux `wordle`, le sixième ne servant que de rechange au garde
-anti-fuite : sur un dico de 341 pseudos, l'écart y vaut 85 **tirages**, soit une quinzaine de
-jours. More or Lessr consomme 11 joueurs par jour sur un pool de
+cible ne revient pas avant `⌊pool/4⌋` **jours** — 29 jours pour 116 joueurs. Wordle sert un
+pseudo **par longueur**, chaque longueur ayant son propre flux `wordle-<longueur>` à une
+cible par jour : l'écart y vaut donc `⌊groupe/4⌋` jours, de 9 (36 pseudos de 8 lettres) à
+22 (90 pseudos de 5 lettres). Le dico compte six longueurs pour cinq grilles, alors une
+longueur se repose chaque jour, par fenêtre glissante — ce qui allonge encore l'écart réel.
+More or Lessr consomme 11 joueurs par jour sur un pool de
 28 : l'écart y vaut 12 **tirages**, soit environ une journée. Chaque
 jeu garde son `lib/<mode>/selection.ts`, qui n'est plus qu'une enveloppe autour de `draw`.
 

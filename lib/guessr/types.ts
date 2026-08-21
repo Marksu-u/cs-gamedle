@@ -15,7 +15,14 @@ export type Player = {
 };
 
 // Forme du JSON (app/data/cs2/guessr_players.json).
-export type GuessrData = { game: string; players: Player[] };
+export type GuessrData = {
+  game: string;
+  // Calendar date (YYYY-MM-DD) these figures were last checked against the
+  // scene. Surfaced to players as the freshness notice, so it is a claim, not a
+  // comment: only move it when the pool has actually been reviewed.
+  updated: string;
+  players: Player[];
+};
 
 // Colour outcome of a cell.
 export type Match = "exact" | "partial" | "miss";

@@ -14,6 +14,7 @@ import SlotTabs from "@/components/wordle/SlotTabs";
 import ResultBanner from "@/components/wordle/ResultBanner";
 import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
 import HelpModal from "@/components/HelpModal";
+import DevReveal from "@/components/dev/DevReveal";
 import { deriveKeyStates } from "@/lib/wordle/engine";
 import { dailyTags } from "@/lib/wordle/selection";
 import { wordlePoints } from "@/lib/daily/scoring";
@@ -202,16 +203,20 @@ export default function WordleGame({
         active={state.activeSlot}
         onSelect={(slot) => dispatch({ type: "SELECT_SLOT", slot })}
       />
+      {/* Side-action menu, right-aligned just above the board. Deliberately
+          OUTSIDE the keyed wrapper below: the menu belongs to the day, not to
+          the grid, so a tab switch must not remount it. Inside, changing grid
+          snapped an open dropdown shut and replayed the burger's mount
+          animation — the "reload" the other two games never showed. */}
+      <div className="flex w-full justify-end">
+        <GameMenu items={menuItems} />
+      </div>
       {/* key={activeSlot}: remounts the subtree on a tab switch, which replays
           the entry animation. */}
       <div
         key={state.activeSlot}
         className="flex w-full animate-[wordle-tab_0.25s_ease] flex-col items-center gap-5"
       >
-        {/* Side-action menu, right-aligned just above the board. */}
-        <div className="flex w-full justify-end">
-          <GameMenu items={menuItems} />
-        </div>
         <Board board={board} maxLength={maxLength} />
         <ResultBanner
           board={board}
@@ -235,6 +240,16 @@ export default function WordleGame({
           </div>
         </div>
       )}
+
+      {/* Dev only: every slot at once, since the five are independent puzzles
+          and testing one grid should not mean solving the other four. */}
+      <DevReveal
+        answers={state.boards.map((b) => ({
+          label: `Grid ${b.slot + 1} (${b.length})`,
+          value: b.target,
+          muted: b.slot !== state.activeSlot,
+        }))}
+      />
 
       <HelpModal
         open={helpOpen}

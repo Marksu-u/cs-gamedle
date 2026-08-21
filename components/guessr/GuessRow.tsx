@@ -11,11 +11,20 @@ import type {
 const GRID_COLS =
   "grid grid-cols-[0.85fr_0.95fr_1fr_1.3fr_0.9fr_0.7fr_0.75fr_0.8fr] gap-1.5";
 
+// The neutral block: a column that did not match, the blank columns of a hint
+// row, and the player name. Opaque, and on the theme tokens rather than
+// `bg-white/5`: translucent, it let the page gradient through, so one and the
+// same cell read cool grey on the left of the board and warm brown on the right.
+// These are also the exact values an empty Wordle tile uses, which is what keeps
+// the two games looking like one product.
+const NEUTRAL = "border-[color:var(--border)] bg-[var(--surface)]";
+
 // Colours per state, aligned with the CS2 theme (cs2-theme.css).
 const MATCH_BG: Record<Match, string> = {
-  exact: "bg-emerald-600/25 border-emerald-500/60",
-  partial: "bg-amber-500/20 border-amber-500/50",
-  miss: "bg-white/5 border-white/10",
+  exact: "bg-[var(--guessr-exact)] border-[color:var(--guessr-exact-border)]",
+  partial:
+    "bg-[var(--guessr-partial)] border-[color:var(--guessr-partial-border)]",
+  miss: NEUTRAL,
 };
 
 function arrow(dir: "up" | "down" | "equal"): string {
@@ -54,16 +63,16 @@ function FlagCell({ field }: { field: FieldResult }) {
 
 // Empty cell: a column a hint did not reveal.
 function EmptyCell() {
-  return (
-    <div className="min-h-[58px] rounded-lg border border-white/10 bg-white/5" />
-  );
+  return <div className={`min-h-[58px] rounded-lg border ${NEUTRAL}`} />;
 }
 
 export default function GuessRow({ result }: { result: GuessResult }) {
   const p = result.player;
   return (
     <div className={GRID_COLS}>
-      <div className="flex min-h-[58px] items-center justify-center rounded-lg border border-white/10 bg-white/5 px-2 text-center text-[13px] font-bold">
+      <div
+        className={`flex min-h-[58px] items-center justify-center rounded-lg border px-2 text-center text-[13px] font-bold ${NEUTRAL}`}
+      >
         {p.name}
       </div>
       <FlagCell field={result.nationality} />
@@ -87,7 +96,7 @@ export function HintRow({
 }) {
   return (
     <div className={GRID_COLS}>
-      <div className="flex min-h-[58px] items-center justify-center rounded-lg border border-amber-500/40 bg-amber-500/10 px-2 text-center text-[12px] font-semibold">
+      <div className="flex min-h-[58px] items-center justify-center rounded-lg border border-[color:var(--guessr-hint-border)] bg-[var(--guessr-hint)] px-2 text-center text-[12px] font-semibold">
         💡 Indice
       </div>
       {HINT_FIELDS.map((f) =>

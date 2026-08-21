@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createGuessrReducer, createInitialState } from "./reducer";
+import {
+  createGuessrReducer,
+  createInitialState,
+  hintCandidates,
+} from "./reducer";
 import { MAX_HINTS } from "@/lib/guessr/hints";
 import type { GridRow, GuessrData, Player } from "@/lib/guessr/types";
 
@@ -20,6 +24,7 @@ function p(name: string, over: Partial<Player> = {}): Player {
 
 const data: GuessrData = {
   game: "guessr",
+  updated: "2026-07-31",
   players: [p("ZywOo"), p("apEX"), p("ropz"), p("rain"), p("flameZ")],
 };
 
@@ -84,6 +89,119 @@ describe("reducer GUESS", () => {
     const won = reducer(s0, { type: "GUESS", name: s0.target.name });
     const after = reducer(won, { type: "GUESS", name: data.players[0].name });
     expect(after).toBe(won);
+  });
+});
+
+describe("hintCandidates", () => {
+  // A hint costs a try. Spending one to be told "3 majors" when a guess already
+  // turned the majors cell green is not a hint, it is a forfeited turn — the
+  // reducer only ever excluded columns it had ALREADY hinted, never columns the
+  // grid had given away.
+  //
+  // "Given away" means an exact match specifically: a partial set overlap or a
+  // ▲/▼ arrow narrows a column without revealing it, so those stay hintable.
+  const pool: GuessrData = {
+    game: "guessr",
+    updated: "2026-07-31",
+    players: [
+      p("target", {
+        majors: 3,
+        age: 30,
+        nationality: "Denmark",
+        role: ["AWP", "IGL"],
+      }),
+      // Shares majors and nationality with the target exactly; age differs
+      // (arrow only) and role overlaps without matching (amber only).
+      p("twin", {
+        majors: 3,
+        age: 21,
+        nationality: "Denmark",
+        role: ["AWP"],
+      }),
+      // Filler: the daily deck refuses a pool under four.
+      p("filler1", { majors: 9, age: 40, nationality: "Brazil" }),
+      p("filler2", { majors: 8, age: 41, nationality: "Sweden" }),
+    ],
+  };
+
+  function afterGuessingTwin() {
+    const reducer = createGuessrReducer(pool, 100);
+    let s = createInitialState(pool, 100);
+    s = { ...s, target: pool.players[0] };
+    s = reducer(s, { type: "GUESS", name: "twin" });
+    expect(s.status).toBe("playing");
+    return s;
+  }
+
+  it("drops columns a guess already turned green", () => {
+    const c = hintCandidates(afterGuessingTwin());
+    expect(c).not.toContain("majors");
+    expect(c).not.toContain("nationality");
+  });
+
+  it("keeps a numeric column that only produced an arrow", () => {
+    expect(hintCandidates(afterGuessingTwin())).toContain("age");
+  });
+
+  it("keeps a set column that only partially overlapped", () => {
+    expect(hintCandidates(afterGuessingTwin())).toContain("role");
+  });
+
+  it("drops columns already hinted", () => {
+    const reducer = createGuessrReducer(pool, 100);
+    let s = createInitialState(pool, 100);
+    s = { ...s, target: pool.players[0] };
+    s = reducer(s, { type: "HINT" });
+    const hinted = hintRows(s.rows)[0];
+    const field = hinted.kind === "hint" ? hinted.field : null;
+    expect(hintCandidates(s)).not.toContain(field);
+  });
+
+  it("is empty once the target itself has been guessed", () => {
+    const reducer = createGuessrReducer(pool, 100);
+    let s = createInitialState(pool, 100);
+    s = { ...s, target: pool.players[0] };
+    s = reducer(s, { type: "GUESS", name: "target" });
+    // Won, so every column is green. Forced back to playing to isolate the
+    // candidate logic from the status guard.
+    expect(hintCandidates({ ...s, status: "playing" })).toEqual([]);
+  });
+});
+
+describe("reducer HINT — no wasted try", () => {
+  const pool: GuessrData = {
+    game: "guessr",
+    updated: "2026-07-31",
+    players: [
+      p("target", { majors: 3, nationality: "Denmark" }),
+      p("twin", { majors: 3, nationality: "Denmark", age: 21 }),
+      p("filler1", { majors: 9, age: 40, nationality: "Brazil" }),
+      p("filler2", { majors: 8, age: 41, nationality: "Sweden" }),
+    ],
+  };
+
+  it("never spends a hint on a column the grid already revealed", () => {
+    const reducer = createGuessrReducer(pool, 100);
+    let s = createInitialState(pool, 100);
+    s = { ...s, target: pool.players[0] };
+    s = reducer(s, { type: "GUESS", name: "twin" });
+    for (let i = 0; i < MAX_HINTS; i++) s = reducer(s, { type: "HINT" });
+    const fields = hintRows(s.rows).map((r) =>
+      r.kind === "hint" ? r.field : null,
+    );
+    expect(fields).not.toContain("majors");
+    expect(fields).not.toContain("nationality");
+    expect(fields.every((f) => f !== undefined)).toBe(true);
+  });
+
+  it("is a no-op rather than an empty row when nothing is left to reveal", () => {
+    const reducer = createGuessrReducer(pool, 100);
+    let s = createInitialState(pool, 100);
+    s = { ...s, target: pool.players[0] };
+    s = reducer(s, { type: "GUESS", name: "target" });
+    s = { ...s, status: "playing" };
+    const after = reducer(s, { type: "HINT" });
+    expect(after).toBe(s);
   });
 });
 

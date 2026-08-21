@@ -29,21 +29,27 @@ export default async function LegalPage({ title, children }: Props) {
         <LanguageSwitcher />
       </div>
 
-      <h1 className="cs2-display text-foreground text-3xl font-extrabold uppercase italic">
-        {title}
-      </h1>
-      <p className="mt-2 text-xs tracking-[0.2em] text-[color:var(--muted)] uppercase">
-        {updated}
-      </p>
+      {/* The body sits on a surface panel, like the game boards do. These pages
+          are the only wide columns on the site, so their right edge ran into the
+          bright end of the page gradient — and the text here is small, muted and
+          legally load-bearing, the worst thing to leave half-readable. */}
+      <div className="rounded-xl border border-[color:var(--border)] bg-[var(--surface)] p-6 sm:p-8">
+        <h1 className="cs2-display text-foreground text-3xl font-extrabold uppercase italic">
+          {title}
+        </h1>
+        <p className="mt-2 text-xs tracking-[0.2em] text-[color:var(--muted)] uppercase">
+          {updated}
+        </p>
 
-      <div className="mt-8 flex flex-col gap-7">{children}</div>
+        <div className="mt-8 flex flex-col gap-7">{children}</div>
 
-      <Link
-        href="/"
-        className="mt-10 inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-[color:var(--accent-hot)] uppercase"
-      >
-        {back}
-      </Link>
+        <Link
+          href="/"
+          className="mt-10 inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-[color:var(--accent-hot)] uppercase"
+        >
+          {back}
+        </Link>
+      </div>
     </main>
   );
 }

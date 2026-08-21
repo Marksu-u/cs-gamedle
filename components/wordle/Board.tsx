@@ -18,6 +18,9 @@ export default function Board({
       // current one) so the widest grid still fits on screen. Capped at 3.5rem on
       // large screens, shrunk otherwise to stay in the viewport. Every tile (3→8
       // letters) therefore ends up the same size.
+      //
+      // 2.5rem = the page gutter (px-4, so 2rem) plus 0.5rem slack. There is no
+      // panel around the board; put padding back and this has to grow with it.
       style={
         {
           "--tile-size": `min(3.5rem, calc((100vw - 2.5rem - ${maxLength - 1} * 0.375rem) / ${maxLength}))`,

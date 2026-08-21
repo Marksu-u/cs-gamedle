@@ -41,8 +41,8 @@ export default function ResultBanner({
     <div
       className={`mt-6 w-full max-w-md rounded-xl border p-5 text-center ${
         gaveUp
-          ? "border-red-500/40 bg-red-600/10"
-          : "border-emerald-500/40 bg-emerald-600/10"
+          ? "border-[color:var(--guessr-lost-border)] bg-[var(--guessr-lost)]"
+          : "border-[color:var(--guessr-won-border)] bg-[var(--guessr-won)]"
       }`}
     >
       <p

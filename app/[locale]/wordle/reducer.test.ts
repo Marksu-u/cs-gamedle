@@ -8,14 +8,18 @@ import { evaluateGuess } from "@/lib/wordle/engine";
 import { MAX_HINTS } from "@/lib/wordle/types";
 import type { BoardState, WordleData, WordleState } from "@/lib/wordle/types";
 
-// Chaque groupe a au moins 4 mots : `draw` (lib/daily/deck) exige pool >= 4.
+// Deux contraintes sur ce dictionnaire : chaque groupe a au moins 4 mots, car
+// `draw` (lib/daily/deck) exige pool >= 4 ; et il y a au moins SLOT_COUNT
+// longueurs, car le jour sert un pseudo PAR longueur.
 const data: WordleData = {
   game: "test",
+  updated: "2026-07-31",
   words: {
     "3": ["CAT", "DOG", "BAT", "RAT"],
     "4": ["ROPZ", "DONK", "NIKO", "COBY"],
     "5": ["APPLE", "MANGO", "LEMON", "GRAPE"],
     "6": ["ORANGE", "YELLOW", "PURPLE", "SILVER"],
+    "7": ["ALEKSIB", "BOOMBL4", "BROLLAN", "CHOPPER"],
   },
 };
 const DAY = 100;

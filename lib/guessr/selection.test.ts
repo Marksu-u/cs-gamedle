@@ -4,6 +4,7 @@ import type { GuessrData } from "./types";
 
 const data: GuessrData = {
   game: "guessr",
+  updated: "2026-07-31",
   players: ["a", "b", "c", "d", "e"].map((name) => ({
     name,
     nationality: "France",
@@ -26,13 +27,16 @@ describe("randomTarget", () => {
     expect(randomTarget(data, () => 0.999).name).toBe("e");
   });
   it("lève si le pool est vide", () => {
-    expect(() => randomTarget({ game: "guessr", players: [] })).toThrow();
+    expect(() =>
+      randomTarget({ game: "guessr", updated: "2026-07-31", players: [] }),
+    ).toThrow();
   });
 });
 
 describe("dailyTarget", () => {
   const data: GuessrData = {
     game: "test",
+    updated: "2026-07-31",
     players: Array.from({ length: 28 }, (_, i) => ({
       name: `P${i}`,
       nationality: "France",

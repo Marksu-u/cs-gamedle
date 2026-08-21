@@ -6,6 +6,7 @@ import { TOTAL_ROUNDS, type MorelessData } from "./types";
 // Fixture: 28 players, like the real pool (the draw requires pool >= count).
 const data: MorelessData = {
   game: "test",
+  updated: "2026-07-31",
   players: Array.from({ length: 28 }, (_, i) => ({
     name: `P${i}`,
     team: "T",
@@ -50,6 +51,7 @@ describe("dailySequence", () => {
   it("throws when the pool is too small", () => {
     const small: MorelessData = {
       game: "t",
+      updated: "2026-07-31",
       players: data.players.slice(0, 5),
     };
     expect(() => dailySequence(small, 100, "tournaments")).toThrow();
@@ -77,6 +79,7 @@ describe("practiceSequence", () => {
   it("throws when the pool is too small", () => {
     const small: MorelessData = {
       game: "t",
+      updated: "2026-07-31",
       players: data.players.slice(0, 5),
     };
     expect(() => practiceSequence(small, "tournaments")).toThrow();
@@ -96,6 +99,7 @@ describe("practiceSequence", () => {
 // constantly. Prize money stays distinct so the other category is unaffected.
 const tiedPool: MorelessData = {
   game: "cs2",
+  updated: "2026-07-31",
   players: Array.from({ length: 40 }, (_, i) => ({
     name: `p${i}`,
     team: "T",

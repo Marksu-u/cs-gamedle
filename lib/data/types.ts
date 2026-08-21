@@ -14,6 +14,11 @@ import type { WordleData } from "@/lib/wordle/types";
 export type Snapshot = {
   day: number;
   generatedAt: string; // ISO 8601, for debugging a stale snapshot
+  // Calendar date (YYYY-MM-DD) the FACTS are current to — not when the snapshot
+  // was built. A manual pool built today from figures last checked in July is
+  // current to July, and that is the date players are shown: `generatedAt` would
+  // claim a freshness the data does not have.
+  dataDate: string;
   source: "manual" | "liquipedia";
   guessr: GuessrData;
   moreless: MorelessData;

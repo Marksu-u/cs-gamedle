@@ -1,7 +1,12 @@
 import { compareGuess, norm } from "@/lib/guessr/compare";
 import { buildHintResult, HINT_FIELDS, MAX_HINTS } from "@/lib/guessr/hints";
 import { dailyTarget, randomTarget } from "@/lib/guessr/selection";
-import type { GameState, GridRow, GuessrData } from "@/lib/guessr/types";
+import type {
+  GameState,
+  GridRow,
+  GuessrData,
+  HintField,
+} from "@/lib/guessr/types";
 
 export type GuessrAction =
   | { type: "GUESS"; name: string }
@@ -9,6 +14,30 @@ export type GuessrAction =
   | { type: "GIVE_UP" }
   | { type: "PRACTICE" }
   | { type: "RESTORE"; state: GameState };
+
+// Columns a hint could still usefully reveal.
+//
+// Two ways a column stops being worth a try: it has already been hinted, or a
+// guess turned it green. The second was missing, so a grid showing "3 majors"
+// in green could be followed by a hint announcing "3 majors" — a try spent to
+// learn nothing.
+//
+// Only an EXACT match disqualifies a column. A ▲/▼ arrow bounds a number
+// without giving it, and an amber set overlap says "one of these" rather than
+// "these" — both leave something real for a hint to reveal.
+export function hintCandidates(state: GameState): HintField[] {
+  const hinted = new Set(
+    state.rows.flatMap((r) => (r.kind === "hint" ? [r.field] : [])),
+  );
+  const revealed = new Set<HintField>();
+  for (const row of state.rows) {
+    if (row.kind !== "guess") continue;
+    for (const f of HINT_FIELDS) {
+      if (row.result[f].match === "exact") revealed.add(f);
+    }
+  }
+  return HINT_FIELDS.filter((f) => !hinted.has(f) && !revealed.has(f));
+}
 
 // Starting state: player of the day, game in progress, no rows.
 export function createInitialState(data: GuessrData, day: number): GameState {
@@ -65,7 +94,10 @@ export function createGuessrReducer(data: GuessrData, day: number) {
           r.kind === "hint" ? [r.field] : [],
         );
         if (used.length >= MAX_HINTS) return state;
-        const available = HINT_FIELDS.filter((f) => !used.includes(f));
+        const available = hintCandidates(state);
+        // Nothing left worth revealing: return the SAME state rather than push a
+        // row with an undefined field, which rendered as an empty grid line.
+        if (available.length === 0) return state;
         const field = available[Math.floor(Math.random() * available.length)];
         const row: GridRow = {
           kind: "hint",

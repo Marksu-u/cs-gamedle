@@ -13,6 +13,11 @@ export const HINT_FIELDS: HintField[] = [
 ];
 
 // Nombre maximal d'indices par partie (chaque indice consomme un essai).
+//
+// Four against the seven columns of HINT_FIELDS, deliberately: three columns
+// always stay hidden, so a player who spends every hint still has to deduce the
+// name rather than read it off the grid. Revealing all seven would not be a hint
+// run, it would be the answer. Raising this to 7 removes the game.
 export const MAX_HINTS = 4;
 
 // Builds the revealed cell of a hint: the TARGET's value compared with itself →

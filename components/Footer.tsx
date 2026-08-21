@@ -13,7 +13,11 @@ export default function Footer() {
   const t = useTranslations("footer");
 
   return (
-    <footer className="mt-auto border-t border-[color:var(--border)] px-6 py-6">
+    // Opaque, not transparent: the footer is the full width of the page, so it
+    // crosses the brightest part of the backdrop gradient, and its disclaimer is
+    // the smallest and most muted text on the site. The top border was already
+    // drawing the edge, so a solid bar reads as deliberate rather than abrupt.
+    <footer className="mt-auto border-t border-[color:var(--border)] bg-[var(--background)] px-6 py-6">
       <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[0.7rem] tracking-[0.15em] text-[color:var(--muted)] uppercase">
         <Link href="/legal" className="hover:text-[color:var(--accent)]">
           {t("legal")}

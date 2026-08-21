@@ -2,7 +2,10 @@ import type { TileState } from "@/lib/wordle/types";
 
 // State colours derived from the CS2 theme tokens (see cs2-theme.css).
 const STATE_CLASS: Record<TileState, string> = {
-  empty: "border-[color:var(--border)] bg-transparent text-foreground",
+  // Filled, not transparent. An empty tile is still a block and has to read as
+  // one; left transparent the page gradient came through the board and the grid
+  // looked like holes punched in the page rather than slots waiting for a letter.
+  empty: "border-[color:var(--border)] bg-[var(--surface)] text-foreground",
   absent:
     "border-transparent bg-[var(--wordle-absent)] text-[color:var(--muted)]",
   present: "border-transparent bg-[var(--wordle-present)] text-black",

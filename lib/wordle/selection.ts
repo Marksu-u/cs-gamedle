@@ -25,39 +25,66 @@ export function isValidGuess(group: string[], guess: string): boolean {
   return set.has(guess.toUpperCase());
 }
 
-// Every tag in the dictionary, in a stable order: the daily draw needs ONE pool,
-// not one per length. Sorting by length then alphabetically keeps the order a
-// pure function of the data, so the same day serves the same tags for everyone
-// whatever order the JSON happens to be in.
-function allTags(data: WordleData): string[] {
-  return availableLengths(data).flatMap((len) =>
-    [...getGroup(data, len)].sort(),
-  );
+// The SLOT_COUNT lengths served on a given day, shortest first.
+//
+// A rotating window over the available lengths rather than a `draw`: the choice
+// is a plain cycle over six values with five always served, so the deck's
+// anti-repeat machinery has nothing to protect — five of six would sit in the
+// cooldown zone every single day and the repair would spend its time fighting
+// itself. A window advances by one a day, which leaves each length out exactly
+// once per cycle and is obviously uniform.
+function lengthsForDay(data: WordleData, day: number): number[] {
+  const lengths = availableLengths(data);
+  if (lengths.length < SLOT_COUNT) {
+    throw new Error(
+      `Dictionnaire insuffisant : ${lengths.length} longueurs, ${SLOT_COUNT} requises.`,
+    );
+  }
+  const debut = day % lengths.length;
+  return Array.from(
+    { length: SLOT_COUNT },
+    (_, i) => lengths[(debut + i) % lengths.length],
+  ).sort((a, b) => a - b);
 }
 
-// The day's tags, one per slot. `draw` slices a single shuffled deck, so the
-// five are distinct and a tag does not come back for `⌊pool/4⌋` draws.
+// One tag from a length's bucket, on that length's own stream.
+//
+// `exclude` is the day's Guessr answer, which can only ever collide in the one
+// bucket matching its length. On the days it does, the pair draw for that bucket
+// supplies the replacement: `draw` guarantees its two entries are distinct, so
+// at most one of them is the excluded tag. Every other bucket, and every other
+// day, keeps the single draw and therefore its full cycle.
+function tagForLength(
+  data: WordleData,
+  length: number,
+  day: number,
+  exclude?: string,
+): string {
+  const group = getGroup(data, length);
+  const [tag] = draw(group, `wordle-${length}`, day, 1);
+  if (!exclude || tag.toUpperCase() !== exclude.toUpperCase()) return tag;
+  const paire = draw(group, `wordle-${length}`, day, 2);
+  return paire[0].toUpperCase() === exclude.toUpperCase() ? paire[1] : paire[0];
+}
+
+// The day's tags, one per slot and one per length.
+//
+// Drawing from a single flattened pool put no constraint on length, so a day
+// could serve five tags of the same size. Each length now has its own stream —
+// the same shape the six length-keyed boards used before the slot refactor —
+// which restores both the variety and the per-length anti-repeat cycle.
 //
 // `exclude` is the day's Guessr answer. The two games draw on independent
-// streams, so without this a tag can be today's Wordle target AND today's Guessr
-// target — and solving the first hands over the second. One spare is drawn so
-// dropping the collision still leaves a full day.
+// streams, so without it a tag can be today's Wordle target AND today's Guessr
+// target, and solving the first hands over the second.
 export function dailyTags(
   data: WordleData,
   day: number,
   exclude?: string,
 ): string[] {
-  const pool = allTags(data);
-  if (pool.length < SLOT_COUNT + 1) {
-    throw new Error(
-      `Dictionnaire insuffisant : ${pool.length} pseudos, ${SLOT_COUNT + 1} requis.`,
-    );
-  }
-  const tire = draw(pool, "wordle", day, SLOT_COUNT + 1);
-  const garde = exclude
-    ? tire.filter((t) => t.toUpperCase() !== exclude.toUpperCase())
-    : tire;
-  return garde.slice(0, SLOT_COUNT);
+  return lengthsForDay(data, day).map((len) =>
+    tagForLength(data, len, day, exclude),
+  );
 }
 
 // PRACTICE tags: a plain random pick, outside the rotation and scoring nothing.
@@ -72,12 +99,28 @@ export function practiceTags(
   exclude: string[] = [],
   rand: () => number = Math.random,
 ): string[] {
-  const evites = new Set(exclude.map((t) => t.toUpperCase()));
-  const filtre = allTags(data).filter((t) => !evites.has(t.toUpperCase()));
-  const pool = filtre.length >= SLOT_COUNT ? filtre : allTags(data);
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
+  const lengths = availableLengths(data);
+  if (lengths.length < SLOT_COUNT) {
+    throw new Error(
+      `Dictionnaire insuffisant : ${lengths.length} longueurs, ${SLOT_COUNT} requises.`,
+    );
   }
-  return pool.slice(0, SLOT_COUNT);
+  // Practice picks its lengths at random rather than by the daily window, so
+  // "Play again" can serve a spread the rotation would not have reached yet.
+  const melange = [...lengths];
+  for (let i = melange.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [melange[i], melange[j]] = [melange[j], melange[i]];
+  }
+
+  const evites = new Set(exclude.map((t) => t.toUpperCase()));
+  return melange
+    .slice(0, SLOT_COUNT)
+    .sort((a, b) => a - b)
+    .map((len) => {
+      const group = getGroup(data, len);
+      const libres = group.filter((t) => !evites.has(t.toUpperCase()));
+      const source = libres.length > 0 ? libres : group;
+      return source[Math.floor(rand() * source.length)];
+    });
 }

@@ -70,7 +70,7 @@ export default async function LocaleLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${sairaCondensed.variable} h-full antialiased`}
     >
       {/* theme-cs2 forces the game's dark theme regardless of the system setting. */}
-      <body className="theme-cs2 bg-background text-foreground flex min-h-full flex-col font-sans">
+      <body className="theme-cs2 cs2-hero bg-background text-foreground flex min-h-full flex-col font-sans">
         <NextIntlClientProvider>
           {children}
           <Footer />

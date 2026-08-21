@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import GameMenu, { type GameMenuItem } from "@/components/GameMenu";
+import DevReveal from "@/components/dev/DevReveal";
 import HelpModal from "@/components/HelpModal";
 import GuessGrid from "@/components/guessr/GuessGrid";
 import GuessInput from "@/components/guessr/GuessInput";
@@ -11,7 +12,11 @@ import { guessrPoints } from "@/lib/daily/scoring";
 import { useTranslations } from "next-intl";
 import { useDailyPuzzle, useDay } from "@/lib/daily/useDailyPuzzle";
 import type { GameState, GuessrData } from "@/lib/guessr/types";
-import { createGuessrReducer, createInitialState } from "./reducer";
+import {
+  createGuessrReducer,
+  createInitialState,
+  hintCandidates,
+} from "./reducer";
 
 export default function GuessrGame({ data }: { data: GuessrData }) {
   const t = useTranslations("guessr");
@@ -62,7 +67,13 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
       label: menu("hint"),
       icon: "hint",
       note: `${hintsUsed}/${MAX_HINTS}`,
-      disabled: hintsUsed >= MAX_HINTS || state.status !== "playing",
+      // The last clause matches Wordle: once every column is either hinted or
+      // already green, the reducer refuses, so the item must not stay lit and
+      // silently do nothing when clicked.
+      disabled:
+        hintsUsed >= MAX_HINTS ||
+        state.status !== "playing" ||
+        hintCandidates(state).length === 0,
       onSelect: () => dispatch({ type: "HINT" }),
     },
     {
@@ -122,6 +133,15 @@ export default function GuessrGame({ data }: { data: GuessrData }) {
       )}
 
       <GuessGrid rows={state.rows} />
+
+      {/* Dev only: the pro of the day, plus the team as a sanity check that the
+          pool being served is the one expected. */}
+      <DevReveal
+        answers={[
+          { label: "Player", value: state.target.name },
+          { label: "Team", value: state.target.current_team, muted: true },
+        ]}
+      />
 
       <HelpModal
         open={helpOpen}

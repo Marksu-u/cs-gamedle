@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { buildMetadata } from "@/lib/seo";
 import LanguageSwitcher from "@/components/daily/LanguageSwitcher";
+import DataNotice from "@/components/daily/DataNotice";
 import { loadSnapshot } from "@/lib/data/load.server";
 // Prerendered, but not frozen: without this the pool would be whatever the build
 // read and a snapshot written later would never be served. Kept as a literal
@@ -31,6 +32,7 @@ export default async function CsMoreOrLessrPage({
   setRequestLocale(locale);
   const t = await getTranslations("moreOrLessr");
   const nav = await getTranslations("nav");
+  const site = await getTranslations("site");
   const snapshot = await loadSnapshot();
 
   return (
@@ -42,7 +44,7 @@ export default async function CsMoreOrLessrPage({
       </div>
       <header className="mb-6 text-center">
         <p className="mb-2 text-xs tracking-[0.25em] text-[color:var(--accent)] uppercase">
-          {t("eyebrow")}
+          {t("eyebrow", { site: site("name") })}
         </p>
         <h1 className="cs2-display text-foreground text-4xl font-extrabold uppercase italic">
           {t("title")}
@@ -50,6 +52,8 @@ export default async function CsMoreOrLessrPage({
       </header>
 
       <MorelessGame data={snapshot.moreless} />
+
+      <DataNotice date={snapshot.dataDate} />
 
       <Link
         href="/"

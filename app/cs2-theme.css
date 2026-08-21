@@ -17,6 +17,28 @@
   --accent-soft: rgb(232 146 46 / 0.15);
   --accent-hot: #ff5a1f;
 
+  /* Guessr — états des cellules de la grille.
+     Opaques par choix : en translucide (bg-emerald-600/25 & co) le dégradé de
+     fond traversait la cellule, si bien qu'une même case se lisait verte à
+     gauche du plateau et brunâtre à droite. Ces valeurs sont exactement le rendu
+     composité d'avant sur --background, donc l'apparence ne change pas — seule
+     la fuite disparaît. */
+  --guessr-exact: #0b3127;
+  --guessr-exact-border: #067752;
+  --guessr-partial: #3e2b0e;
+  --guessr-partial-border: #865409;
+  --guessr-hint: #261c10;
+  --guessr-hint-border: #6d460b;
+
+  /* Guessr — bandeau de fin de partie (la « révélation » de la réponse).
+     Même raison que ci-dessus : translucide, il laissait passer le dégradé au
+     travers de la carte qui annonce la réponse. Valeurs = le rendu composité
+     d'avant sur --background. */
+  --guessr-won: #0d1d1a;
+  --guessr-won-border: #08543d;
+  --guessr-lost: #240d11;
+  --guessr-lost-border: #6c1b20;
+
   /* Wordle — couleurs d'état des tuiles/touches. */
   --wordle-correct: #6aaa64; /* vert : bonne lettre, bonne place */
   --wordle-present: #d8a93b; /* doré (cohérent accent) : présente, mal placée */
@@ -30,8 +52,33 @@
 
 /* Bandeau plein écran : gradient orange en diagonale + motif de lignes,
    d'après la key art CS2. */
+/* Le fond du site, appliqué au <body> dans le layout : toutes les pages le
+   partagent, pied de page compris.
+
+   The gradient is painted by a FIXED pseudo-element rather than set on the
+   element itself. A background-image on <body> stretches to the DOCUMENT
+   height, so the diagonal flattened out on long pages — the legal ones are
+   several screens tall — and no two pages looked alike. Pinned to the viewport,
+   every page gets the identical wash.
+
+   `background-attachment: fixed` would do the same in one line, but it is the
+   one property iOS Safari still handles badly, and this is a game played on
+   phones.
+
+   `isolation` is what makes `z-index: -1` work: without a stacking context here
+   the pseudo escapes to the root and paints BEHIND the element's own
+   background-colour, i.e. invisibly. */
 .cs2-hero {
+  position: relative;
+  isolation: isolate;
   background-color: var(--background);
+}
+
+.cs2-hero::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background-image:
     repeating-linear-gradient(
       118deg,
